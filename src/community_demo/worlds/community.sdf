@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+<sdf version="1.9"><world name="community">
+  <gravity>0 0 -9.8</gravity>
+  <scene><ambient>.7 .7 .7 1</ambient><background_color>.4 .5 .6 1</background_color></scene>
+  <light name="sun" type="directional"><pose>0 0 5 0 0 0</pose><diffuse>1 1 1 1</diffuse>
+    <specular>.1 .1 .1 1</specular><direction>-.3 -.4 -1</direction></light>
+  <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+  <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+  <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+  <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+    <render_engine>ogre2</render_engine></plugin>
+  <model name="ground"><static>true</static><pose>0 0 -0.015 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>4.2 4.2 0.03</size></box></geometry></collision><visual name="visual"><geometry><box><size>4.2 4.2 0.03</size></box></geometry>
+      <material><ambient>0.24 0.25 0.26 1</ambient><diffuse>0.24 0.25 0.26 1</diffuse></material></visual></link></model>
+<model name="north_wall"><static>true</static><pose>0 2.09 0.12 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>4.2 0.02 0.24</size></box></geometry></collision><visual name="visual"><geometry><box><size>4.2 0.02 0.24</size></box></geometry>
+      <material><ambient>0.55 0.55 0.55 1</ambient><diffuse>0.55 0.55 0.55 1</diffuse></material></visual></link></model>
+<model name="south_wall"><static>true</static><pose>0 -2.09 0.12 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>4.2 0.02 0.24</size></box></geometry></collision><visual name="visual"><geometry><box><size>4.2 0.02 0.24</size></box></geometry>
+      <material><ambient>0.55 0.55 0.55 1</ambient><diffuse>0.55 0.55 0.55 1</diffuse></material></visual></link></model>
+<model name="east_wall"><static>true</static><pose>2.09 0 0.12 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.02 4.2 0.24</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.02 4.2 0.24</size></box></geometry>
+      <material><ambient>0.55 0.55 0.55 1</ambient><diffuse>0.55 0.55 0.55 1</diffuse></material></visual></link></model>
+<model name="west_wall"><static>true</static><pose>-2.09 0 0.12 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.02 4.2 0.24</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.02 4.2 0.24</size></box></geometry>
+      <material><ambient>0.55 0.55 0.55 1</ambient><diffuse>0.55 0.55 0.55 1</diffuse></material></visual></link></model>
+<model name="top_lane_n"><static>true</static><pose>0 1.94 0.002 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>4 0.012 0.003</size></box></geometry>
+      <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material></visual></link></model>
+<model name="top_lane_s"><static>true</static><pose>0 1.16 0.002 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>4 0.012 0.003</size></box></geometry>
+      <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material></visual></link></model>
+<model name="left_lane_w"><static>true</static><pose>-1.94 0.6 0.002 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>0.012 2.6 0.003</size></box></geometry>
+      <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material></visual></link></model>
+<model name="middle_lane_n"><static>true</static><pose>-0.7 0.86 0.002 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>2.6 0.012 0.003</size></box></geometry>
+      <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material></visual></link></model>
+<model name="middle_lane_s"><static>true</static><pose>-0.7 0.14 0.002 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>2.6 0.012 0.003</size></box></geometry>
+      <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material></visual></link></model>
+<model name="centre_lane_w"><static>true</static><pose>-0.06 -0.65 0.002 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>0.012 1.7 0.003</size></box></geometry>
+      <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material></visual></link></model>
+<model name="centre_lane_e"><static>true</static><pose>0.66 -0.65 0.002 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>0.012 1.7 0.003</size></box></geometry>
+      <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material></visual></link></model>
+<model name="bottom_lane_n"><static>true</static><pose>0.9 -1.14 0.002 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>2.2 0.012 0.003</size></box></geometry>
+      <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material></visual></link></model>
+<model name="bottom_lane_s"><static>true</static><pose>0.9 -1.94 0.002 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>2.2 0.012 0.003</size></box></geometry>
+      <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material></visual></link></model>
+<model name="right_lane_w"><static>true</static><pose>1.14 0 0.002 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>0.012 3.8 0.003</size></box></geometry>
+      <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material></visual></link></model>
+<model name="right_lane_e"><static>true</static><pose>1.94 0 0.002 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>0.012 3.8 0.003</size></box></geometry>
+      <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material></visual></link></model>
+<model name="stop_line_top"><static>true</static><pose>-0.18 1.55 0.004 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>0.025 0.65 0.004</size></box></geometry>
+      <material><ambient>1 1 1 1</ambient><diffuse>1 1 1 1</diffuse></material></visual></link></model>
+<model name="stop_line_bottom"><static>true</static><pose>0.3 -1.04 0.004 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>0.65 0.025 0.004</size></box></geometry>
+      <material><ambient>1 1 1 1</ambient><diffuse>1 1 1 1</diffuse></material></visual></link></model>
+<model name="light_top"><static>true</static><pose>-0.57 1.55 0.47 0 0 0</pose>
+      <link name="body">
+        <visual name="panel"><geometry><box><size>.045 .64 .18</size></box></geometry>
+          <material><ambient>.02 .02 .02 1</ambient><diffuse>.02 .02 .02 1</diffuse></material></visual>
+        <visual name="red"><pose>.026 .20 0 0 1.5708 0</pose>
+          <geometry><cylinder><radius>.06</radius><length>.008</length></cylinder></geometry>
+          <material><ambient>.10 .01 .01 1</ambient><diffuse>.10 .01 .01 1</diffuse></material></visual>
+        <visual name="yellow"><pose>.026 0 0 0 1.5708 0</pose>
+          <geometry><cylinder><radius>.06</radius><length>.008</length></cylinder></geometry>
+          <material><ambient>.12 .08 .01 1</ambient><diffuse>.12 .08 .01 1</diffuse></material></visual>
+        <visual name="green"><pose>.026 -.20 0 0 1.5708 0</pose>
+          <geometry><cylinder><radius>.06</radius><length>.008</length></cylinder></geometry>
+          <material><ambient>0 .9 .02 1</ambient><diffuse>0 .9 .02 1</diffuse>
+            <emissive>0 1 0 1</emissive></material></visual>
+      </link></model>
+<model name="light_bottom"><static>true</static><pose>0.3 -1.39 0.47 0 0 1.5707963</pose>
+      <link name="body">
+        <visual name="panel"><geometry><box><size>.045 .64 .18</size></box></geometry>
+          <material><ambient>.02 .02 .02 1</ambient><diffuse>.02 .02 .02 1</diffuse></material></visual>
+        <visual name="red"><pose>.026 .20 0 0 1.5708 0</pose>
+          <geometry><cylinder><radius>.06</radius><length>.008</length></cylinder></geometry>
+          <material><ambient>.10 .01 .01 1</ambient><diffuse>.10 .01 .01 1</diffuse></material></visual>
+        <visual name="yellow"><pose>.026 0 0 0 1.5708 0</pose>
+          <geometry><cylinder><radius>.06</radius><length>.008</length></cylinder></geometry>
+          <material><ambient>.12 .08 .01 1</ambient><diffuse>.12 .08 .01 1</diffuse></material></visual>
+        <visual name="green"><pose>.026 -.20 0 0 1.5708 0</pose>
+          <geometry><cylinder><radius>.06</radius><length>.008</length></cylinder></geometry>
+          <material><ambient>0 .9 .02 1</ambient><diffuse>0 .9 .02 1</diffuse>
+            <emissive>0 1 0 1</emissive></material></visual>
+      </link></model>
+<model name="A_resident_1"><static>true</static><pose>-1.35 0.96 0.15 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.08 0.13 0.3</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.08 0.13 0.3</size></box></geometry>
+      <material><ambient>0.1 0.45 0.88 1</ambient><diffuse>0.1 0.45 0.88 1</diffuse></material></visual></link></model>
+<model name="A_resident_2"><static>true</static><pose>-1.15 0.96 0.15 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.08 0.13 0.3</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.08 0.13 0.3</size></box></geometry>
+      <material><ambient>0.1 0.45 0.88 1</ambient><diffuse>0.1 0.45 0.88 1</diffuse></material></visual></link></model>
+<model name="A_resident_3"><static>true</static><pose>-0.95 0.96 0.15 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.08 0.13 0.3</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.08 0.13 0.3</size></box></geometry>
+      <material><ambient>0.1 0.45 0.88 1</ambient><diffuse>0.1 0.45 0.88 1</diffuse></material></visual></link></model>
+<model name="A_resident_4"><static>true</static><pose>-0.75 0.96 0.15 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.08 0.13 0.3</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.08 0.13 0.3</size></box></geometry>
+      <material><ambient>0.1 0.45 0.88 1</ambient><diffuse>0.1 0.45 0.88 1</diffuse></material></visual></link></model>
+<model name="A_resident_5"><static>true</static><pose>-0.55 0.96 0.15 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.08 0.13 0.3</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.08 0.13 0.3</size></box></geometry>
+      <material><ambient>0.1 0.45 0.88 1</ambient><diffuse>0.1 0.45 0.88 1</diffuse></material></visual></link></model>
+<model name="B_resident_1"><static>true</static><pose>-1.35 -0.28 0.15 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.08 0.13 0.3</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.08 0.13 0.3</size></box></geometry>
+      <material><ambient>0.1 0.45 0.88 1</ambient><diffuse>0.1 0.45 0.88 1</diffuse></material></visual></link></model>
+<model name="B_resident_2"><static>true</static><pose>-1.15 -0.28 0.15 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.08 0.13 0.3</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.08 0.13 0.3</size></box></geometry>
+      <material><ambient>0.1 0.45 0.88 1</ambient><diffuse>0.1 0.45 0.88 1</diffuse></material></visual></link></model>
+<model name="B_resident_3"><static>true</static><pose>-0.95 -0.28 0.15 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.08 0.13 0.3</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.08 0.13 0.3</size></box></geometry>
+      <material><ambient>0.1 0.45 0.88 1</ambient><diffuse>0.1 0.45 0.88 1</diffuse></material></visual></link></model>
+<model name="B_resident_4"><static>true</static><pose>-0.75 -0.28 0.15 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.08 0.13 0.3</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.08 0.13 0.3</size></box></geometry>
+      <material><ambient>0.1 0.45 0.88 1</ambient><diffuse>0.1 0.45 0.88 1</diffuse></material></visual></link></model>
+<model name="B_outsider"><static>true</static><pose>-0.55 -0.28 0.15 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.08 0.13 0.3</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.08 0.13 0.3</size></box></geometry>
+      <material><ambient>0.95 0.3 0.1 1</ambient><diffuse>0.95 0.3 0.1 1</diffuse></material></visual></link></model>
+<model name="car_1"><static>true</static><pose>1.77 -1.55 0.13 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.35 0.26 0.25</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.35 0.26 0.25</size></box></geometry>
+      <material><ambient>0.05 0.65 0.75 1</ambient><diffuse>0.05 0.65 0.75 1</diffuse></material></visual></link></model>
+<model name="plate_1"><static>true</static><pose>1.59 -1.55 0.13 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>0.006 0.095 0.03</size></box></geometry>
+      <material><ambient>0.05 0.05 0.7 1</ambient><diffuse>0.05 0.05 0.7 1</diffuse></material></visual></link></model>
+<model name="car_2"><static>true</static><pose>1.77 -0.75 0.13 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.35 0.26 0.25</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.35 0.26 0.25</size></box></geometry>
+      <material><ambient>0.05 0.65 0.75 1</ambient><diffuse>0.05 0.65 0.75 1</diffuse></material></visual></link></model>
+<model name="plate_2"><static>true</static><pose>1.59 -0.75 0.13 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>0.006 0.095 0.03</size></box></geometry>
+      <material><ambient>0.05 0.05 0.7 1</ambient><diffuse>0.05 0.05 0.7 1</diffuse></material></visual></link></model>
+<model name="car_3"><static>true</static><pose>1.77 0.05 0.13 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>0.35 0.26 0.25</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.35 0.26 0.25</size></box></geometry>
+      <material><ambient>0.05 0.65 0.75 1</ambient><diffuse>0.05 0.65 0.75 1</diffuse></material></visual></link></model>
+<model name="plate_3"><static>true</static><pose>1.59 0.05 0.13 0 0 0</pose>
+      <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><visual name="visual"><geometry><box><size>0.006 0.095 0.03</size></box></geometry>
+      <material><ambient>0.05 0.05 0.7 1</ambient><diffuse>0.05 0.05 0.7 1</diffuse></material></visual></link></model>
+<model name="patrol_bot"><pose>1.65 1.55 0 0 0 3.14159265</pose>
+      <link name="chassis"><pose>0 0 .13 0 0 0</pose>
+        <inertial><mass>1.5</mass><inertia><ixx>.012</ixx><iyy>.012</iyy><izz>.020</izz></inertia></inertial>
+        <collision name="body_collision"><geometry><box><size>.22 .16 .12</size></box></geometry></collision>
+        <visual name="body_visual"><geometry><box><size>.22 .16 .12</size></box></geometry>
+          <material><ambient>.08 .25 .95 1</ambient><diffuse>.08 .25 .95 1</diffuse></material></visual>
+        <sensor name="laser" type="gpu_lidar"><topic>/scan</topic><pose>0 0 .07 0 0 0</pose>
+          <always_on>true</always_on><update_rate>10</update_rate><ray><scan><horizontal>
+          <samples>360</samples><resolution>1</resolution><min_angle>-3.14159</min_angle>
+          <max_angle>3.14159</max_angle></horizontal></scan><range><min>.08</min><max>6</max></range>
+          </ray></sensor>
+        <sensor name="camera" type="camera"><topic>/camera/image</topic>
+          <pose>.115 0 .09 0 -.80 0</pose><always_on>true</always_on><update_rate>10</update_rate>
+          <camera><horizontal_fov>1.15</horizontal_fov><image><width>640</width><height>480</height>
+          <format>R8G8B8</format></image><clip><near>.05</near><far>6</far></clip></camera></sensor>
+      </link>
+      <link name="left_wheel"><pose>0 .10 .055 1.5707963 0 0</pose>
+        <inertial><mass>.15</mass><inertia><ixx>.0003</ixx><iyy>.0003</iyy><izz>.0003</izz></inertia></inertial>
+        <collision name="collision"><geometry><cylinder><radius>.055</radius><length>.025</length></cylinder></geometry>
+          <surface><friction><ode><mu>1</mu><mu2>1</mu2></ode></friction></surface></collision>
+        <visual name="visual"><geometry><cylinder><radius>.055</radius><length>.025</length></cylinder></geometry>
+          <material><ambient>.02 .02 .02 1</ambient><diffuse>.02 .02 .02 1</diffuse></material></visual>
+      </link>
+      <link name="right_wheel"><pose>0 -.10 .055 1.5707963 0 0</pose>
+        <inertial><mass>.15</mass><inertia><ixx>.0003</ixx><iyy>.0003</iyy><izz>.0003</izz></inertia></inertial>
+        <collision name="collision"><geometry><cylinder><radius>.055</radius><length>.025</length></cylinder></geometry>
+          <surface><friction><ode><mu>1</mu><mu2>1</mu2></ode></friction></surface></collision>
+        <visual name="visual"><geometry><cylinder><radius>.055</radius><length>.025</length></cylinder></geometry>
+          <material><ambient>.02 .02 .02 1</ambient><diffuse>.02 .02 .02 1</diffuse></material></visual>
+      </link>
+      <joint name="left_wheel_joint" type="revolute"><parent>chassis</parent><child>left_wheel</child>
+        <axis><xyz>0 0 1</xyz></axis></joint>
+      <joint name="right_wheel_joint" type="revolute"><parent>chassis</parent><child>right_wheel</child>
+        <axis><xyz>0 0 1</xyz></axis></joint>
+      <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+        <left_joint>left_wheel_joint</left_joint><right_joint>right_wheel_joint</right_joint>
+        <wheel_separation>.20</wheel_separation><wheel_radius>.055</wheel_radius>
+        <topic>/model/patrol_bot/cmd_vel</topic><odom_topic>/model/patrol_bot/odometry</odom_topic>
+        <frame_id>odom</frame_id><child_frame_id>base_link</child_frame_id>
+        <odom_publish_frequency>20</odom_publish_frequency>
+      </plugin>
+      <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher"/>
+    </model>
+</world></sdf>

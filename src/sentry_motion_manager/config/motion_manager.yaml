@@ -1,0 +1,68 @@
+motion_manager:
+  ros__parameters:
+    command_output_enabled: false
+    command_frame_id: base_footprint
+
+    manager_frequency_hz: 100.0
+    output_frequency_hz: 50.0
+    state_frequency_hz: 10.0
+    diagnostics_frequency_hz: 2.0
+
+    nav_command_topic: cmd_vel_nav
+    recovery_command_topic: cmd_vel_recovery
+    terrain_command_topic: cmd_vel_terrain
+    evasion_command_topic: cmd_vel_evasion
+    manual_command_topic: cmd_vel_manual
+    emergency_stop_topic: emergency_stop
+    recovery_trigger_topic: motion_manager/recovery_trigger
+    odometry_topic: odometry
+    output_command_topic: cmd_vel
+    state_topic: motion_manager/state
+    diagnostics_topic: diagnostics
+
+    nav_timeout_s: 0.25
+    recovery_timeout_s: 0.20
+    terrain_timeout_s: 0.20
+    evasion_timeout_s: 0.20
+    manual_timeout_s: 0.20
+
+    max_linear_x: 2.0
+    max_angular_z: 6.3
+    max_linear_accel: 3.0
+    max_angular_accel: 12.0
+
+    recovery_diagnose_timeout_s: 1.0
+    recovery_no_progress_timeout_s: 1.0
+    recovery_min_progress_delta_m: 0.02
+    recovery_minimum_projected_success_m: 0.05
+    recovery_turn_direction: 1.0
+
+    recovery_straight_release_distance_m: 0.25
+    recovery_straight_release_speed_mps: -0.15
+    recovery_straight_release_timeout_s: 3.0
+
+    recovery_low_curvature_release_distance_m: 0.20
+    recovery_low_curvature_release_speed_mps: -0.15
+    recovery_low_curvature_angular_z_radps: 0.35
+    recovery_low_curvature_max_angular_z_radps: 0.50
+    recovery_low_curvature_release_timeout_s: 3.0
+
+    recovery_arc_escape_distance_m: 0.35
+    recovery_arc_escape_speed_mps: -0.20
+    recovery_arc_escape_angular_z_radps: 0.80
+    recovery_arc_escape_timeout_s: 3.5
+
+stuck_detector:
+  ros__parameters:
+    odometry_topic: odometry
+    command_topic: cmd_vel
+    motion_state_topic: motion_manager/state
+    recovery_trigger_topic: motion_manager/recovery_trigger
+
+    tick_frequency_hz: 20.0
+
+    window_s: 3.0
+    cmd_threshold_mps: 0.05
+    position_threshold_m: 0.10
+    hold_s: 1.0
+    cooldown_s: 3.0
