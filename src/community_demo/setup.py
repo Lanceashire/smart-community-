@@ -11,6 +11,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/worlds', ['worlds/community.sdf']),
         ('share/' + package_name + '/launch', ['launch/demo.launch.py']),
+        ('share/' + package_name + '/gui', ['gui/overview.config']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

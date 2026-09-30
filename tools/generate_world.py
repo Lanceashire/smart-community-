@@ -49,19 +49,43 @@ def traffic_light(name, x, y, yaw):
 
 
 def robot():
-    return '''<model name="patrol_bot"><pose>1.65 1.55 0 0 0 3.14159265</pose>
+    return '''<model name="patrol_bot"><pose>1.35 1.55 .002 0 0 3.14159265</pose>
       <link name="chassis"><pose>0 0 .13 0 0 0</pose>
         <inertial><mass>1.5</mass><inertia><ixx>.012</ixx><iyy>.012</iyy><izz>.020</izz></inertia></inertial>
         <collision name="body_collision"><geometry><box><size>.22 .16 .12</size></box></geometry></collision>
         <visual name="body_visual"><geometry><box><size>.22 .16 .12</size></box></geometry>
           <material><ambient>.08 .25 .95 1</ambient><diffuse>.08 .25 .95 1</diffuse></material></visual>
-        <sensor name="laser" type="gpu_lidar"><topic>/scan</topic><pose>0 0 .07 0 0 0</pose>
+        <!-- Front/rear low-friction spherical supports prevent pitching on the drive axle. -->
+        <collision name="front_support"><pose>.085 0 -.105 0 0 0</pose>
+          <geometry><sphere><radius>.025</radius></sphere></geometry>
+          <surface><friction><ode><mu>0</mu><mu2>0</mu2></ode></friction></surface></collision>
+        <collision name="rear_support"><pose>-.085 0 -.105 0 0 0</pose>
+          <geometry><sphere><radius>.025</radius></sphere></geometry>
+          <surface><friction><ode><mu>0</mu><mu2>0</mu2></ode></friction></surface></collision>
+        <visual name="front_support_visual"><pose>.085 0 -.105 0 0 0</pose>
+          <geometry><sphere><radius>.025</radius></sphere></geometry></visual>
+        <visual name="rear_support_visual"><pose>-.085 0 -.105 0 0 0</pose>
+          <geometry><sphere><radius>.025</radius></sphere></geometry></visual>
+        <visual name="roof"><pose>0 0 .067 0 0 0</pose>
+          <geometry><box><size>.18 .14 .015</size></box></geometry>
+          <material><ambient>.95 .08 .55 1</ambient><diffuse>.95 .08 .55 1</diffuse></material></visual>
+        <visual name="front_marker"><pose>.085 0 .077 0 0 0</pose>
+          <geometry><box><size>.035 .13 .018</size></box></geometry>
+          <material><ambient>1 .85 0 1</ambient><diffuse>1 .85 0 1</diffuse></material></visual>
+        <visual name="lidar_housing"><pose>-.03 0 .085 0 0 0</pose>
+          <geometry><cylinder><radius>.025</radius><length>.025</length></cylinder></geometry>
+          <material><ambient>.08 .08 .1 1</ambient><diffuse>.08 .08 .1 1</diffuse></material></visual>
+        <visual name="camera_housing"><pose>.115 0 .085 0 -.4 0</pose>
+          <geometry><box><size>.025 .05 .025</size></box></geometry>
+          <material><ambient>.04 .04 .04 1</ambient><diffuse>.04 .04 .04 1</diffuse></material></visual>
+        <!-- 0.235 m above ground: below the 0.24 m walls and 0.255 m car roofs. -->
+        <sensor name="laser" type="gpu_lidar"><topic>/scan</topic><pose>0 0 .105 0 0 0</pose>
           <always_on>true</always_on><update_rate>10</update_rate><ray><scan><horizontal>
           <samples>360</samples><resolution>1</resolution><min_angle>-3.14159</min_angle>
           <max_angle>3.14159</max_angle></horizontal></scan><range><min>.08</min><max>6</max></range>
           </ray></sensor>
         <sensor name="camera" type="camera"><topic>/camera/image</topic>
-          <pose>.115 0 .09 0 -.80 0</pose><always_on>true</always_on><update_rate>10</update_rate>
+          <pose>.132 0 .10 0 -.40 0</pose><always_on>true</always_on><update_rate>10</update_rate>
           <camera><horizontal_fov>1.15</horizontal_fov><image><width>640</width><height>480</height>
           <format>R8G8B8</format></image><clip><near>.05</near><far>6</far></clip></camera></sensor>
       </link>
@@ -80,15 +104,22 @@ def robot():
           <material><ambient>.02 .02 .02 1</ambient><diffuse>.02 .02 .02 1</diffuse></material></visual>
       </link>
       <joint name="left_wheel_joint" type="revolute"><parent>chassis</parent><child>left_wheel</child>
-        <axis><xyz>0 0 1</xyz></axis></joint>
+        <axis><xyz expressed_in="__model__">0 1 0</xyz>
+          <limit><lower>-1e16</lower><upper>1e16</upper></limit></axis></joint>
       <joint name="right_wheel_joint" type="revolute"><parent>chassis</parent><child>right_wheel</child>
-        <axis><xyz>0 0 1</xyz></axis></joint>
+        <axis><xyz expressed_in="__model__">0 1 0</xyz>
+          <limit><lower>-1e16</lower><upper>1e16</upper></limit></axis></joint>
       <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
         <left_joint>left_wheel_joint</left_joint><right_joint>right_wheel_joint</right_joint>
         <wheel_separation>.20</wheel_separation><wheel_radius>.055</wheel_radius>
         <topic>/model/patrol_bot/cmd_vel</topic><odom_topic>/model/patrol_bot/odometry</odom_topic>
         <frame_id>odom</frame_id><child_frame_id>base_link</child_frame_id>
         <odom_publish_frequency>20</odom_publish_frequency>
+      </plugin>
+      <plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher">
+        <dimensions>3</dimensions><odom_frame>world</odom_frame><robot_base_frame>base_link</robot_base_frame>
+        <odom_topic>/model/patrol_bot/ground_truth</odom_topic><odom_publish_frequency>20</odom_publish_frequency>
+        <tf_topic>/model/patrol_bot/ground_truth_tf</tf_topic>
       </plugin>
       <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher"/>
     </model>'''
@@ -137,7 +168,7 @@ def main():
     sdf = f'''<?xml version="1.0"?>
 <sdf version="1.9"><world name="community">
   <gravity>0 0 -9.8</gravity>
-  <scene><ambient>.7 .7 .7 1</ambient><background_color>.4 .5 .6 1</background_color></scene>
+  <scene><ambient>.7 .7 .7 1</ambient><background>.4 .5 .6 1</background></scene>
   <light name="sun" type="directional"><pose>0 0 5 0 0 0</pose><diffuse>1 1 1 1</diffuse>
     <specular>.1 .1 .1 1</specular><direction>-.3 -.4 -1</direction></light>
   <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>

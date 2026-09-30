@@ -3,6 +3,7 @@
 import rclpy
 from geometry_msgs.msg import Twist, TwistStamped
 from rclpy.node import Node
+from rclpy.executors import ExternalShutdownException
 
 
 class CommandBridge(Node):
@@ -20,6 +21,8 @@ def main():
     node = CommandBridge()
     try:
         rclpy.spin(node)
+    except (KeyboardInterrupt, ExternalShutdownException):
+        pass
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        rclpy.try_shutdown()

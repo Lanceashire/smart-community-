@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "status": "COMPLETE physical single lap; travelled=11.52 m",
+  "physical_distance_m": 11.528221852925167,
+  "span_x_m": 2.8980296556241134,
+  "span_y_m": 3.0939760149155884,
+  "max_tilt_degrees": 0.0015756723376268676,
+  "parked_car_lidar_detections": {
+    "car_1": {
+      "range_m": 0.3239133358001709,
+      "expected_face_range_m": 0.32406516573387134,
+      "robot_xy": [
+        1.276751669011059,
+        -1.4552637092861076
+      ]
+    },
+    "car_2": {
+      "range_m": 0.3000527024269104,
+      "expected_face_range_m": 0.30064248859624726,
+      "robot_xy": [
+        1.2992951334176137,
+        -0.6636228668970262
+      ]
+    },
+    "car_3": {
+      "range_m": 0.2837445139884949,
+      "expected_face_range_m": 0.28335468344559134,
+      "robot_xy": [
+        1.3178442854559025,
+        0.14616471571778403
+      ]
+    }
+  },
+  "reached": [
+    "REACHED top_approach (1/10) physical=(0.191,1.550)",
+    "REACHED top_stop (2/10) physical=(0.173,1.550)",
+    "REACHED top_west (3/10) physical=(-1.455,1.550)",
+    "REACHED left_south (4/10) physical=(-1.544,0.596)",
+    "REACHED middle_east (5/10) physical=(0.205,0.504)",
+    "REACHED lower_approach (6/10) physical=(0.292,-0.680)",
+    "REACHED lower_stop (7/10) physical=(0.293,-0.700)",
+    "REACHED lower_south (8/10) physical=(0.300,-1.452)",
+    "REACHED bottom_east (9/10) physical=(1.254,-1.543)",
+    "REACHED right_north (10/10) physical=(1.348,1.453)"
+  ],
+  "first_pose": [
+    0.05,
+    1.35,
+    1.5500000000000003,
+    -4.377503006111616e-05,
+    2.1077358287459788e-12
+  ],
+  "last_pose": [
+    83.6,
+    1.3479240801990708,
+    1.4593777481757713,
+    -3.299688550173485e-09,
+    9.454237346213955e-11
+  ],
+  "sample_count": 1672,
+  "simulation_duration_s": 83.55,
+  "validation_date": "2026-09-30",
+  "pose_source": "Gazebo OdometryPublisher physical world pose; not DiffDrive wheel odometry",
+  "scope": "Static green-light world; placeholder standees and plates; simulation ground truth localization"
+}
