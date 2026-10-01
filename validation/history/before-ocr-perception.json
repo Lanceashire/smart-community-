@@ -1,0 +1,47 @@
+{
+  "passed": false,
+  "status": "COMPLETE single lap; travelled=12.85 m",
+  "counts": {
+    "residents": 8,
+    "visitors": 2,
+    "total": 10
+  },
+  "expected_people": [
+    "resident_01",
+    "resident_02",
+    "resident_03",
+    "resident_04",
+    "resident_05",
+    "resident_06",
+    "resident_07",
+    "resident_08",
+    "visitor_01",
+    "visitor_02"
+  ],
+  "seen_people": [
+    "resident_01",
+    "resident_02",
+    "resident_03",
+    "resident_04",
+    "resident_05",
+    "resident_06",
+    "resident_07",
+    "resident_08",
+    "visitor_01",
+    "visitor_02"
+  ],
+  "missing_people": [],
+  "unexpected_people": [],
+  "plates": [
+    "苏APL12A"
+  ],
+  "missing_plates": [
+    "苏AB8Q62",
+    "鄂D7B5Q2"
+  ],
+  "unexpected_plates": [],
+  "events_have_images": true,
+  "recognition_sequence_valid": true,
+  "runtime_truth_subscription": false,
+  "limits": "One fixed supplied-gallery simulation layout; no real-world result asserted"
+}

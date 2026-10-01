@@ -32,11 +32,11 @@ class TrafficVision(Node):
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         # The gantry is above camera height; ignore brightly coloured people
         # and the ground in the lower half of the frame.
-        roi = hsv[:int(msg.height * .58), :, :]
-        red = cv2.inRange(roi, (0, 130, 95), (12, 255, 255)) | cv2.inRange(
-            roi, (170, 130, 95), (179, 255, 255))
-        yellow = cv2.inRange(roi, (16, 115, 105), (38, 255, 255))
-        green = cv2.inRange(roi, (40, 100, 85), (85, 255, 255))
+        roi = hsv[:int(msg.height * .45), :, :]
+        red = cv2.inRange(roi, (0, 70, 180), (10, 255, 255)) | cv2.inRange(
+            roi, (170, 70, 180), (179, 255, 255))
+        yellow = cv2.inRange(roi, (12, 70, 180), (38, 255, 255))
+        green = cv2.inRange(roi, (40, 70, 180), (85, 255, 255))
         counts = {'red': cv2.countNonZero(red), 'yellow': cv2.countNonZero(yellow),
                   'green': cv2.countNonZero(green)}
         best = max(counts, key=counts.get)

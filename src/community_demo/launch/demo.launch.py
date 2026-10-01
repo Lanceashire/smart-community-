@@ -6,6 +6,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, OpaqueFunction, Shutdown, TimerAction
 from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
 from launch_ros.actions import Node
 
 
@@ -17,8 +18,9 @@ def start_gazebo(context):
     if LaunchConfiguration('paused').perform(context).lower() != 'true':
         cmd.append('-r')
     cmd += ['--gui-config', os.path.join(share, 'gui', 'overview.config'),
-            os.path.join(share, 'worlds', 'community.sdf')]
+            os.path.join(share, 'worlds', LaunchConfiguration('world').perform(context))]
     return [ExecuteProcess(cmd=cmd, output='screen', on_exit=[Shutdown(reason='Gazebo exited')], additional_env={
+        'GZ_SIM_RESOURCE_PATH': os.path.join(share,'models') + ':' + os.environ.get('GZ_SIM_RESOURCE_PATH',''),
         'QT_AUTO_SCREEN_SCALE_FACTOR': '0', 'QT_SCALE_FACTOR': '1', 'QT_FONT_DPI': '96',
     })]
 
@@ -30,8 +32,9 @@ def generate_launch_description():
             '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
             '/model/patrol_bot/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
             '/model/patrol_bot/ground_truth@nav_msgs/msg/Odometry[gz.msgs.Odometry',
-            '/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
+            '/lidar/raw/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked',
             '/camera/image@sensor_msgs/msg/Image[gz.msgs.Image',
+            '/model/patrol_bot/camera_pan@std_msgs/msg/Float64]gz.msgs.Double',
             '/model/patrol_bot/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
         ], output='screen',
     )
@@ -50,13 +53,23 @@ def generate_launch_description():
             'nav_timeout_s': .5,
         }],
     )
-    vision = Node(package='community_demo', executable='vision', output='screen')
+    vision = Node(package='community_demo', executable='vision', output='screen', condition=IfCondition(LaunchConfiguration('vision')))
     cmd_bridge = Node(package='community_demo', executable='cmd_bridge', output='screen')
-    patrol = Node(package='community_demo', executable='patrol', output='screen')
+    patrol = Node(package='community_demo', executable='patrol', output='screen', condition=IfCondition(LaunchConfiguration('patrol')))
+    localization = Node(package='community_demo', executable='localization', parameters=[{'use_sim_time':True}], output='screen')
+    slam = Node(package='slam_toolbox', executable='async_slam_toolbox_node', name='slam_toolbox', parameters=[os.path.join(get_package_share_directory('community_demo'),'config','slam.yaml')], output='screen')
+    signals = Node(package='community_demo', executable='traffic_signals', output='screen', parameters=[{'use_sim_time':True}])
     return LaunchDescription([
+        DeclareLaunchArgument('world', default_value='community.sdf'),
         DeclareLaunchArgument('gui', default_value='true'),
         DeclareLaunchArgument('paused', default_value='false'),
+        DeclareLaunchArgument('patrol', default_value='true'),
+        DeclareLaunchArgument('vision', default_value='true'),
         OpaqueFunction(function=start_gazebo),
-        bridge,
-        TimerAction(period=4.0, actions=[manager, vision, cmd_bridge, patrol]),
+        bridge, localization, slam,
+        Node(package='nav2_map_server',executable='map_server',name='map_server',parameters=[os.path.join(get_package_share_directory('community_demo'),'config/navigation.yaml'),{'yaml_filename':os.path.join(get_package_share_directory('community_demo'),'maps/roads.yaml')}],output='screen'),
+        Node(package='nav2_planner',executable='planner_server',name='planner_server',parameters=[os.path.join(get_package_share_directory('community_demo'),'config/navigation.yaml')],output='screen'),
+        Node(package='nav2_lifecycle_manager',executable='lifecycle_manager',name='nav_lifecycle',parameters=[{'use_sim_time':True,'autostart':True,'node_names':['map_server','planner_server']}],output='screen'),
+        Node(package='nav2_lifecycle_manager', executable='lifecycle_manager', name='slam_lifecycle', parameters=[{'use_sim_time':True,'autostart':True,'bond_timeout':0.0,'node_names':['slam_toolbox']}], output='screen'),
+        TimerAction(period=4.0, actions=[manager, vision, cmd_bridge, signals, patrol]),
     ])

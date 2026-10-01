@@ -1,0 +1,362 @@
+{
+  "field_m": [
+    4.2,
+    4.2
+  ],
+  "road_width_m": 0.6,
+  "map_texture": "original supplied map; no invented perimeter wall",
+  "origin": "map centre; +X right, +Y top, +Z up",
+  "spawn": [
+    1.1,
+    1.7,
+    3.141592653589793
+  ],
+  "people": [
+    {
+      "name": "A_person_1",
+      "asset": "resident_01",
+      "district": "A",
+      "source_icon_center_px": [
+        227,
+        242
+      ],
+      "x": -1.2578,
+      "y": 1.1037,
+      "facing": "south",
+      "direction_basis": "unmarked: toward middle route",
+      "yaw": -1.5707963267948966,
+      "height_m": 0.15,
+      "width_m": 0.06605113636363637
+    },
+    {
+      "name": "A_person_2",
+      "asset": "visitor_01",
+      "district": "A",
+      "source_icon_center_px": [
+        275,
+        260
+      ],
+      "x": -1.0954,
+      "y": 1.0362,
+      "facing": "west",
+      "direction_basis": "left arrow adjacent to second figure",
+      "yaw": 3.141592653589793,
+      "height_m": 0.15,
+      "width_m": 0.04972602739726027
+    },
+    {
+      "name": "A_person_3",
+      "asset": "resident_02",
+      "district": "A",
+      "source_icon_center_px": [
+        324,
+        242
+      ],
+      "x": -0.9295,
+      "y": 1.1037,
+      "facing": "south",
+      "direction_basis": "down arrow adjacent to third figure",
+      "yaw": -1.5707963267948966,
+      "height_m": 0.15,
+      "width_m": 0.0542016806722689
+    },
+    {
+      "name": "A_person_4",
+      "asset": "resident_03",
+      "district": "A",
+      "source_icon_center_px": [
+        380,
+        260
+      ],
+      "x": -0.74,
+      "y": 1.0362,
+      "facing": "north",
+      "direction_basis": "up arrow adjacent to fourth figure",
+      "yaw": 1.5707963267948966,
+      "height_m": 0.15,
+      "width_m": 0.07020348837209302
+    },
+    {
+      "name": "A_person_5",
+      "asset": "resident_04",
+      "district": "A",
+      "source_icon_center_px": [
+        435,
+        230
+      ],
+      "x": -0.5538,
+      "y": 1.1487,
+      "facing": "south",
+      "direction_basis": "unmarked: toward middle route",
+      "yaw": -1.5707963267948966,
+      "height_m": 0.15,
+      "width_m": 0.07028571428571428
+    },
+    {
+      "name": "B_person_1",
+      "asset": "resident_05",
+      "district": "B",
+      "source_icon_center_px": [
+        241,
+        565
+      ],
+      "x": -1.2086,
+      "y": -0.0932,
+      "facing": "north",
+      "direction_basis": "unmarked: toward middle route",
+      "yaw": 1.5707963267948966,
+      "height_m": 0.15,
+      "width_m": 0.04755043227665706
+    },
+    {
+      "name": "B_person_2",
+      "asset": "visitor_02",
+      "district": "B",
+      "source_icon_center_px": [
+        289,
+        588
+      ],
+      "x": -1.0502,
+      "y": -0.1775,
+      "facing": "north",
+      "direction_basis": "up arrow in left group",
+      "yaw": 1.5707963267948966,
+      "height_m": 0.15,
+      "width_m": 0.06416430594900849
+    },
+    {
+      "name": "B_person_3",
+      "asset": "resident_06",
+      "district": "B",
+      "source_icon_center_px": [
+        337,
+        565
+      ],
+      "x": -0.8917,
+      "y": -0.0932,
+      "facing": "east",
+      "direction_basis": "right arrow in right group",
+      "yaw": 0,
+      "height_m": 0.15,
+      "width_m": 0.045953757225433524
+    },
+    {
+      "name": "B_person_4",
+      "asset": "resident_07",
+      "district": "B",
+      "source_icon_center_px": [
+        394,
+        588
+      ],
+      "x": -0.7036,
+      "y": -0.1775,
+      "facing": "north",
+      "direction_basis": "unmarked: toward middle route",
+      "yaw": 1.5707963267948966,
+      "height_m": 0.15,
+      "width_m": 0.057902735562310036
+    },
+    {
+      "name": "B_person_5",
+      "asset": "resident_08",
+      "district": "B",
+      "source_icon_center_px": [
+        449,
+        550
+      ],
+      "x": -0.5221,
+      "y": -0.0382,
+      "facing": "north",
+      "direction_basis": "unmarked: toward middle route",
+      "yaw": 1.5707963267948966,
+      "height_m": 0.15,
+      "width_m": 0.05526315789473684
+    }
+  ],
+  "lamps": [
+    {
+      "name": "light_top_red_on",
+      "colour": "red",
+      "state": "on",
+      "x": -0.2915,
+      "y": 1.9,
+      "yaw": 0,
+      "visible_z": 0.35,
+      "hidden_z": -1.0
+    },
+    {
+      "name": "light_top_red_off",
+      "colour": "red",
+      "state": "off",
+      "x": -0.2915,
+      "y": 1.9,
+      "yaw": 0,
+      "visible_z": 0.35,
+      "hidden_z": -1.0
+    },
+    {
+      "name": "light_top_yellow_on",
+      "colour": "yellow",
+      "state": "on",
+      "x": -0.2915,
+      "y": 1.7,
+      "yaw": 0,
+      "visible_z": 0.35,
+      "hidden_z": -1.0
+    },
+    {
+      "name": "light_top_yellow_off",
+      "colour": "yellow",
+      "state": "off",
+      "x": -0.2915,
+      "y": 1.7,
+      "yaw": 0,
+      "visible_z": 0.35,
+      "hidden_z": -1.0
+    },
+    {
+      "name": "light_top_green_on",
+      "colour": "green",
+      "state": "on",
+      "x": -0.2915,
+      "y": 1.5,
+      "yaw": 0,
+      "visible_z": 0.35,
+      "hidden_z": -1.0
+    },
+    {
+      "name": "light_top_green_off",
+      "colour": "green",
+      "state": "off",
+      "x": -0.2915,
+      "y": 1.5,
+      "yaw": 0,
+      "visible_z": 0.35,
+      "hidden_z": -1.0
+    },
+    {
+      "name": "light_bottom_red_on",
+      "colour": "red",
+      "state": "on",
+      "x": 0.1,
+      "y": -1.6115000000000002,
+      "yaw": 1.5707963267948966,
+      "visible_z": 0.35,
+      "hidden_z": -1.0
+    },
+    {
+      "name": "light_bottom_red_off",
+      "colour": "red",
+      "state": "off",
+      "x": 0.1,
+      "y": -1.6115000000000002,
+      "yaw": 1.5707963267948966,
+      "visible_z": 0.35,
+      "hidden_z": -1.0
+    },
+    {
+      "name": "light_bottom_yellow_on",
+      "colour": "yellow",
+      "state": "on",
+      "x": -0.1,
+      "y": -1.6115000000000002,
+      "yaw": 1.5707963267948966,
+      "visible_z": 0.35,
+      "hidden_z": -1.0
+    },
+    {
+      "name": "light_bottom_yellow_off",
+      "colour": "yellow",
+      "state": "off",
+      "x": -0.1,
+      "y": -1.6115000000000002,
+      "yaw": 1.5707963267948966,
+      "visible_z": 0.35,
+      "hidden_z": -1.0
+    },
+    {
+      "name": "light_bottom_green_on",
+      "colour": "green",
+      "state": "on",
+      "x": -0.30000000000000004,
+      "y": -1.6115000000000002,
+      "yaw": 1.5707963267948966,
+      "visible_z": 0.35,
+      "hidden_z": -1.0
+    },
+    {
+      "name": "light_bottom_green_off",
+      "colour": "green",
+      "state": "off",
+      "x": -0.30000000000000004,
+      "y": -1.6115000000000002,
+      "yaw": 1.5707963267948966,
+      "visible_z": 0.35,
+      "hidden_z": -1.0
+    }
+  ],
+  "cars": [
+    {
+      "name": "car_1",
+      "x": 1.75,
+      "y": -1.7,
+      "yaw": 3.141592653589793,
+      "size_m": [
+        0.005,
+        0.345,
+        0.25
+      ],
+      "plate_m": [
+        0.095,
+        0.03
+      ]
+    },
+    {
+      "name": "car_2",
+      "x": 1.75,
+      "y": -1.1,
+      "yaw": 3.141592653589793,
+      "size_m": [
+        0.005,
+        0.345,
+        0.25
+      ],
+      "plate_m": [
+        0.095,
+        0.03
+      ]
+    },
+    {
+      "name": "car_3",
+      "x": 1.75,
+      "y": -0.5,
+      "yaw": 3.141592653589793,
+      "size_m": [
+        0.005,
+        0.345,
+        0.25
+      ],
+      "plate_m": [
+        0.095,
+        0.03
+      ]
+    }
+  ],
+  "gantry_m": {
+    "width": 0.64,
+    "height": 0.48,
+    "clearance": 0.34,
+    "panel_height": 0.14,
+    "leg_width": 0.025
+  },
+  "stop_lines": {
+    "top_x": 0.3,
+    "bottom_y": -0.51
+  },
+  "assumptions": [
+    "Coordinates inferred from the provided raster map and snapped to nominal 0.1 m; not a surveyed CAD drawing.",
+    "Five A and five B people follow schematic; identities and their exact positions are configurable.",
+    "Lower gantry y=-1.62 m leaves room for the differential robot turning south of the posts.",
+    "Start is on the driving lane beside the upper-right start/finish box, not inside the parking column."
+  ]
+}

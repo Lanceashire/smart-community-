@@ -1,0 +1,137 @@
+{
+  "reference": "user supplied 复赛任务示意图.png, 1200x1082",
+  "placement_method": "Linear mapping of icon centres inside A strip/B upper block; icon art size is not physical person width. No surveyed CAD coordinates were supplied.",
+  "unmarked_orientation_policy": "Face nearest patrol road. Only arrows shown in the diagram are treated as explicit directional evidence. B arrows identify group directions; association with second/third icons is documented interpretation.",
+  "people": [
+    {
+      "name": "A_person_1",
+      "asset": "resident_01",
+      "district": "A",
+      "source_icon_center_px": [
+        227,
+        242
+      ],
+      "x": -1.2578,
+      "y": 1.1037,
+      "facing": "south",
+      "direction_basis": "unmarked: toward middle route"
+    },
+    {
+      "name": "A_person_2",
+      "asset": "visitor_01",
+      "district": "A",
+      "source_icon_center_px": [
+        275,
+        260
+      ],
+      "x": -1.0954,
+      "y": 1.0362,
+      "facing": "west",
+      "direction_basis": "left arrow adjacent to second figure"
+    },
+    {
+      "name": "A_person_3",
+      "asset": "resident_02",
+      "district": "A",
+      "source_icon_center_px": [
+        324,
+        242
+      ],
+      "x": -0.9295,
+      "y": 1.1037,
+      "facing": "south",
+      "direction_basis": "down arrow adjacent to third figure"
+    },
+    {
+      "name": "A_person_4",
+      "asset": "resident_03",
+      "district": "A",
+      "source_icon_center_px": [
+        380,
+        260
+      ],
+      "x": -0.74,
+      "y": 1.0362,
+      "facing": "north",
+      "direction_basis": "up arrow adjacent to fourth figure"
+    },
+    {
+      "name": "A_person_5",
+      "asset": "resident_04",
+      "district": "A",
+      "source_icon_center_px": [
+        435,
+        230
+      ],
+      "x": -0.5538,
+      "y": 1.1487,
+      "facing": "south",
+      "direction_basis": "unmarked: toward middle route"
+    },
+    {
+      "name": "B_person_1",
+      "asset": "resident_05",
+      "district": "B",
+      "source_icon_center_px": [
+        241,
+        565
+      ],
+      "x": -1.2086,
+      "y": -0.0932,
+      "facing": "north",
+      "direction_basis": "unmarked: toward middle route"
+    },
+    {
+      "name": "B_person_2",
+      "asset": "visitor_02",
+      "district": "B",
+      "source_icon_center_px": [
+        289,
+        588
+      ],
+      "x": -1.0502,
+      "y": -0.1775,
+      "facing": "north",
+      "direction_basis": "up arrow in left group"
+    },
+    {
+      "name": "B_person_3",
+      "asset": "resident_06",
+      "district": "B",
+      "source_icon_center_px": [
+        337,
+        565
+      ],
+      "x": -0.8917,
+      "y": -0.0932,
+      "facing": "east",
+      "direction_basis": "right arrow in right group"
+    },
+    {
+      "name": "B_person_4",
+      "asset": "resident_07",
+      "district": "B",
+      "source_icon_center_px": [
+        394,
+        588
+      ],
+      "x": -0.7036,
+      "y": -0.1775,
+      "facing": "north",
+      "direction_basis": "unmarked: toward middle route"
+    },
+    {
+      "name": "B_person_5",
+      "asset": "resident_08",
+      "district": "B",
+      "source_icon_center_px": [
+        449,
+        550
+      ],
+      "x": -0.5221,
+      "y": -0.0382,
+      "facing": "north",
+      "direction_basis": "unmarked: toward middle route"
+    }
+  ]
+}

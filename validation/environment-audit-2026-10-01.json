@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-01",
+  "scope": "Live environment and rule-gap audit; not final competition compliance certification",
+  "current_container": "aic-scene-jazzy",
+  "original_container_preserved": "nifty_hugle (stopped)",
+  "ros": "Jazzy",
+  "gazebo": "8.15.0 Harmonic",
+  "nav2_installed": true,
+  "slam_toolbox_installed": true,
+  "active_ros_nodes": [
+    "community_command_bridge",
+    "community_patrol",
+    "community_signal_simulator",
+    "community_traffic_vision",
+    "gz_bridge",
+    "motion_manager"
+  ],
+  "camera": {
+    "resolution": [
+      1280,
+      960
+    ],
+    "encoding": "rgb8",
+    "observed_wall_hz": 8.237116053851997,
+    "measurement_seconds": 7,
+    "received_frames": 57
+  },
+  "lidar": {
+    "samples": 360,
+    "live_messages_received": 39,
+    "measurement_seconds": 4
+  },
+  "physical_pose_live": true,
+  "patrol_current_status": "COMPLETE physical single lap; travelled=12.51 m",
+  "renderer": "zink Vulkan 1.4 (NVIDIA GeForce RTX 5060 Laptop GPU, NVIDIA_PROPRIETARY)",
+  "vision_shared_venv": {
+    "host": "/home/jiezichuan/.local/share/aic-smart-community/aic-vision-venv",
+    "torch": "2.13.0+cu130",
+    "ultralytics": "8.4.164",
+    "cuda_verified": true,
+    "test": "64x64 all-ones matmul on GPU returned 64.0; read-only mounted in disposable same-image container",
+    "mounted_in_current_scene_container": false
+  },
+  "people_audit": {
+    "A_count": 5,
+    "B_count": 5,
+    "minimum_center_distance_m": {
+      "A": 0.230217288664427,
+      "B": 0.224722050542442
+    },
+    "grouping_matches_schematic": true,
+    "exact_id_and_arrow_mapping_verified": false,
+    "complete_autonomous_visual_coverage_verified": false,
+    "identity_assignment": "8 resident + 2 visitor example, not prescribed answer",
+    "person_height_m": 0.15,
+    "height_status": "Estimated from ruler photograph"
+  },
+  "pending": [
+    "Restore shared visual environment mount in scene development container",
+    "Verify each person orientation against diagram",
+    "Verify camera coverage for every person during autonomous route",
+    "Replace incomplete car background and yellow-off assets",
+    "Replace physical truth localization with mapping/localization",
+    "Check full robot footprint against lane lines and red stop lines",
+    "Implement YOLO/OCR/unique counting and synchronized outputs"
+  ]
+}

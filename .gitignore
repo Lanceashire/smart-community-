@@ -8,3 +8,10 @@ runs/
 datasets/
 .devcontainer/
 
+data/
+.deps/
+*.pt
+!src/community_demo/models/perception/*.pt
+
+# Simulation acceptance photographs are delivered locally only.
+validation/final-evidence/*.jpg

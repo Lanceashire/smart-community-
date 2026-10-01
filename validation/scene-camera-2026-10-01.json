@@ -1,0 +1,145 @@
+{
+  "mode": "Scene-only inspection; pose resets are NOT autonomous navigation evidence",
+  "views": [
+    {
+      "view": "A_from_middle",
+      "size": [
+        1280,
+        960
+      ],
+      "actual_robot_xyz": [
+        -0.8699999999999994,
+        0.5,
+        -8.499688836927088e-07
+      ],
+      "signal_simulator": null,
+      "camera_colour_baseline": null
+    },
+    {
+      "view": "A_from_west",
+      "size": [
+        1280,
+        960
+      ],
+      "actual_robot_xyz": [
+        -1.7,
+        1.100000000000001,
+        -8.597688438694018e-07
+      ],
+      "signal_simulator": "red",
+      "camera_colour_baseline": "unknown"
+    },
+    {
+      "view": "B_from_middle",
+      "size": [
+        1280,
+        960
+      ],
+      "actual_robot_xyz": [
+        -0.8700000000000002,
+        0.49999999999999994,
+        -8.597684648392612e-07
+      ],
+      "signal_simulator": "red",
+      "camera_colour_baseline": "red"
+    },
+    {
+      "view": "B_from_east",
+      "size": [
+        1280,
+        960
+      ],
+      "actual_robot_xyz": [
+        -0.1,
+        -0.19999999999999993,
+        -8.597686309008701e-07
+      ],
+      "signal_simulator": "red",
+      "camera_colour_baseline": "unknown"
+    },
+    {
+      "view": "plate_1",
+      "size": [
+        1280,
+        960
+      ],
+      "actual_robot_xyz": [
+        1.1,
+        -1.699999999999999,
+        -8.597688779810042e-07
+      ],
+      "signal_simulator": "red",
+      "camera_colour_baseline": "unknown"
+    },
+    {
+      "view": "plate_2",
+      "size": [
+        1280,
+        960
+      ],
+      "actual_robot_xyz": [
+        1.1,
+        -1.0999999999999992,
+        -8.597689129252739e-07
+      ],
+      "signal_simulator": "red",
+      "camera_colour_baseline": "unknown"
+    },
+    {
+      "view": "plate_3",
+      "size": [
+        1280,
+        960
+      ],
+      "actual_robot_xyz": [
+        1.1,
+        -0.49999999999999983,
+        -8.597688896938571e-07
+      ],
+      "signal_simulator": "red",
+      "camera_colour_baseline": "unknown"
+    },
+    {
+      "view": "signal_green",
+      "size": [
+        1280,
+        960
+      ],
+      "actual_robot_xyz": [
+        0.52,
+        1.699999999999999,
+        -8.597688779810042e-07
+      ],
+      "signal_simulator": "green",
+      "camera_colour_baseline": "green"
+    },
+    {
+      "view": "signal_yellow",
+      "size": [
+        1280,
+        960
+      ],
+      "actual_robot_xyz": [
+        0.52,
+        1.699999999999999,
+        -8.597688779810042e-07
+      ],
+      "signal_simulator": "yellow",
+      "camera_colour_baseline": "yellow"
+    },
+    {
+      "view": "signal_red",
+      "size": [
+        1280,
+        960
+      ],
+      "actual_robot_xyz": [
+        0.52,
+        1.699999999999999,
+        -8.597688779810042e-07
+      ],
+      "signal_simulator": "red",
+      "camera_colour_baseline": "red"
+    }
+  ]
+}

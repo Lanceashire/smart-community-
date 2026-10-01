@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "checks": {
+    "original_texture_sha256": true,
+    "field_4p2_square": true,
+    "no_invented_boundary_walls": true,
+    "ten_reference_people": true,
+    "three_metric_car_boards": true,
+    "two_dimensioned_gantries": true,
+    "twelve_lens_states": true,
+    "camera_below_gate": true,
+    "all_meshes_and_textures_resolve": true,
+    "missing_assets_reported": true
+  },
+  "asset_count": 27,
+  "missing_assets": [
+    {
+      "source": "复赛资料/红绿灯/红绿灯图片/黄灯暗.png.baiduyun.p.downloading",
+      "error": "UnidentifiedImageError"
+    },
+    {
+      "source": "复赛资料/车辆识别/车牌背景.png.baiduyun.p.downloading",
+      "error": "UnidentifiedImageError"
+    }
+  ],
+  "layout_assumptions": [
+    "Coordinates inferred from the provided raster map and snapped to nominal 0.1 m; not a surveyed CAD drawing.",
+    "Five A and five B people follow schematic; identities and their exact positions are configurable.",
+    "Lower gantry y=-1.62 m leaves room for the differential robot turning south of the posts.",
+    "Start is on the driving lane beside the upper-right start/finish box, not inside the parking column."
+  ],
+  "scope": "Static scene audit only. Does not prove navigation, recognition, or road compliance."
+}

@@ -1,0 +1,12 @@
+{
+  "source": "actual /map from SLAM Toolbox, not floor texture",
+  "frame": "slam_map",
+  "size": [
+    304,
+    429
+  ],
+  "resolution": 0.019999999552965164,
+  "occupied_cells": 3629,
+  "known_cells": 44697,
+  "road_grid": "provided schematic drivable polygons; planning constraint, not physical walls"
+}

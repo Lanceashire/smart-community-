@@ -1,133 +1,210 @@
-# 智慧社区复赛：ROS 2 Jazzy 单圈巡航基线
+# AIC 智慧社区复赛：场景、巡检导航与视觉识别
 
-这是一个**可在已创建的 Jazzy 容器中跑通一圈**的工程起点。它把 RoboMaster 开源项目中适合小场地的速度安全管理和限幅 PID 控制裁剪下来，接到独立制作的 Gazebo Harmonic 场景、巡航状态机和相机灯色识别。当前版本追求先证明 Gazebo → ROS → 控制 → 视觉 → 停车放行 → 完成单圈的闭环；[复赛规则](https://www.aicomp.cn/wp-content/uploads/2026/06/12%E6%99%BA%E6%85%A7%E7%A4%BE%E5%8C%BA.pdf)要求的完整 SLAM、动态灯态、人偶统计、车牌 OCR 和高保真模型还未实现，见[当前边界](#当前边界)。
+基于用户提供的复赛 ZIP，还原 **4.2×4.2 m 场地、60 cm 道路、A/B 人物区、两处动态信号灯和三处车牌**。保留原来 RoboMaster 项目的运动管理与限幅 PID，在 ROS 2 Jazzy / Gazebo Harmonic 中实现单圈巡检。
 
-## 选型与来源
+本工程使用资料中的纸板人像与车牌立牌。人物并非需要行走的行人；它们是机器人巡检识别的目标。场景中的机器人具有有效的驱动轮、支撑结构和运动控制，完成情况由独立物理位姿记录核验。
 
-| 上游 | 取用及改造 | 选择理由 |
-| --- | --- | --- |
-| [Sentry26](https://github.com/Boombroke/Sentry26) | 保留 `sentry_motion_manager` 的指令超时、来源选择、限速、急停入口；将参数收紧至本场地的低速差速底盘，增加 `TwistStamped → Twist` 仿真桥。 | 与现有容器同为 ROS 2 Jazzy + Gazebo Harmonic，原 RM 底盘的 0.46 m 半径和双 Mid360 链路不适合 0.60 m 道路。 |
-| [北极熊战队路径控制器](https://github.com/SMBU-PolarBear-Robotics-Team/pb_omni_pid_pursuit_controller) | 将其限幅 PID 收缩为 `bounded_pid.py`，分别控制平移与航向；路线节点在大转角先原地转向，接近路点时降速。 | 原件是 ROS 2 Humble 的全向 Nav2 插件，不能直接用于 0.22 m 差速机器人；保留算法核心比整包移植更快。 |
+## 当前验证状态
 
-[完整提交来源与版本](NOTICE.md)。还核对了其他哨兵导航方案：中南大学与青岛大学方案主要围绕激光惯性定位和大场地，Aurora-UJS 项目包含 JPS/MINCO 等完整规划链路；这些对首个 4.2 m 单圈演示会引入大量传感器与构建依赖，当前不引入。**没有使用** `Gh0stown/AiC-2026`。
+- 人物：A/B 每处 5 个，逐项位置、方向箭头依据与无箭头时的假设见 `worlds/people_reference.json`。8 个停车观察画面覆盖不同朝向的人像和三辆车牌。
+- 传感器：1280×960 单目相机，带一个可转动偏航关节；一台 720×16 多线激光，过滤地面和自身回波后生成 720 点 `/scan`。
+- **最终联合验收通过**：17 个路点、实际运动 12.535 m；相机/轮速融合定位最大位置误差 0.0468 m，最大航向误差 6.78°。
+- **整车道路边界违规采样 0**；两次停止线均在绿灯通过，见 `validation/final-navigation.json`。这是本次固定布局整轮验收，不代表所有变灯时间与布局都已覆盖。
+- **人员 8 居民 + 2 访客**，身份列表与参考布局完全一致，未多计或漏计。
+- **车牌三张**：苏A·B8Q62、鄂D·7B5Q2、苏A·PL12A，均由相机裁切 OCR 读出并多帧确认。
+- 终端事件按识别顺序输出；同一事件画面、时间戳与编号已冻结在本机 `validation/final-evidence/`。按用户要求，验收 JPG 只保留本机交付压缩包，GitHub 保留文字记录与事件 JSON。独立视觉评分见 `validation/perception-audit.json`。
+- 实际激光 SLAM 地图见 `maps/slam.pgm`、`maps/map-evidence.json`，来源为 `/map`。
+- YOLO 最终独立测试 mAP50 0.842、mAP50-95 0.747，低于验证集成绩；因此保留蓝牌几何补检，并将适用范围限定为资料图库和本仿真场景。人员/车辆改变、真实图像和其他车牌颜色仍需新数据验证。
 
-## 2026-09-30 物理运动修复
+**尚缺的原素材：** ZIP 内 `车牌背景.png.baiduyun.p.downloading`、`黄灯暗.png.baiduyun.p.downloading` 不能解码。按用户要求暂缓替换，保留生成的薄车头板和暗黄灯几何模型。其余 27 张原图保持原始字节，哈希写入素材清单。
 
-最初版本只查看了 DiffDrive 轮里程计和控制日志，错误地把轮子转动判断为完成巡航。桌面复核发现两轮底盘缺少支撑而倾倒，真实车体只偏移约 2.5 mm；旧提交的“跑通”声明不成立。本版据此作了以下修复：
+## 赛题要求与对应实现
 
-- 增加前后低摩擦球形支撑，两个驱动轮的旋转轴显式指定为模型坐标系的 +Y；底盘不再只靠一根轮轴保持平衡。
-- 增加粉色顶盖、黄色车头、雷达和相机外观，打开俯视窗口即可识别机器人。
-- 使用 Gazebo `OdometryPublisher` 的**物理世界位姿**驱动这个仿真基线，轮里程计保留作诊断。真实车体移动不足时不能完成路线；倾角超过 20°、位姿失联、连续 4 秒有指令但无实际运动都会停车。
-- 右侧巡航线移动到 `x=1.35 m`，与停放车辆保持间距；相机俯仰角按水平底盘重新校准。
-- GUI 与仿真服务器由同一条 launch 命令启动；增加 `/patrol/restart`，完成后可原地再次出发，无需关闭窗口。
-- 雷达扫描高度为 0.235 m，低于 0.255 m 车顶与 0.24 m 场地墙；接收数据超过 0.7 秒未更新时停车。停车放行要求停靠后收到 5 条新的绿色视觉结果，避免反复使用同一条结果计数。
+| 资料要求 | 实现 |
+| --- | --- |
+| 尺寸和示意布局 | 原图地面贴图、按尺寸生成 SDF/Collada、人像位置朝向对照表 |
+| 自主一圈巡检 | 巡航任务状态机 → Nav2 `ComputePathToPose` → 北极熊限幅 PID 差速跟踪 → Sentry26 运动管理 → Gazebo |
+| 建图与定位 | 多线激光 → 过滤后的扫描 → SLAM Toolbox 建图；轮速增量 + 相机地面标线配准输出导航位置 |
+| 人物识别与统计 | YOLO11n 的 18 个资料人像身份类别；多帧确认，按视觉身份去重，再统计居民/访客 |
+| 车牌位置及字符 | YOLO 车牌检测 + 蓝色背景边界补检/修框，选择中央车牌后 RapidOCR 识别，多帧确认 |
+| 红灯停绿灯行 | 相机灯态检测、连续帧确认、进入停止线前再次检查灯态新鲜度；识别不确定时停止 |
+| 不压道路边线 | Nav2 道路栅格约束；含外轮面的整车轮廓预测检查；独立真值评估实际轮廓 |
+| 框、名称、置信度及终端顺序 | 同一帧产生带框图像和 JSON，首次确认事件按序打印并保存对应画面 |
 
-最终物理验收通过：83.55 秒、真实轨迹 11.53 m、X/Y 跨度 2.90/3.09 m、全部 10 个路点到达，最大倾角 0.0016° 以下；三辆停放车的雷达测距均与车体几何位置吻合。见[验收摘要](validation/physical-lap-2026-09-30.json)，复现工具为 `tools/verify_physical_lap.py`。
+## 技术链与语言
 
-这里的物理世界位姿是**仿真专用定位输入**，不是 SLAM 或真实机器人可用的定位结果。验收脚本同时要求真实轨迹长度、X/Y 跨度、倾角和全部路点通过，不能只检查日志文字。
+- **Python 3.12**：场景生成、定位融合、巡检状态机、视觉、训练和评估。
+- **C++ / ROS 2**：复用 Sentry26 运动管理节点，以及已安装的 Nav2、SLAM Toolbox、ROS-Gazebo 桥。
+- **SDF / Collada / YAML**：世界、模型材质、地图与 ROS 配置。无需自行编写渲染器。
+- YOLO 使用 **GPU**；OCR 使用两线程 ONNX Runtime CPU，以减少与 Gazebo/检测模型的资源争用。
 
-## 本机已验证的环境
+### 定位为什么采用相机和轮速融合
 
-- 宿主机：Garuda Linux，Docker 29.8.1。宿主机不需安装 ROS。
-- 当前容器：Ubuntu 24.04.4、ROS 2 Jazzy、Gazebo Sim 8.15.0（Harmonic）、`ros_gz_bridge`、`ament_cmake_auto`、`colcon`、OpenCV 4.6。
-- 用户现有的开发容器工作目录：`/home/ubuntu/projects/smart-community`，源码放在其中的 `src/`。Gazebo 相机传感器在该容器中实际发布了 640 × 480 RGB 图像；本机的 Nvidia 图形运行时可供它使用。
-- 本次基线**不依赖** Ultralytics 权重。YOLO 及车牌 OCR 的训练和接入是后续任务，不能将本版 HSV 灯色检测说成 YOLO 识别。
+场地没有高围墙，15 cm 人偶较低，单线激光在 23.5 cm 高度会漏掉人物。多线激光向下覆盖目标，并按高度过滤地面。这个稀疏场景直接使用纯激光扫描匹配控制机器人时，实测出现异常与明显误差，因此导航定位改为：
 
-在新容器中，至少需要以下系统依赖（这里记录所需包，未在新镜像上重新验证从零安装）：
+1. 从驱动轮里程计取得增量，按当前估计航向积分。
+2. 根据相机焦距、26.5 cm 安装高度、0.10 rad 下俯角和相机偏航，将画面地面白线反投影到地面。
+3. 将观测白线与提供的地图白线距离场配准，在轮速预测附近搜索小范围位置和航向修正。
+4. 相机或里程计丢失时停止发布新鲜导航位姿，巡航停止。
 
-```bash
-apt-get update
-apt-get install -y python3-colcon-common-extensions python3-opencv python3-numpy \
-  ros-jazzy-ros-gz ros-jazzy-gz-sim-vendor \
-  ros-jazzy-ament-cmake-auto ros-jazzy-rclcpp-components ros-jazzy-std-srvs
-```
+已知起始位置是任务的开局条件。当前版本不提供任意位置绑架恢复，不能把这次固定场地结果说成通用定位系统。SLAM Toolbox 继续使用滤后的激光和融合里程计生成地图；巡航位置不直接取纯激光匹配结果。
 
-需要能运行 Gazebo Ogre2 相机的图形环境。现有容器已具备，不需要重新建容器。现有环境中的 Nav2 和 SLAM Toolbox 是后续接入用的软件，本版启动不依赖它们。运行命令前需要 source ROS 环境；仓库中没有模型权重或额外 GPU 推理依赖。
+控制节点只订阅 `/localization/pose`，不订阅 `/model/patrol_bot/ground_truth`。后者只供独立评估与离线数据标注工具使用。
 
-## 编译和运行
+### 道路规划与停止线
 
-进入**已经创建**的容器，然后执行：
+`maps/roads.pgm` 是根据资料的可行驶道路建立的语义占据栅格；它不是场景中的假墙。Nav2 NavFn 使用 A* 生成路径，巡航实际跟踪返回的路径。全局规划使用静态道路约束，近距离障碍物由真实激光回波触发停止；当前不实现绕过临时堵路后自动重规划。
+
+轮廓采用 **22 cm × 22.5 cm**，宽度包含轮子外侧，而不是只看机器人中心点。运行时预测 0.1/0.3/0.5 秒位置并检查轮廓采样；评估工具使用实际物理位姿重复检查。红灯规则在等待点确认绿灯，并在车头尚未越过停止线时检查灯态变化，信息失效或变红会再次停止。
+
+### 视觉身份与统计边界
+
+YOLO 类别为 `resident_01..16`、`visitor_01..02`、`plate`、`light_red/yellow/green`，合计 22 类。居民与访客分类来自资料提供的身份分组，身份需要多帧一致识别后才记一次。
+
+这适用于资料中的固定人像图库。它不是人脸识别系统，也没有证明对新的真实人物能够判断其社区身份。当前布局的参考人数是 8 居民 + 2 访客；这个值只出现在独立评分工具中，运行时统计由检测结果累积，不读取布局答案。
+
+车牌框有部分裁切和漏检时，由蓝色背景连通区域补检并校正边界。图像中 `geom` 值是区域形状评分，不是 YOLO 概率；JSON 分别标明方法、形状评分和 OCR 置信度。该补检适配资料中的蓝牌，尚未覆盖绿牌或其他车牌颜色。
+
+OCR 同样不读取车牌答案；参考字符串只在 `tools/verify_perception.py` 的独立评估中使用。车牌必须符合本场景蓝牌的字符长度与格式，并经至少两次识别确认。
+
+## 模型训练
+
+### 本次数据
+
+数据来自 **Gazebo 机器人相机实际图像**，不是直接把透明 PNG 当作训练照片。单独的 `training.sdf` 放置 18 种身份，用于采集；另有正式布局转头采集批次；赛题 `community.sdf` 保留 10 个参考人物。
+
+- 训练集 736 帧，验证集 101 帧，独立测试集 140 帧。
+- 按采集批次分组：训练随机种子 42/314/514 和一轮自主采集，验证 237，测试 991/719；未把同一段视频的相邻帧随机混入验证/测试。
+- 标签由已知仿真几何离线投影生成，并过滤背面与明显投影遮挡。标签预览已人工抽查。这个方法需要继续抽查边缘遮挡，不能声称标签完全没有误差。
+- 这些批次仍来自同一素材图库、主要光照与固定采集场景；指标不代表真实相机或全新场景的泛化性能。
+- 不使用水平翻转增强，避免把人像和文字镜像化。使用小幅角度、尺寸、亮度变化与 Mosaic。
+
+### 复现训练
+
+在现有容器内：
 
 ```bash
 source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+# 首先只启动采集场景，不能同时运行自主巡航。
+ros2 launch community_demo demo.launch.py world:=training.sdf patrol:=false
+```
+
+另一个容器终端依次采集，**同一世界只能运行一个位姿采集任务**：
+
+```bash
+python3 tools/collect_dataset.py --batch train42 --random-views 320 \
+  --seed 42 --layout training-layout.json --split train
+python3 tools/collect_dataset.py --batch val237 --random-views 100 \
+  --seed 237 --layout training-layout.json --split val
+python3 tools/collect_dataset.py --batch test991 --random-views 80 \
+  --seed 991 --layout training-layout.json --split test
+```
+
+采集结束后关闭这个 Gazebo 世界，再训练：
+
+```bash
+/home/ubuntu/.local/share/aic-vision-venv/bin/python tools/train_yolo.py \
+  --epochs 45 --imgsz 960 --batch 6
+```
+
+官方 YOLO11n 权重只作为初始化；训练后的权重为 `src/community_demo/models/perception/best.pt`。原始采集帧、虚拟环境和训练日志不进入提交包。本机先训练 45 轮，再在补充相机转头视角后基于首轮权重继续训练 25 轮，记录见 `validation/yolo-training*.json`。
+
+## 本机已验证环境
+
+| 项目 | 当前值 |
+| --- | --- |
+| 宿主 | Garuda / Arch，原生 Docker Engine |
+| GPU | NVIDIA RTX 5060 Laptop，约 8 GB，驱动 615.71.09 |
+| 容器 | `aic-development`；原 `nifty_hugle`、`aic-scene-jazzy` 保留作回退 |
+| 系统 | Ubuntu 24.04.4 |
+| ROS / Gazebo | Jazzy / Harmonic，Gazebo Sim 8.15.0 |
+| GPU 视觉 | PyTorch 2.13.0+cu130，Ultralytics 8.4.164 |
+| OCR | RapidOCR 3.9.2、ONNX Runtime 1.30.0 |
+| 渲染 | 实测 Zink/Vulkan → NVIDIA GPU；相机帧实测约 8 Hz，配置 10 Hz |
+
+宿主源码：`/home/jiezichuan/Documents/Codex/2026-09-28/x/outputs/smart-community-docker/workspace`。
+容器绑定目录：`/home/ubuntu/projects/smart-community`。
+GPU 虚拟环境只读挂载：`/home/ubuntu/.local/share/aic-vision-venv`。
+额外 OCR 依赖写入工程 `.deps/`，不改变原只读环境。
+
+其他机器应自行提供 NVIDIA Container Toolkit、可显示 Gazebo 的 X11/Wayland-XWayland 桌面，以及上述 ROS 软件包。容器名、DISPLAY、Xauthority 文件属于本机会话，不能照抄为通用常量。
+
+## 编译、运行、验收
+
+在现有容器终端：
+
+```bash
 cd /home/ubuntu/projects/smart-community
+source /opt/ros/jazzy/setup.bash
 colcon build --symlink-install --packages-select sentry_motion_manager community_demo \
   --cmake-args -DCMAKE_BUILD_TYPE=Release
 source install/setup.bash
-ros2 launch community_demo demo.launch.py gui:=true
+# 只需首次安装 OCR 依赖；已有 .deps 时可跳过。
+bash tools/install_vision.sh
 ```
 
-启动后窗口中的粉色顶盖小车会由右上方沿道路巡航，预计约两分钟完成一圈。只运行服务器时指定 `gui:=false`；需要先看清起点再启动时指定 `paused:=true`，然后点击左上方三角形播放按钮。另开容器终端查看：
+完整巡航与视觉：
 
 ```bash
-source /opt/ros/jazzy/setup.bash
-ros2 topic echo /patrol/status
-ros2 topic echo /perception/traffic_light
-ros2 topic hz /camera/image
-ros2 topic hz /scan
-ros2 topic echo /model/patrol_bot/ground_truth
+bash tools/launch_full.sh gui:=true
 ```
 
-完成时终端出现 `COMPLETE physical single lap; travelled=... m`，小车返回右上方并停下。**停在终点后不会自动循环**。保留窗口再跑一圈：
+浏览器打开 `http://127.0.0.1:8765`，查看真实相机、检测框和去重结果。页面的“再巡航一圈”按钮可以在完成后重新启动，并清空上一圈统计。识别终端日志在 `log/perception-terminal.log`；事件对应图片、JSON 在 `log/perception/`。
+
+仅观察场景：`ros2 launch community_demo scene.launch.py gui:=true`。
+HSV 基线调试巡航：`ros2 launch community_demo demo.launch.py gui:=true`，它不启动 YOLO，不能当作完整视觉验收。
+这些模式选择其一，不能启动多个同名 Gazebo 世界。
+
+完成一圈后再次巡航：
 
 ```bash
 ros2 service call /patrol/restart std_srvs/srv/Trigger '{}'
 ```
 
-独立验收：先以 `paused:=true` 启动，在另一个已 source ROS 环境的终端、仓库根目录执行 `python3 tools/verify_physical_lap.py`，再点击播放。它会检查 10 个路点、物理行驶距离超过 8 m、X/Y 轨迹跨度均超过 2.5 m、倾角始终低于 20°，以及三辆车的扫描距离与几何位置一致，生成 `log/physical_lap_evidence.json` 并以退出码表明是否通过。查看一条“完成”日志不能代替此验收。
+重启会清空上一圈的视觉统计，保留机器人窗口。启动整轮评估可使用暂停开局：
 
-已经完成一圈时，可用 `python3 tools/verify_physical_lap.py --restart` 在保持窗口的同时启动下一圈并自动验收。命令必须在仓库根目录运行。它不会在一圈行驶途中强行重置机器人。
-
-`Ctrl+C` 停止 launch；关闭 Gazebo 时也会联动退出 ROS 节点。若需要重建静态世界文件，先在仓库根目录运行 `python3 tools/generate_world.py`，然后重新编译 `community_demo`。
-
-## 系统数据流
-
-```text
-Gazebo 物理世界位姿 ─ ground_truth ───→ community_patrol
-Gazebo DiffDrive ── wheel odometry ───→ 轮里程计诊断
-Gazebo 360° lidar ── /scan ────────────→ community_patrol（近距离停车）
-Gazebo camera ── /camera/image ────────→ community_traffic_vision
-                                             │ /perception/traffic_light
-                                             ▼
-route waypoints ────────────────→ community_patrol
-                                    │ /cmd_vel_nav (TwistStamped)
-                                    ▼
-                         sentry_motion_manager
-                                    │ /cmd_vel (TwistStamped)
-                                    ▼
-                         community_command_bridge
-                                    │ /model/patrol_bot/cmd_vel (Twist)
-                                    ▼
-                               Gazebo DiffDrive
+```bash
+bash tools/launch_full.sh gui:=true paused:=true
 ```
 
-机器人出生位姿为世界坐标 `(1.35, 1.55, π)`。`ground_truth` 由 Gazebo 的物理实体位姿生成，直接在世界坐标系中与路点比较。DiffDrive 的轮里程计与这个话题分开；轮里程计变化不等于底盘真实位移。
+另开终端启动以下记录器，再点击 Gazebo 播放按钮：
 
-路线按示意图的拓扑顺序经过上侧道路、西侧道路、中间横道、中间纵道、下侧道路和东侧道路返回起点，共 10 个控制路点。上侧与下侧设停止点：先发布零速度，等待连续 5 条新收到的相机绿色结果，才推进到下一路点；失去视觉结果时保持停止。`vision.py` 使用 HSV 阈值识别本版模型的亮绿色区域，并做 3 帧一致性检查。近距离 `/scan` 障碍会触发停车，但尚不具备绕行规划。
+```bash
+python3 tools/verify_physical_lap.py --output validation/final-lap.json --timeout 340
+python3 tools/audit_navigation.py --output validation/final-navigation.json --timeout 340
+```
 
-## 当前边界
+两个记录器应分别在终端中运行。完成后：
 
-1. **已实际验证**：现有容器内两包编译通过；Gazebo 发布相机、雷达、轮里程计和物理世界位姿；底盘真实完成 11.53 m 单圈，两处灯位停靠放行。巡航验收以 `verify_physical_lap.py` 输出为准。
-2. **仿真灯目前固定绿色**，还没有红/黄/绿定时切换，因此不能用这次演示证明“红灯不越线”。
-3. 人偶是蓝色/橙色立牌、车牌是蓝色矩形占位模型；尚未贴用户提供的 16＋2 人偶与三张车牌素材，也没有对应的 YOLO 数据集、人数统计或 OCR。
-4. 目前用 Gazebo 物理世界位姿和固定路点巡航，没有建图、真实定位、Nav2 路径规划、动态避障或车道线越界检测。它是可运行的工程骨架，**不是可直接提交的完整复赛作品**。
-5. Gazebo 世界的尺寸和物料大方向取自随附任务图；本版道具位置仍是近似值，正式仿真应使用材料实测尺寸重新校准。
+```bash
+python3 tools/verify_perception.py
+python3 tools/save_maps.py
+python3 tools/check_scene.py
+```
 
-## 下一步优化优先级
+## 场景尺寸和摆放假设
 
-保留当前能运行的基线，每加入一个能力都复跑真实轨迹验收。以下功能尚未实现，顺序按当前风险和依赖安排，不代表赛事官方评分顺序。
+- 人物高度约 15 cm 根据资料照片中的尺子估计；宽度保留原图比例；纸板厚 2 mm 为仿真假设。
+- 车辆立牌：高 25 cm、宽 34.5 cm、厚 5 mm；车牌 9.5×3 cm。
+- 门架：宽 64 cm、总高 48 cm、净空 34 cm、灯板高 14 cm；灯径 12 cm 为模型假设。
+- 信号周期红/绿/黄 10/15/3 秒是可修改的仿真默认值；附件任务文字没有指定周期。
+- A/B 图标中心按题图边界映射到米制坐标。箭头不明确的个体采用面向相邻巡检道路的假设；资料没有固定每个位置的身份编号。
+- 原图含 18 种人物素材不代表必须全部摆入参考场景，参考题图采用 A/B 各 5 人。可更改布局，并应重新验收相机覆盖和视觉计数。
 
-| 顺序 | 优化项 | 当前问题 | 建议做法及验收 |
-| --- | --- | --- | --- |
-| 1 | 动态信号灯与停止线 | 固定绿色只能证明看见绿灯后放行，尚未验证红灯停车。 | 加入红/黄/绿切换；用红灯开局、临近停止线变灯、画面丢失等用例检查车头是否越线。 |
-| 2 | 场地尺寸与车辆占用范围 | 道具是近似摆放，前方扇区检查没有覆盖完整车身；窄处需要核查侧向间距。 | 按资料校准尺寸与贴图，用实际底盘外轮廓检查整条轨迹与障碍物的间距，再定停车阈值和限速。 |
-| 3 | YOLO 检测、人员统计与车牌 OCR | 当前只有适用于本仿真颜色的 HSV 灯色识别，没有人偶/车牌检测。 | 导入真实素材，采集不同位置与角度的图像；按场景分离训练/验证集，训练检测器后接 OCR，并核对类别召回、重复计数和完整车牌正确率。 |
-| 4 | 建图与定位 | 目前直接读取 Gazebo 真实坐标，无法移植到未知地图或真机。 | 接入 SLAM Toolbox 或已知地图定位，再接 Nav2；将当前真值仅保留为评估参考，测定位误差和丢失定位后的停车行为。 |
-| 5 | 路径跟踪和障碍绕行 | 固定路点、大转角原地旋转、遇障停车；还没有重规划。 | 引入差速底盘路径控制与局部代价地图，先低速验证转角和狭窄通道，再测试临时障碍物绕行；同时检查不能越过车道边界。 |
-| 6 | 操作界面与证据输出 | 当前主要依靠终端状态、仿真窗口和 JSON 验收结果。 | 增加当前路段、速度、灯色、识别框、轨迹和故障原因显示，并把识别结果与对应图像保存为可核查记录。 |
+## RoboMaster 代码来源
 
-当前建议首先完成前两项，再引入训练模型与完整导航。模型大小、训练轮数和导航参数应依据实际数据与测量结果确定。
+| 上游 | 本工程使用部分 |
+| --- | --- |
+| [SMBU 北极熊路径控制器](https://github.com/SMBU-PolarBear-Robotics-Team/pb_omni_pid_pursuit_controller) | 限幅 PID 改为 Python 差速路径跟踪，大转角先原地转向 |
+| [Boombroke/Sentry26](https://github.com/Boombroke/Sentry26) | 原 C++ 运动管理器，命令限速、加速度限制、超时与急停入口 |
+
+未使用 `Gh0stown/AiC-2026`。上游提交、版权、视觉依赖和素材来源见 `NOTICE.md`、`licenses/`。本项目代码的 Apache-2.0 不替代 Ultralytics AGPL-3.0、字体或用户素材的各自权利声明。
 
 ## 打包
 
-`tools/package.sh` 将源码、世界、README 和来源说明压成 ZIP，排除 `build/`、`install/`、日志和训练数据。复赛官方工程 ZIP 上限为 150 MB；本版代码远低于该上限。训练权重和采集数据以后应单独管理，再按赛事提交要求决定哪些放入工程包。
+```bash
+bash tools/package.sh /tmp/smart-community-source.zip
+```
+
+提交包包含代码、场景、原素材、训练后模型、OCR 模型、README、来源声明和验证结果；排除虚拟环境、数据集、构建产物与普通日志。附件要求代码包不超过 150 MB，最终包大小和哈希见交付记录。

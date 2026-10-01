@@ -1,0 +1,56 @@
+{
+  "1": {
+    "proposal": {
+      "bbox": [
+        557,
+        610,
+        651,
+        638
+      ],
+      "geometry_score": 0.904,
+      "method": "blue-colour geometry; not a neural probability"
+    },
+    "texts": [
+      "苏A·B8Q62"
+    ],
+    "scores": [
+      0.99646
+    ]
+  },
+  "2": {
+    "proposal": {
+      "bbox": [
+        587,
+        612,
+        682,
+        640
+      ],
+      "geometry_score": 0.911,
+      "method": "blue-colour geometry; not a neural probability"
+    },
+    "texts": [
+      "鄂D-7B5Q2"
+    ],
+    "scores": [
+      0.95587
+    ]
+  },
+  "3": {
+    "proposal": {
+      "bbox": [
+        576,
+        613,
+        672,
+        642
+      ],
+      "geometry_score": 0.848,
+      "method": "blue-colour geometry; not a neural probability"
+    },
+    "texts": [
+      "苏A·PL12A"
+    ],
+    "scores": [
+      0.99213
+    ]
+  }
+}

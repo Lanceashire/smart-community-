@@ -1,0 +1,19 @@
+{
+  "model": "YOLO11n",
+  "torch": "2.13.0+cu130",
+  "ultralytics": "8.4.164",
+  "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+  "epochs_requested": 45,
+  "imgsz": 960,
+  "batch": 6,
+  "sha256": "a1699888b34c21ce8a3e342b5a821d83fc8160443128095ff553a9b590d024b0",
+  "test_metrics": {
+    "metrics/precision(B)": 0.8579737070245474,
+    "metrics/recall(B)": 0.8827678053518153,
+    "metrics/mAP50(B)": 0.8790150518971683,
+    "metrics/mAP50-95(B)": 0.8102017340807617,
+    "fitness": 0.8102017340807617
+  },
+  "dataset": "Gazebo camera frames, separate seeded pose capture batches; offline geometry projection annotations require human audit",
+  "limitation": "fixed supplied 18 standee identities; simulation-only test, not real-world generalization"
+}

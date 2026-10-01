@@ -1,0 +1,13 @@
+rapidocr==3.9.2
+onnxruntime==1.30.0
+omegaconf==2.3.1
+antlr4-python3-runtime==4.9.3
+pyclipper==1.4.0
+shapely==2.1.2
+colorlog
+coloredlogs
+flatbuffers
+humanfriendly
+six
+tqdm
+requests
