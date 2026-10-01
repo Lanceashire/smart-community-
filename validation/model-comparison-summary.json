@@ -1,0 +1,61 @@
+{
+  "default_model": "YOLO11n retained; no overwrite",
+  "candidate_model": "YOLO11s",
+  "candidate_path": "src/community_demo/models/perception/yolo11s-comparison.pt",
+  "candidate_sha256": "f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa",
+  "baseline_sha256": "c344dccefe49d8d3ba12a00abb59034ef40ea7442a2252d1ce6bdf5f6677af96",
+  "full_test_mAP50": {
+    "nano": 0.8408095084372438,
+    "s": 0.8988848532343922
+  },
+  "full_test_mAP50_95": {
+    "nano": 0.6791117526392877,
+    "s": 0.7849883200994825
+  },
+  "recommendation": "Prefer S for this fixed supplied-gallery task; preserve nano rollback and investigate yellow/green and weak identities using validation evidence",
+  "validation_weak_identities": [
+    "visitor_01",
+    "resident_16",
+    "resident_14",
+    "resident_06"
+  ],
+  "runtime": {
+    "first_lap_navigation": "validation/yolo11s-navigation.json",
+    "second_lap_physical": "validation/yolo11s-physical-lap.json",
+    "second_lap_vision": "validation/yolo11s-perception-audit.json",
+    "physical_distance_m": 12.516737776361252,
+    "waypoints": 17,
+    "people": {
+      "residents": 8,
+      "visitors": 2,
+      "total": 10
+    },
+    "plates": [
+      "苏AB8Q62",
+      "苏APL12A",
+      "鄂D7B5Q2"
+    ],
+    "first_lap_road_violations": 0,
+    "first_lap_stop_crossings": [
+      {
+        "gate": 1,
+        "time": 13.85,
+        "phase": "green",
+        "legal": true
+      },
+      {
+        "gate": 2,
+        "time": 99.65,
+        "phase": "green",
+        "legal": true
+      }
+    ]
+  },
+  "limits": [
+    "Two repeated laps of one fixed layout, not exhaustive safety or competition success rate",
+    "Auto-projected labels with 24-frame visual review; not exhaustive manual labels",
+    "Nano and S differ in prior epoch count, label correction and validation selection; not architecture-only ablation",
+    "All new validation/test images are simulator captures; no real camera data"
+  ],
+  "evidence_images": "local only; excluded from GitHub"
+}

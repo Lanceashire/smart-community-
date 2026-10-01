@@ -6,7 +6,8 @@ source /opt/ros/jazzy/setup.bash
 source install/setup.bash
 set -u
 mkdir -p log
-bash tools/start_perception.sh --ros-args -p use_sim_time:=true > log/perception-terminal.log 2>&1 &
+bash tools/start_perception.sh --ros-args -p use_sim_time:=true \
+  -p model:="${AIC_PERCEPTION_MODEL:-src/community_demo/models/perception/best.pt}" > log/perception-terminal.log 2>&1 &
 perception_pid=$!
 cleanup() { kill -INT "$perception_pid" 2>/dev/null || true; }
 trap cleanup EXIT INT TERM

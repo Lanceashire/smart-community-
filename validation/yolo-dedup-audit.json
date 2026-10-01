@@ -1,0 +1,18 @@
+{
+  "model": "YOLO11n",
+  "test_frames": 136,
+  "excluded_exact_train_duplicates": [
+    "heldout-poses-991_00061.jpg",
+    "heldout-poses-991_00062.jpg",
+    "heldout-poses-991_00067.jpg",
+    "heldout-poses-991_00069.jpg"
+  ],
+  "metrics": {
+    "metrics/precision(B)": 0.8461294232256872,
+    "metrics/recall(B)": 0.8555574706839774,
+    "metrics/mAP50(B)": 0.8362590256136951,
+    "metrics/mAP50-95(B)": 0.7429194151657881,
+    "fitness": 0.7429194151657881
+  },
+  "limitations": "Same supplied gallery and main simulation scene; automatic labels not fully audited; exact duplicate filtering does not establish scene-level independence"
+}

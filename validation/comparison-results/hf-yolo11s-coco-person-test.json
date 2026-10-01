@@ -1,0 +1,31 @@
+{
+  "model": "hf-yolo11s-coco",
+  "group": "person",
+  "split": "test",
+  "sha256": "85a76fe86dd8afe384648546b56a7a78580c7cb7b404fc595f97969322d502d5",
+  "class_mapping": {
+    "0": 0
+  },
+  "metrics": {
+    "metrics/precision(B)": 0.8367380425277203,
+    "metrics/recall(B)": 0.8369942196531792,
+    "metrics/mAP50(B)": 0.8451680263137115,
+    "metrics/mAP50-95(B)": 0.5173210712157471,
+    "fitness": 0.5173210712157471
+  },
+  "per_class": {
+    "person": {
+      "precision": 0.8367380425277203,
+      "recall": 0.8369942196531792,
+      "mAP50": 0.8451680263137115,
+      "mAP50-95": 0.5173210712157471
+    }
+  },
+  "speed_ms": {
+    "preprocess": 0.44298125375285935,
+    "inference": 7.2148006977759405,
+    "loss": 0.0004558843210727887,
+    "postprocess": 0.4200311679203118
+  },
+  "dataset_manifest_sha256": "57b277616c091e3b7070b896bb0bafad7bf1ef18d74579e50a1de377f692280d"
+}

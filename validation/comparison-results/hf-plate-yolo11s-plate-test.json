@@ -1,0 +1,31 @@
+{
+  "model": "hf-plate-yolo11s",
+  "group": "plate",
+  "split": "test",
+  "sha256": "95e50c25ab7066dd0ca5aec18fa80349676db08697780d1149576461174d2381",
+  "class_mapping": {
+    "0": 0
+  },
+  "metrics": {
+    "metrics/precision(B)": 0.8155524239195409,
+    "metrics/recall(B)": 0.6510372646599646,
+    "metrics/mAP50(B)": 0.7268034630493797,
+    "metrics/mAP50-95(B)": 0.4870019028568116,
+    "fitness": 0.4870019028568116
+  },
+  "per_class": {
+    "plate": {
+      "precision": 0.8155524239195409,
+      "recall": 0.6510372646599646,
+      "mAP50": 0.7268034630493797,
+      "mAP50-95": 0.4870019028568116
+    }
+  },
+  "speed_ms": {
+    "preprocess": 0.4410850261429819,
+    "inference": 7.0915495036944725,
+    "loss": 0.0005941193913754229,
+    "postprocess": 0.334310399249438
+  },
+  "dataset_manifest_sha256": "57b277616c091e3b7070b896bb0bafad7bf1ef18d74579e50a1de377f692280d"
+}

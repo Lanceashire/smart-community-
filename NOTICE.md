@@ -23,3 +23,9 @@ The incomplete car-background and yellow-off downloads could not be decoded. The
 - Nav2 and SLAM Toolbox are installed ROS dependencies. This project's launch/configuration uses them through ROS interfaces; their source is not copied into this repository.
 
 Automatic geometric annotation is confined to offline dataset collection. Runtime perception does not import scene geometry or simulated identities. The independent result verifier contains transcribed plate references solely to score OCR results, never to fill runtime answers.
+
+## Hugging Face comparison (2026-10-01)
+
+The separate `models/perception/yolo11s-comparison.pt` checkpoint is fine-tuned from [Ultralytics/YOLO11](https://huggingface.co/Ultralytics/YOLO11), revision `8b8ac7d1fae7468f85dbf89670dd66f41f485aab`, on the same 736 local simulator training images. Its Ultralytics AGPL-3.0 provenance applies independently of this repository's Apache-2.0 code license. It does not overwrite the earlier nano checkpoint.
+
+Downloaded comparison models from `morsetechlab/yolov11-license-plate-detection`, `yahyagul/traffic-sign-yolov8`, and `dronefreak/lisa-yolo26l` remain in the local ignored download cache. Repository cards, immutable revisions, file hashes and declared licenses are recorded in `validation/hf-model-sources.json`; benchmark scores are measured on our own shared validation/test sets, not copied from their model cards. No source-code patches or custom loaders from those cards were executed. Underlying Ultralytics dependency licensing still applies even if an individual card declares MIT.

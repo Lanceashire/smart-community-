@@ -1,0 +1,49 @@
+{
+  "model": "finetuned-yolo11s",
+  "group": "person",
+  "split": "test",
+  "sha256": "f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa",
+  "class_mapping": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0,
+    "6": 0,
+    "7": 0,
+    "8": 0,
+    "9": 0,
+    "10": 0,
+    "11": 0,
+    "12": 0,
+    "13": 0,
+    "14": 0,
+    "15": 0,
+    "16": 0,
+    "17": 0
+  },
+  "merged_class_nms": true,
+  "metrics": {
+    "metrics/precision(B)": 0.8984786974605898,
+    "metrics/recall(B)": 0.9132947976878613,
+    "metrics/mAP50(B)": 0.9475392672533189,
+    "metrics/mAP50-95(B)": 0.81297117481057,
+    "fitness": 0.81297117481057
+  },
+  "per_class": {
+    "person": {
+      "precision": 0.8984786974605898,
+      "recall": 0.9132947976878613,
+      "mAP50": 0.9475392672533189,
+      "mAP50-95": 0.81297117481057
+    }
+  },
+  "speed_ms": {
+    "preprocess": 0.43927274256604315,
+    "inference": 7.128667145493568,
+    "loss": 0.0004371156490433079,
+    "postprocess": 0.6694527313227999
+  },
+  "dataset_manifest_sha256": "57b277616c091e3b7070b896bb0bafad7bf1ef18d74579e50a1de377f692280d"
+}

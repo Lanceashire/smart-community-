@@ -15,3 +15,5 @@ data/
 
 # Simulation acceptance photographs are delivered locally only.
 validation/final-evidence/*.jpg
+
+validation/yolo11s-evidence/*.jpg

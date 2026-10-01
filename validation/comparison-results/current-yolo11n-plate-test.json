@@ -1,0 +1,31 @@
+{
+  "model": "current-yolo11n",
+  "group": "plate",
+  "split": "test",
+  "sha256": "c344dccefe49d8d3ba12a00abb59034ef40ea7442a2252d1ce6bdf5f6677af96",
+  "class_mapping": {
+    "18": 0
+  },
+  "metrics": {
+    "metrics/precision(B)": 0.896691967188318,
+    "metrics/recall(B)": 0.7987603048575431,
+    "metrics/mAP50(B)": 0.8615746248192817,
+    "metrics/mAP50-95(B)": 0.6878133847679139,
+    "fitness": 0.6878133847679139
+  },
+  "per_class": {
+    "plate": {
+      "precision": 0.896691967188318,
+      "recall": 0.7987603048575431,
+      "mAP50": 0.8615746248192817,
+      "mAP50-95": 0.6878133847679139
+    }
+  },
+  "speed_ms": {
+    "preprocess": 0.48653854478356723,
+    "inference": 3.222899623141082,
+    "loss": 0.00042996268361935447,
+    "postprocess": 0.3994299365548437
+  },
+  "dataset_manifest_sha256": "57b277616c091e3b7070b896bb0bafad7bf1ef18d74579e50a1de377f692280d"
+}

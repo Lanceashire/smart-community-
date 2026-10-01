@@ -1,0 +1,50 @@
+{
+  "model": "hf-lisa-yolo26l",
+  "group": "lights",
+  "split": "test",
+  "sha256": "3274d22601e0e8ee565032103539a3049878f3e0c1334213a09d0af3818cfde1",
+  "class_mapping": {
+    "0": 2,
+    "1": 2,
+    "2": 2,
+    "3": 0,
+    "4": 0,
+    "5": 1,
+    "6": 1
+  },
+  "merged_class_nms": true,
+  "metrics": {
+    "metrics/precision(B)": 0.006276150627615063,
+    "metrics/recall(B)": 0.06521739130434782,
+    "metrics/mAP50(B)": 0.0016116337248626555,
+    "metrics/mAP50-95(B)": 0.00032748089478442294,
+    "fitness": 0.00032748089478442294
+  },
+  "per_class": {
+    "red": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "mAP50": 0.0,
+      "mAP50-95": 0.0
+    },
+    "yellow": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "mAP50": 0.0,
+      "mAP50-95": 0.0
+    },
+    "green": {
+      "precision": 0.01882845188284519,
+      "recall": 0.1956521739130435,
+      "mAP50": 0.0048349011745879664,
+      "mAP50-95": 0.000982442684353269
+    }
+  },
+  "speed_ms": {
+    "preprocess": 0.49619777612847493,
+    "inference": 22.150450861949167,
+    "loss": 0.0005065335923308027,
+    "postprocess": 0.49600699253120967
+  },
+  "dataset_manifest_sha256": "57b277616c091e3b7070b896bb0bafad7bf1ef18d74579e50a1de377f692280d"
+}

@@ -14,7 +14,7 @@
 - **车牌三张**：苏A·B8Q62、鄂D·7B5Q2、苏A·PL12A，均由相机裁切 OCR 读出并多帧确认。
 - 终端事件按识别顺序输出；同一事件画面、时间戳与编号已冻结在本机 `validation/final-evidence/`。按用户要求，验收 JPG 只保留本机交付压缩包，GitHub 保留文字记录与事件 JSON。独立视觉评分见 `validation/perception-audit.json`。
 - 实际激光 SLAM 地图见 `maps/slam.pgm`、`maps/map-evidence.json`，来源为 `/map`。
-- YOLO 最终独立测试 mAP50 0.842、mAP50-95 0.747，低于验证集成绩；因此保留蓝牌几何补检，并将适用范围限定为资料图库和本仿真场景。人员/车辆改变、真实图像和其他车牌颜色仍需新数据验证。
+- 新增 Hugging Face 权重实测与经授权微调的 YOLO11s 候选：同一扩充测试集 268 张上，nano 的 22 类 mAP50 / mAP50–95 为 **84.08% / 67.91%**，S 为 **89.89% / 78.50%**。原 nano `best.pt` 完整保留，S 单独保存为 `yolo11s-comparison.pt`，可用启动环境变量选择。详见下方比较协议；这些分数不代表真实社区或比赛成功率。
 
 **尚缺的原素材：** ZIP 内 `车牌背景.png.baiduyun.p.downloading`、`黄灯暗.png.baiduyun.p.downloading` 不能解码。按用户要求暂缓替换，保留生成的薄车头板和暗黄灯几何模型。其余 27 张原图保持原始字节，哈希写入素材清单。
 
@@ -73,7 +73,8 @@ OCR 同样不读取车牌答案；参考字符串只在 `tools/verify_perception
 
 数据来自 **Gazebo 机器人相机实际图像**，不是直接把透明 PNG 当作训练照片。单独的 `training.sdf` 放置 18 种身份，用于采集；另有正式布局转头采集批次；赛题 `community.sdf` 保留 10 个参考人物。
 
-- 训练集 736 帧，验证集 101 帧，独立测试集 140 帧。
+- 原始训练集 736 帧、验证集 101 帧、测试集 140 帧。复查发现旧测试集有 4 张与训练集字节完全相同，原先 140 张测试的分数存在泄漏，不能作为严格独立结果。
+- 本次再采集验证 480 帧、测试 180 帧；对原图和新增图进行跨集合 SHA256 / pHash 近似去重后，冻结 **train 736 / val 558 / test 268**。训练图片未增加；val 用于选择训练检查点，test 用于最后对比，没有将 val/test 图片加入训练。
 - 按采集批次分组：训练随机种子 42/314/514 和一轮自主采集，验证 237，测试 991/719；未把同一段视频的相邻帧随机混入验证/测试。
 - 标签由已知仿真几何离线投影生成，并过滤背面与明显投影遮挡。标签预览已人工抽查。这个方法需要继续抽查边缘遮挡，不能声称标签完全没有误差。
 - 这些批次仍来自同一素材图库、主要光照与固定采集场景；指标不代表真实相机或全新场景的泛化性能。
@@ -108,7 +109,89 @@ python3 tools/collect_dataset.py --batch test991 --random-views 80 \
   --epochs 45 --imgsz 960 --batch 6
 ```
 
-官方 YOLO11n 权重只作为初始化；训练后的权重为 `src/community_demo/models/perception/best.pt`。原始采集帧、虚拟环境和训练日志不进入提交包。本机先训练 45 轮，再在补充相机转头视角后基于首轮权重继续训练 25 轮，记录见 `validation/yolo-training*.json`。
+原 nano 使用官方 YOLO11n 权重初始化；其训练后的权重仍为 `src/community_demo/models/perception/best.pt`。原始采集帧、虚拟环境和训练日志不进入提交包。本机先训练 45 轮，再在补充相机转头视角后基于首轮权重继续训练 25 轮，记录见 `validation/yolo-training*.json`。
+
+## Hugging Face 对比与 YOLO11s 候选
+
+### 数据和评价协议
+
+- 新批次来自 `training.sdf` 与正式 `community.sdf`，分别使用正常、偏暗、偏亮三种光照；变换相机视角、距离和偏航。验证和测试使用独立随机种子，所有 22 类均有实例。
+- 离线采集使用静态、无碰撞的相机支架，等待位姿确认、新图像及时间戳对齐后保存；它只用于数据采集，不用于巡航运动验收。原赛题场景不改动。
+- 标签由几何投影生成，比较副本修正了 26.7 cm 相机高度和前景黄色机盖遮挡；人工抽查 24 个画面，尚非逐框人工标注。数据仍来自同一资料图库，测试集少数身份仅 8 个实例，需继续扩展与人工核验。
+- 对跨集合图片使用 SHA256 和 pHash 汉明距离 ≤2 去重。清单见 `validation/comparison-dataset.json`，类别与光照统计见 `validation/expanded-data-audit.json`。
+- 所有检测器使用相同图像、960 输入、batch 8、GPU、置信度起点 0.001、NMS IoU 0.7、max_det 300；mAP50–95 衡量更严格的框位置。模型类别映射后再对合并类别做相同 NMS。
+- 原 nano 训练 45+25 轮，使用旧验证集和原始标签；S 经用户明确授权，使用同样的 736 张训练图片及修正后的标签，训练 45 轮、batch 4，使用扩充验证集选 checkpoint。因此这是**可用权重的同测试集比较**，不是仅改变网络尺寸的严格消融实验。
+
+### 完整 22 类结果
+
+| 模型 | 验证 mAP50 | 测试 Precision | 测试 Recall | 测试 mAP50 | 测试 mAP50–95 |
+| --- | --- | --- | --- | --- | --- |
+| 保留的 YOLO11n | 87.42% | 83.82% | 79.02% | 84.08% | 67.91% |
+| 微调后的 YOLO11s | 92.07% | 91.73% | 85.06% | 89.89% | 78.50% |
+
+S 的测试 mAP50 提升 5.81 个百分点、mAP50–95 提升 10.59 个百分点。测试 batch 8 下纯模型推理约 7.13 ms/图，nano 约 3.25 ms/图；这不是机器人端含取图、ROS、绘制与 OCR 的端到端延迟。训练时本机 GPU 显存约 2.9 GB，无显存溢出。
+
+### 现成模型的同图像子任务实测
+
+| 权重 | 人物框 mAP50 | 车牌框 mAP50 | 灯态框 mAP50 |
+| --- | --- | --- | --- |
+| 当前 nano（身份合并为人物） | 92.35% | 86.16% | 92.64% |
+| 本次微调 S（身份合并为人物） | 94.75% | 88.41% | 92.12% |
+| [Ultralytics/YOLO11](https://huggingface.co/Ultralytics/YOLO11) 原始 S | 84.52% | — | — |
+| [morsetechlab 车牌 YOLO11](https://huggingface.co/morsetechlab/yolov11-license-plate-detection) n / s | — | 60.68% / 72.68% | — |
+| [yahyagul 交通标志 YOLOv8](https://huggingface.co/yahyagul/traffic-sign-yolov8) | — | — | 4.30% |
+| [dronefreak LISA YOLO26l](https://huggingface.co/dronefreak/lisa-yolo26l) | — | — | 0.16% |
+
+通用 COCO 人物类别不能认出我们的 18 个资料身份；上表的人物指标只是找人框，不能替代完整身份比较。交通灯模型与本题的单颗亮灯、微型立牌及框定义存在差异，低分只说明直接迁移到本数据不适合，不说明其原始任务性能差。车牌仓库作者自己提示其原数据划分有污染，不能拿主页宣传分数直接与我们的分数比。
+
+S 并非每个子任务都更好：灯态总体 mAP50 略低，黄灯/绿灯仍需补数据；测试红灯 mAP50 为 S 95.03% / nano 92.75%，灯态整体 mAP50–95 为 S 81.73% / nano 79.85%。不能声称所有灯色识别都提高。
+
+权重仓库版本与文件 SHA256 已固定在 `validation/hf-model-sources.json`。比较原始结果（含逐类指标和速度）见 `validation/hf-model-comparison.json`、`validation/comparison-results/`，训练记录见 `validation/yolo11s-training.json`。原始数据、模型下载缓存及验收画面只保留本机，不上传 GitHub。
+
+S 候选已经接入 Gazebo 完成两圈固定布局验收：人物 8 居民 + 2 访客、三张正确车牌、两处绿灯通过、道路边界违规采样 0。第一圈完整道路评估见 `validation/yolo11s-navigation.json`；第二圈物理记录为 17/17 路点、实际行驶 12.517 m，见 `validation/yolo11s-physical-lap.json`，视觉评分见 `validation/yolo11s-perception-audit.json`。两圈的记录分别列出，不合并伪称同一次采样。第二圈事件画面冻结在本机 `validation/yolo11s-evidence/`，JPG 不上传 GitHub。
+
+### 运行候选模型
+
+在已有容器、已构建工作区中运行，先关闭正在运行的旧巡航：
+
+```bash
+AIC_PERCEPTION_MODEL=src/community_demo/models/perception/yolo11s-comparison.pt \
+  bash tools/launch_full.sh gui:=true
+```
+
+不设置变量仍使用原 nano，启动脚本不会覆盖权重。S checkpoint SHA256：`f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa`。
+
+### 复现比较流程
+
+数据未包含在仓库中，需要先自行采集。离线采集期间只运行一个 Gazebo 世界，并停止自主巡航：
+
+```bash
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+python3 tools/prepare_validation_worlds.py
+python3 tools/run_validation_matrix.py
+/home/ubuntu/.local/share/aic-vision-venv/bin/python tools/build_comparison_dataset.py
+```
+
+下载固定版本的公开权重，可在有网络代理配置的宿主机工作区运行：
+
+```bash
+python3 tools/download_comparison_models.py
+```
+
+如需重新训练候选（需要自行决定是否重新训练；默认运行不训练）：
+
+```bash
+/home/ubuntu/.local/share/aic-vision-venv/bin/python tools/train_comparison_s.py --epochs 45
+```
+
+训练输出位于 `log/training/hf-yolo11s-comparison/weights/best.pt`，训练工具不覆盖项目权重；评估新训练结果前手动将其复制为 `src/community_demo/models/perception/yolo11s-comparison.pt`。对比：
+
+```bash
+/home/ubuntu/.local/share/aic-vision-venv/bin/python tools/compare_yolo_models.py --include-s
+```
+
+数据清单和评估 JSON 用于复查；扩大验证集能增加发现错误的机会，本身不会自动提高模型准确度。后续应优先补黄/绿灯、少样本身份、遮挡与真实相机图，并保持最终测试集不参与调参。
 
 ## 本机已验证环境
 

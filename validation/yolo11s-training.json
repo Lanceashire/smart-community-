@@ -1,0 +1,16 @@
+{
+  "model": "YOLO11s",
+  "initial_weights": "Ultralytics/YOLO11 on Hugging Face",
+  "initial_revision": "8b8ac7d1fae7468f85dbf89670dd66f41f485aab",
+  "epochs_requested": 45,
+  "batch": 4,
+  "imgsz": 960,
+  "sha256": "f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa",
+  "training_images": 736,
+  "validation": "Frozen expanded, deduplicated comparison set",
+  "limitation": "Current nano had 45+25 epochs with an earlier validation set; this measures usable checkpoint performance, not a controlled architecture-only ablation",
+  "epochs_completed": 45,
+  "comparison_checkpoint": "src/community_demo/models/perception/yolo11s-comparison.pt",
+  "original_nano_preserved": true,
+  "training_label_adjustment": "Same 736 source training images; copied labels clip foreground hood. Original nano used original labels."
+}

@@ -1,0 +1,55 @@
+{
+  "models": [
+    {
+      "repo": "Ultralytics/YOLO11",
+      "revision": "8b8ac7d1fae7468f85dbf89670dd66f41f485aab",
+      "file": "yolo11s.pt",
+      "declared_license": "agpl-3.0",
+      "url": "https://huggingface.co/Ultralytics/YOLO11",
+      "size_bytes": 19313732,
+      "sha256": "85a76fe86dd8afe384648546b56a7a78580c7cb7b404fc595f97969322d502d5"
+    },
+    {
+      "repo": "morsetechlab/yolov11-license-plate-detection",
+      "revision": "251a30d7daedca065f56e04b0af04052c907c68f",
+      "file": "license-plate-finetune-v1n.pt",
+      "declared_license": "agpl-3.0",
+      "url": "https://huggingface.co/morsetechlab/yolov11-license-plate-detection",
+      "size_bytes": 5465235,
+      "sha256": "0aec75976c56eb6f26dfb274c430620ec65137915ff1ae47c3a48c7af8afb7b2"
+    },
+    {
+      "repo": "morsetechlab/yolov11-license-plate-detection",
+      "revision": "251a30d7daedca065f56e04b0af04052c907c68f",
+      "file": "license-plate-finetune-v1s.pt",
+      "declared_license": "agpl-3.0",
+      "url": "https://huggingface.co/morsetechlab/yolov11-license-plate-detection",
+      "size_bytes": 19173715,
+      "sha256": "95e50c25ab7066dd0ca5aec18fa80349676db08697780d1149576461174d2381"
+    },
+    {
+      "repo": "yahyagul/traffic-sign-yolov8",
+      "revision": "15be2681d3b6e666f45c744219aab84e97a2f1b4",
+      "file": "best_roboflow.pt",
+      "declared_license": "mit",
+      "url": "https://huggingface.co/yahyagul/traffic-sign-yolov8",
+      "size_bytes": 22545002,
+      "sha256": "93793cc99ffda2a10e09860e3a7c6383f7c25d470dd604c4555b5b07253a6e2b"
+    },
+    {
+      "repo": "dronefreak/lisa-yolo26l",
+      "revision": "4f7736c7e07911e5498e4b660211e9ad4b02d206",
+      "file": "best.pt",
+      "local_file": "lisa-yolo26l.pt",
+      "declared_license": "agpl-3.0",
+      "url": "https://huggingface.co/dronefreak/lisa-yolo26l",
+      "size_bytes": 53003941,
+      "sha256": "3274d22601e0e8ee565032103539a3049878f3e0c1334213a09d0af3818cfde1"
+    }
+  ],
+  "notes": {
+    "morsetechlab": "Publisher explicitly discloses upstream train/test contamination; advertised scores are not comparison evidence",
+    "yahyagul": "Publisher lists MIT for model repository; underlying Ultralytics dependency retains own license",
+    "data_policy": "All acceptance/capture photographs stay local"
+  }
+}

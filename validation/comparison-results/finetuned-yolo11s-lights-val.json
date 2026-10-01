@@ -1,0 +1,46 @@
+{
+  "model": "finetuned-yolo11s",
+  "group": "lights",
+  "split": "val",
+  "sha256": "f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa",
+  "class_mapping": {
+    "19": 0,
+    "20": 1,
+    "21": 2
+  },
+  "merged_class_nms": false,
+  "metrics": {
+    "metrics/precision(B)": 0.980925592662102,
+    "metrics/recall(B)": 0.9123419760933665,
+    "metrics/mAP50(B)": 0.944680626343675,
+    "metrics/mAP50-95(B)": 0.8693927395985235,
+    "fitness": 0.8693927395985235
+  },
+  "per_class": {
+    "red": {
+      "precision": 0.9939734659764394,
+      "recall": 0.9247311827956989,
+      "mAP50": 0.9348863636363637,
+      "mAP50-95": 0.8639988505251563
+    },
+    "yellow": {
+      "precision": 0.9734168104155153,
+      "recall": 0.8390804597701149,
+      "mAP50": 0.9182856280120791,
+      "mAP50-95": 0.8154526235574184
+    },
+    "green": {
+      "precision": 0.9753865015943513,
+      "recall": 0.9732142857142857,
+      "mAP50": 0.9808698873825821,
+      "mAP50-95": 0.9287267447129948
+    }
+  },
+  "speed_ms": {
+    "preprocess": 0.45005921865301773,
+    "inference": 7.124882220435416,
+    "loss": 0.0004555949836493283,
+    "postprocess": 0.4155996899518419
+  },
+  "dataset_manifest_sha256": "57b277616c091e3b7070b896bb0bafad7bf1ef18d74579e50a1de377f692280d"
+}
