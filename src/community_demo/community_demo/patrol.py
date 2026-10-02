@@ -1,11 +1,8 @@
-"""Estimated-pose-followed simulation patrol with signal stop gates.
-
-This deliberately small first-run controller feeds Sentry26's command manager.
-It is not a replacement for SLAM/Nav2 required by a complete semifinal entry.
-"""
+"""Nav2-planned single-lap patrol, camera stop gates and explicit lap lifecycle."""
 
 import math
 import json
+import uuid
 from pathlib import Path
 import cv2
 import numpy as np
@@ -17,12 +14,14 @@ from rclpy.action import ActionClient
 from nav_msgs.msg import Odometry
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, DurabilityPolicy, qos_profile_sensor_data
 from sensor_msgs.msg import LaserScan, Image
 from std_msgs.msg import String, Float64
 from std_srvs.srv import Trigger
 
 from community_demo.bounded_pid import BoundedPID
 from community_demo.road_rules import safe_pose,predict,footprint
+from community_demo.signal_gate import FreshGreenGate
 
 
 def wrap(angle):
@@ -68,21 +67,33 @@ class Patrol(Node):
         self.require_vision = self.get_parameter('require_vision').value
         self.pan_pub=self.create_publisher(Float64,'/model/patrol_bot/camera_pan',10)
         self.observation_pub=self.create_publisher(String,'/inspection/observation',10)
-        self.create_subscription(Image,'/camera/image',self.on_camera,10)
+        self.create_subscription(Image,'/camera/image',self.on_camera,qos_profile_sensor_data)
         self.camera_frame=None
         self.observation_start=None
         self.observation_align=False
         self.observation_index=0
+        self.observation_attempt=0
+        self.observation_feedback={}
+        self.feedback_update=None
+        self.observation_outcomes=[]
+        self.create_subscription(String,'/perception/results',self.on_perception,qos_profile_sensor_data)
+        self.inspection_pub=self.create_publisher(String,'/inspection/outcome',10)
         self.saved_views=[]
+        inspection=Path('log/inspection');inspection.mkdir(parents=True,exist_ok=True)
+        (inspection/'views.json').write_text('[]\n')
+        (inspection/'outcomes.json').write_text('[]\n')
         self.planner=ActionClient(self,ComputePathToPose,'/compute_path_to_pose')
         self.path=None;self.path_pending=False;self.path_index=-1;self.path_pub=self.create_publisher(__import__('nav_msgs.msg',fromlist=['Path']).Path,'/patrol/path',10)
         self.command_pub = self.create_publisher(TwistStamped, '/cmd_vel_nav', 10)
         self.status_pub = self.create_publisher(String, '/patrol/status', 10)
+        self.lap_pub = self.create_publisher(String, '/patrol/lap', QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
+        self.run_id = uuid.uuid4().hex[:12]
+        self.lap_id = 1
         # Control consumes camera/wheel localization. Simulator truth is evaluation only.
-        self.create_subscription(Odometry, self.get_parameter('pose_topic').value, self.on_odom, 10)
+        self.create_subscription(Odometry, self.get_parameter('pose_topic').value, self.on_odom, qos_profile_sensor_data)
         self.create_service(Trigger, '/patrol/restart', self.restart)
-        self.create_subscription(LaserScan, '/scan', self.on_scan, 10)
-        self.create_subscription(String, '/perception/traffic_light', self.on_light, 10)
+        self.create_subscription(LaserScan, '/scan', self.on_scan, qos_profile_sensor_data)
+        self.create_subscription(String, '/perception/traffic_light', self.on_light, qos_profile_sensor_data)
         self.pose = None
         self.pose_update = None
         self.tilt = 0.0
@@ -96,12 +107,17 @@ class Patrol(Node):
         self.index = 0
         self.green_streak = 0
         self.waiting_for_green = False
+        self.signal_gate = FreshGreenGate()
         self.completed = False
         self.last_log = ''
         self.speed_pid = BoundedPID(kp=.55, lower=0.0, upper=.18)
         self.heading_pid = BoundedPID(kp=1.8, lower=-.65, upper=.65)
         self.create_timer(.1, self.tick)
         self.get_logger().info('Single-lap route ready; uses camera / wheel localization with separate laser SLAM mapping and camera-confirmed green.')
+        self.publish_lap('started')
+
+    def publish_lap(self, phase):
+        self.lap_pub.publish(String(data=json.dumps({'run_id': self.run_id, 'lap_id': self.lap_id, 'phase': phase})))
 
     def request_path(self,tx,ty):
         if not self.planner.server_is_ready():return
@@ -132,22 +148,48 @@ class Patrol(Node):
                 self.log_status('ALIGN_CAMERA '+name);return False
         self.publish_command()
         view,angle=OBSERVATIONS[name][self.observation_index]
+        elapsed=(now-self.observation_start).nanoseconds/1e9 if self.observation_start else 0.
+        feedback=self.observation_feedback
+        fresh=self.feedback_update is not None and (now-self.feedback_update).nanoseconds<700_000_000
+        ready=fresh and feedback.get('view')==view and feedback.get('ready',False)
+        if not ready:
+            if elapsed>=9.5:self.observation_attempt=2
+            elif elapsed>=5.5:self.observation_attempt=1
+        angle += (0., .08, -.08)[self.observation_attempt]
         self.pan_pub.publish(Float64(data=angle))
         if self.observation_start is None:self.observation_start=now
-        event={'view':view,'route_point':name,'pan_rad':angle,'pose':self.pose}
+        event={'run_id':self.run_id,'lap_id':self.lap_id,'view':view,'route_point':name,'pan_rad':angle,'pose':self.pose,'attempt':self.observation_attempt}
         self.observation_pub.publish(String(data=json.dumps(event)))
-        self.log_status('OBSERVE '+view)
+        self.log_status(('OBSERVE ' if self.observation_attempt==0 else 'RETRY_OBSERVE ')+view)
         if (now-self.observation_start).nanoseconds<5_500_000_000:return False
         if self.camera_frame is None:return False
+        if not ready and elapsed<13.5:return False
+        outcome={**event,'confirmed':bool(ready),'elapsed_s':round(elapsed,2),'feedback':feedback if fresh else {'reason':'stale or missing perception feedback'}}
+        self.observation_outcomes.append(outcome)
+        if not ready:self.get_logger().warning('UNCONFIRMED_VIEW '+view+' after bounded retries')
+        self.inspection_pub.publish(String(data=json.dumps(outcome)))
         out=Path('log/inspection');out.mkdir(parents=True,exist_ok=True)
         cv2.imwrite(str(out/(view+'.png')),self.camera_frame)
+        archive=out/self.run_id/f'lap-{self.lap_id:03d}';archive.mkdir(parents=True,exist_ok=True)
+        cv2.imwrite(str(archive/(view+'.png')),self.camera_frame)
         self.saved_views.append(event)
         (out/'views.json').write_text(json.dumps(self.saved_views,indent=2)+'\n')
+        (archive/'views.json').write_text(json.dumps(self.saved_views,indent=2)+'\n')
+        (out/'outcomes.json').write_text(json.dumps(self.observation_outcomes,indent=2)+'\n')
+        (archive/'outcomes.json').write_text(json.dumps(self.observation_outcomes,indent=2)+'\n')
         self.observation_index+=1;self.observation_start=None
+        self.observation_attempt=0
         if self.observation_index<len(OBSERVATIONS[name]):return False
         self.observation_index=0;self.observation_align=False;self.pan_pub.publish(Float64(data=0.0))
         self.observation_pub.publish(String(data=json.dumps({'view':'transit'})))
         return True
+
+    def on_perception(self,msg):
+        try:data=json.loads(msg.data)
+        except ValueError:return
+        if (data.get('run_id'),data.get('lap_id'))!=(self.run_id,self.lap_id):return
+        self.observation_feedback=data.get('observation_feedback',{})
+        self.feedback_update=self.get_clock().now()
 
     def on_odom(self, msg):
         p = msg.pose.pose.position
@@ -174,8 +216,28 @@ class Patrol(Node):
         self.distance_travelled = 0.0
         self.green_streak = 0
         self.waiting_for_green = False
+        self.signal_gate.reset()
         self.motion_probe = None
         self.fault = None
+        self.lap_id += 1
+        self.observation_start = None
+        self.observation_align = False
+        self.observation_index = 0
+        self.saved_views = []
+        self.observation_outcomes=[]
+        self.observation_feedback={}
+        self.feedback_update=None
+        self.observation_attempt=0
+        self.last_log = ''
+        for controller in (self.speed_pid, self.heading_pid):
+            controller.integral = controller.previous = 0.0
+        out = Path('log/inspection');out.mkdir(parents=True,exist_ok=True)
+        (out/'views.json').write_text('[]\n')
+        (out/'outcomes.json').write_text('[]\n')
+        self.pan_pub.publish(Float64(data=0.0))
+        self.observation_pub.publish(String(data=json.dumps({'view':'transit'})))
+        self.publish_lap('started')
+        self.log_status(f'START lap={self.lap_id}')
         response.success = True
         response.message = 'Starting another physical lap; Gazebo window stays open.'
         return response
@@ -188,7 +250,7 @@ class Patrol(Node):
         self.light_state = msg.data
         self.light_update = self.get_clock().now()
         if self.waiting_for_green:
-            self.green_streak = self.green_streak + 1 if msg.data == 'green' else 0
+            self.signal_gate.observe(msg.data)
 
     def publish_command(self, linear=0.0, angular=0.0):
         self.command_guard=None
@@ -272,15 +334,18 @@ class Patrol(Node):
                 if not self.waiting_for_green:
                     self.waiting_for_green = True
                     self.green_streak = 0
+                    self.signal_gate.reset()
                 recent = (self.light_update is not None and
                           (self.get_clock().now() - self.light_update).nanoseconds < 700_000_000)
                 if self.light_state != 'green' or not recent:
                     self.green_streak = 0
-                if self.green_streak < 5 and self.require_vision:
+                if not recent:self.signal_gate.invalidate()
+                if not self.signal_gate.ready and self.require_vision:
                     self.log_status(f'STOP {name}: light={self.light_state}')
                     return
                 self.green_streak = 0
                 self.waiting_for_green = False
+                self.signal_gate.reset()
             self.pan_pub.publish(Float64(data=0.0))
             self.log_status(f'REACHED {name} ({self.index + 1}/{len(ROUTE)}) estimated=({x:.3f},{y:.3f})')
             self.index += 1
@@ -289,6 +354,7 @@ class Patrol(Node):
                     self.fault = 'FAULT insufficient physical travel for a complete lap'
                 else:
                     self.completed = True
+                    self.publish_lap('completed')
             return
         if self.front_blocked():
             self.publish_command()

@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 from rclpy.executors import ExternalShutdownException
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
@@ -15,7 +16,7 @@ class TrafficVision(Node):
     def __init__(self):
         super().__init__('community_traffic_vision')
         self.publisher = self.create_publisher(String, '/perception/traffic_light', 10)
-        self.create_subscription(Image, '/camera/image', self.on_image, 10)
+        self.create_subscription(Image, '/camera/image', self.on_image, qos_profile_sensor_data)
         self.history = deque(maxlen=3)
         self.last_state = None
 

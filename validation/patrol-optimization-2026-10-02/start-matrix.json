@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "variants": [
+    {
+      "name": "start-plus",
+      "world": "audit-start-plus.sdf",
+      "offset_m": [
+        0.025,
+        -0.025
+      ],
+      "yaw_offset_rad": 0.035,
+      "start_pose": [
+        1.125,
+        1.675,
+        3.1765926535897933
+      ],
+      "sha256": "4b4603d3981798a4f6d87b4b48276d8ff8bd40120ce05842adabb540d9132cb7"
+    },
+    {
+      "name": "start-minus",
+      "world": "audit-start-minus.sdf",
+      "offset_m": [
+        -0.025,
+        0.025
+      ],
+      "yaw_offset_rad": -0.035,
+      "start_pose": [
+        1.0750000000000002,
+        1.7249999999999999,
+        3.106592653589793
+      ],
+      "sha256": "1d63cd2cc44d90e7b9188d00d0b936e312ce0fbdf15fa71fe08a9dcddb8c3742"
+    }
+  ],
+  "method": "Different initial spawn only; nominal localization prior unchanged; no teleports during patrol"
+}

@@ -1,0 +1,13 @@
+{
+  "observation_record_count": 16,
+  "expected_per_lap": 8,
+  "distinct_views": 8,
+  "issues": [
+    "Repeated laps append to one observation list",
+    "Recognition reset inferred from GO string rather than explicit lap lifecycle",
+    "Event JPEG names reused on each lap",
+    "Signal audit topic published requested phase before visual update acknowledgement",
+    "Plate name overlay showed geometry score instead of OCR confidence"
+  ],
+  "scope": "Fix lifecycle/evidence consistency; preserve route, models, inference thresholds and training"
+}

@@ -1,0 +1,1429 @@
+{
+  "passed": true,
+  "requested_laps": 4,
+  "laps": [
+    {
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 12.9,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 14.1,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 124.75,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 125.95,
+          "phase": "green"
+        }
+      ],
+      "red_straddle_samples": 0,
+      "observation_outcomes": [
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 1,
+          "view": "A_north",
+          "route_point": "observe_A_north",
+          "pan_rad": 1.5707963267948966,
+          "pose": [
+            -0.6925489926593771,
+            1.7029249734027816,
+            -3.1303267732695845
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "A_north",
+            "ready": true,
+            "person_ids": [
+              "resident_05",
+              "visitor_02",
+              "resident_03",
+              "resident_08",
+              "resident_07"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 1,
+          "view": "A_west",
+          "route_point": "observe_A_west",
+          "pan_rad": 1.5707963267948966,
+          "pose": [
+            -1.690583860465938,
+            1.079631182118433,
+            -1.6010309436518242
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "A_west",
+            "ready": true,
+            "person_ids": [
+              "visitor_01",
+              "resident_08"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 1,
+          "view": "A_south",
+          "route_point": "observe_middle",
+          "pan_rad": 1.5707963267948966,
+          "pose": [
+            -0.9338434044263423,
+            0.5071319348867708,
+            -0.01953077545368681
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "A_south",
+            "ready": true,
+            "person_ids": [
+              "resident_04",
+              "resident_01",
+              "resident_02"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 1,
+          "view": "B_north",
+          "route_point": "observe_middle",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            -0.9338434044263423,
+            0.5032319348867706,
+            -0.037730775453393796
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "B_north",
+            "ready": true,
+            "person_ids": [
+              "resident_07",
+              "visitor_02",
+              "resident_05",
+              "resident_08"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 1,
+          "view": "B_east",
+          "route_point": "observe_B_east",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            -0.1058097165561589,
+            -0.058694319318585236,
+            -1.5369878120662426
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "B_east",
+            "ready": true,
+            "person_ids": [
+              "resident_06",
+              "resident_01"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 1,
+          "view": "plate_1",
+          "route_point": "observe_plate_1",
+          "pan_rad": -1.4907963267948965,
+          "pose": [
+            1.1002718669214318,
+            -1.7341670083541114,
+            1.5663868112472352
+          ],
+          "attempt": 1,
+          "confirmed": true,
+          "elapsed_s": 8.9,
+          "feedback": {
+            "view": "plate_1",
+            "ready": true,
+            "person_ids": [],
+            "plate_texts": [
+              "苏AB8Q62"
+            ],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 1,
+          "view": "plate_2",
+          "route_point": "observe_plate_2",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            1.098964305810913,
+            -1.1349942460958178,
+            1.6042269043472004
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "plate_2",
+            "ready": true,
+            "person_ids": [],
+            "plate_texts": [
+              "鄂D7B5Q2"
+            ],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 1,
+          "view": "plate_3",
+          "route_point": "observe_plate_3",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            1.098677633055218,
+            -0.5343324038733738,
+            1.6061707221366637
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.5,
+          "feedback": {
+            "view": "plate_3",
+            "ready": true,
+            "person_ids": [],
+            "plate_texts": [
+              "苏APL12A"
+            ],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        }
+      ],
+      "passed": true,
+      "run_id": "3766e5aa04ac",
+      "lap_id": 1,
+      "mode": "fault injection",
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "fault_stop_and_recovery": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "sim_elapsed_s": 203.54999999999998,
+      "physical_distance_m": 12.540776269794941,
+      "waypoints": [
+        "top_approach",
+        "top_stop",
+        "observe_A_north",
+        "top_west",
+        "observe_A_west",
+        "left_south",
+        "observe_middle",
+        "middle_east",
+        "observe_B_east",
+        "lower_approach",
+        "lower_stop",
+        "lower_south",
+        "bottom_east",
+        "observe_plate_1",
+        "observe_plate_2",
+        "observe_plate_3",
+        "right_north"
+      ],
+      "observations": [
+        "A_north",
+        "A_west",
+        "A_south",
+        "B_north",
+        "B_east",
+        "plate_1",
+        "plate_2",
+        "plate_3"
+      ],
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "initial_phase": "unknown",
+      "crossings": [
+        {
+          "gate": 1,
+          "time": 12.9,
+          "phase": "green",
+          "legal": true
+        },
+        {
+          "gate": 2,
+          "time": 124.75,
+          "phase": "green",
+          "legal": true
+        }
+      ],
+      "red_waits": [
+        {
+          "gate": 1,
+          "red_wait_samples": 102,
+          "min_front_clearance_m": 0.1576577710304905,
+          "max_speed_m_s": 0.0
+        },
+        {
+          "gate": 2,
+          "red_wait_samples": 197,
+          "min_front_clearance_m": 0.11955342839744393,
+          "max_speed_m_s": 0.0
+        }
+      ],
+      "max_fresh_position_error_m": 0.14541533440244897,
+      "max_fresh_yaw_error_deg": 5.884662953648803,
+      "road_violation_samples": 0,
+      "samples": 4072,
+      "camera_frames": 1598,
+      "scan_frames": 1951,
+      "raw_image_topic_event_frames_seen": 23,
+      "image_correspondence_method": "Rendered JPEG frame number independently read with OCR; best-effort raw topic reception remains a diagnostic, not a guarantee of delivery",
+      "image_report": "lap-001-images.json",
+      "report": "lap-001.json"
+    },
+    {
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 292.9,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 294.2,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 404.85,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 406.05,
+          "phase": "green"
+        }
+      ],
+      "red_straddle_samples": 0,
+      "observation_outcomes": [
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 2,
+          "view": "A_north",
+          "route_point": "observe_A_north",
+          "pan_rad": 1.5707963267948966,
+          "pose": [
+            -0.6860315557954443,
+            1.7029749491913153,
+            -3.127965235346251
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.5,
+          "feedback": {
+            "view": "A_north",
+            "ready": true,
+            "person_ids": [
+              "resident_03",
+              "resident_05",
+              "visitor_02",
+              "resident_08",
+              "resident_07"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 2,
+          "view": "A_west",
+          "route_point": "observe_A_west",
+          "pan_rad": 1.5707963267948966,
+          "pose": [
+            -1.6936294660356328,
+            1.0710077873203068,
+            -1.587392664762546
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "A_west",
+            "ready": true,
+            "person_ids": [
+              "resident_07",
+              "visitor_01",
+              "resident_08"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 2,
+          "view": "A_south",
+          "route_point": "observe_middle",
+          "pan_rad": 1.5707963267948966,
+          "pose": [
+            -0.9188451510795318,
+            0.5037523210834514,
+            -0.024406639978061195
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "A_south",
+            "ready": true,
+            "person_ids": [
+              "resident_04",
+              "resident_01",
+              "resident_02"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 2,
+          "view": "B_north",
+          "route_point": "observe_middle",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            -0.91884515107953,
+            0.5086273210834513,
+            -0.04276813197597035
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.5,
+          "feedback": {
+            "view": "B_north",
+            "ready": true,
+            "person_ids": [
+              "resident_08",
+              "resident_07",
+              "resident_05",
+              "visitor_02"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 2,
+          "view": "B_east",
+          "route_point": "observe_B_east",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            -0.10874725520875012,
+            -0.0527885129171837,
+            -1.5405589692020927
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.5,
+          "feedback": {
+            "view": "B_east",
+            "ready": true,
+            "person_ids": [
+              "resident_06",
+              "resident_01"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 2,
+          "view": "plate_1",
+          "route_point": "observe_plate_1",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            1.099082252575743,
+            -1.7345838155090083,
+            1.556065858417767
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "plate_1",
+            "ready": true,
+            "person_ids": [],
+            "plate_texts": [
+              "苏AB8Q62"
+            ],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 2,
+          "view": "plate_2",
+          "route_point": "observe_plate_2",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            1.1049979386853495,
+            -1.1431310424771104,
+            1.5941178648713499
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "plate_2",
+            "ready": true,
+            "person_ids": [],
+            "plate_texts": [
+              "鄂D7B5Q2"
+            ],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 2,
+          "view": "plate_3",
+          "route_point": "observe_plate_3",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            1.1020723653741917,
+            -0.5375415421412278,
+            1.6021949568689198
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "plate_3",
+            "ready": true,
+            "person_ids": [],
+            "plate_texts": [
+              "苏APL12A"
+            ],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        }
+      ],
+      "passed": true,
+      "run_id": "3766e5aa04ac",
+      "lap_id": 2,
+      "mode": "normal autonomous lap",
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "sim_elapsed_s": 230.7,
+      "physical_distance_m": 12.527525513659517,
+      "waypoints": [
+        "top_approach",
+        "top_stop",
+        "observe_A_north",
+        "top_west",
+        "observe_A_west",
+        "left_south",
+        "observe_middle",
+        "middle_east",
+        "observe_B_east",
+        "lower_approach",
+        "lower_stop",
+        "lower_south",
+        "bottom_east",
+        "observe_plate_1",
+        "observe_plate_2",
+        "observe_plate_3",
+        "right_north"
+      ],
+      "observations": [
+        "A_north",
+        "A_west",
+        "A_south",
+        "B_north",
+        "B_east",
+        "plate_1",
+        "plate_2",
+        "plate_3"
+      ],
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "initial_phase": "green",
+      "crossings": [
+        {
+          "gate": 1,
+          "time": 292.9,
+          "phase": "green",
+          "legal": true
+        },
+        {
+          "gate": 2,
+          "time": 404.85,
+          "phase": "green",
+          "legal": true
+        }
+      ],
+      "red_waits": [
+        {
+          "gate": 1,
+          "red_wait_samples": 196,
+          "min_front_clearance_m": 0.12943982829964262,
+          "max_speed_m_s": 0.0
+        },
+        {
+          "gate": 2,
+          "red_wait_samples": 197,
+          "min_front_clearance_m": 0.12000356313607102,
+          "max_speed_m_s": 0.0
+        }
+      ],
+      "max_fresh_position_error_m": 0.0728351342631006,
+      "max_fresh_yaw_error_deg": 6.13354712751913,
+      "road_violation_samples": 0,
+      "samples": 4615,
+      "camera_frames": 1895,
+      "scan_frames": 2306,
+      "raw_image_topic_event_frames_seen": 28,
+      "image_correspondence_method": "Rendered JPEG frame number independently read with OCR; best-effort raw topic reception remains a diagnostic, not a guarantee of delivery",
+      "image_report": "lap-002-images.json",
+      "report": "lap-002.json"
+    },
+    {
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 545.2,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 546.45,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 656.85,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 658.1,
+          "phase": "green"
+        }
+      ],
+      "red_straddle_samples": 0,
+      "observation_outcomes": [
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 3,
+          "view": "A_north",
+          "route_point": "observe_A_north",
+          "pan_rad": 1.5707963267948966,
+          "pose": [
+            -0.687550015000546,
+            1.7000039417990742,
+            -3.1292958443013625
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.5,
+          "feedback": {
+            "view": "A_north",
+            "ready": true,
+            "person_ids": [
+              "resident_03",
+              "resident_08",
+              "resident_05",
+              "visitor_02",
+              "resident_07"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 3,
+          "view": "A_west",
+          "route_point": "observe_A_west",
+          "pan_rad": 1.5707963267948966,
+          "pose": [
+            -1.691868758628318,
+            1.070535645659359,
+            -1.5889350969583487
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.5,
+          "feedback": {
+            "view": "A_west",
+            "ready": true,
+            "person_ids": [
+              "visitor_02",
+              "resident_07",
+              "resident_08",
+              "visitor_01"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 3,
+          "view": "A_south",
+          "route_point": "observe_middle",
+          "pan_rad": 1.5707963267948966,
+          "pose": [
+            -0.9160493996630527,
+            0.5075975441499156,
+            -0.022117543567879098
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.5,
+          "feedback": {
+            "view": "A_south",
+            "ready": true,
+            "person_ids": [
+              "resident_01",
+              "resident_04",
+              "resident_02"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 3,
+          "view": "B_north",
+          "route_point": "observe_middle",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            -0.915074399663058,
+            0.520272544149916,
+            -0.043784210234314905
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.5,
+          "feedback": {
+            "view": "B_north",
+            "ready": true,
+            "person_ids": [
+              "resident_07",
+              "resident_05",
+              "visitor_02",
+              "resident_08"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 3,
+          "view": "B_east",
+          "route_point": "observe_B_east",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            -0.10838169330499753,
+            -0.056023059871719634,
+            -1.5450226614315277
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "B_east",
+            "ready": true,
+            "person_ids": [
+              "resident_06",
+              "resident_01"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 3,
+          "view": "plate_1",
+          "route_point": "observe_plate_1",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            1.0985988436972502,
+            -1.7377068754696725,
+            1.5606793017425515
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.5,
+          "feedback": {
+            "view": "plate_1",
+            "ready": true,
+            "person_ids": [],
+            "plate_texts": [
+              "苏AB8Q62"
+            ],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 3,
+          "view": "plate_2",
+          "route_point": "observe_plate_2",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            1.1014579770876294,
+            -1.1407977860380136,
+            1.599142483434251
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "plate_2",
+            "ready": true,
+            "person_ids": [],
+            "plate_texts": [
+              "鄂D7B5Q2"
+            ],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 3,
+          "view": "plate_3",
+          "route_point": "observe_plate_3",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            1.1043686376705757,
+            -0.5476389350348944,
+            1.5989890840697967
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.5,
+          "feedback": {
+            "view": "plate_3",
+            "ready": true,
+            "person_ids": [],
+            "plate_texts": [
+              "苏APL12A"
+            ],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        }
+      ],
+      "passed": true,
+      "run_id": "3766e5aa04ac",
+      "lap_id": 3,
+      "mode": "normal autonomous lap",
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "sim_elapsed_s": 195.0999999999999,
+      "physical_distance_m": 12.536747460950723,
+      "waypoints": [
+        "top_approach",
+        "top_stop",
+        "observe_A_north",
+        "top_west",
+        "observe_A_west",
+        "left_south",
+        "observe_middle",
+        "middle_east",
+        "observe_B_east",
+        "lower_approach",
+        "lower_stop",
+        "lower_south",
+        "bottom_east",
+        "observe_plate_1",
+        "observe_plate_2",
+        "observe_plate_3",
+        "right_north"
+      ],
+      "observations": [
+        "A_north",
+        "A_west",
+        "A_south",
+        "B_north",
+        "B_east",
+        "plate_1",
+        "plate_2",
+        "plate_3"
+      ],
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "initial_phase": "red",
+      "crossings": [
+        {
+          "gate": 1,
+          "time": 545.2,
+          "phase": "green",
+          "legal": true
+        },
+        {
+          "gate": 2,
+          "time": 656.85,
+          "phase": "green",
+          "legal": true
+        }
+      ],
+      "red_waits": [
+        {
+          "gate": 1,
+          "red_wait_samples": 59,
+          "min_front_clearance_m": 0.14832406752359029,
+          "max_speed_m_s": 3.427219735638506e-11
+        },
+        {
+          "gate": 2,
+          "red_wait_samples": 195,
+          "min_front_clearance_m": 0.12391046487649654,
+          "max_speed_m_s": 0.0
+        }
+      ],
+      "max_fresh_position_error_m": 0.05188122274080193,
+      "max_fresh_yaw_error_deg": 6.7968784822721675,
+      "road_violation_samples": 0,
+      "samples": 3903,
+      "camera_frames": 1588,
+      "scan_frames": 1948,
+      "raw_image_topic_event_frames_seen": 19,
+      "image_correspondence_method": "Rendered JPEG frame number independently read with OCR; best-effort raw topic reception remains a diagnostic, not a guarantee of delivery",
+      "image_report": "lap-003-images.json",
+      "report": "lap-003.json"
+    },
+    {
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 824.9,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 826.15,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 936.85,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 938.05,
+          "phase": "green"
+        }
+      ],
+      "red_straddle_samples": 0,
+      "observation_outcomes": [
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 4,
+          "view": "A_north",
+          "route_point": "observe_A_north",
+          "pan_rad": 1.5707963267948966,
+          "pose": [
+            -0.6859537356037783,
+            1.7009012910652614,
+            -3.1370190576029455
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "A_north",
+            "ready": true,
+            "person_ids": [
+              "resident_03",
+              "resident_08",
+              "resident_05",
+              "visitor_02",
+              "resident_07"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 4,
+          "view": "A_west",
+          "route_point": "observe_A_west",
+          "pan_rad": 1.5707963267948966,
+          "pose": [
+            -1.6932175573645512,
+            1.0710514216643001,
+            -1.5991119494972288
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.5,
+          "feedback": {
+            "view": "A_west",
+            "ready": true,
+            "person_ids": [
+              "resident_08",
+              "visitor_01"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 4,
+          "view": "A_south",
+          "route_point": "observe_middle",
+          "pan_rad": 1.5707963267948966,
+          "pose": [
+            -0.927879982692081,
+            0.509032518301191,
+            -0.01404362678657228
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "A_south",
+            "ready": true,
+            "person_ids": [
+              "resident_04",
+              "resident_01",
+              "resident_02"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 4,
+          "view": "B_north",
+          "route_point": "observe_middle",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            -0.9269049826920774,
+            0.511957518301191,
+            -0.029643626786394647
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.5,
+          "feedback": {
+            "view": "B_north",
+            "ready": true,
+            "person_ids": [
+              "resident_07",
+              "visitor_02",
+              "resident_08",
+              "resident_05"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 4,
+          "view": "B_east",
+          "route_point": "observe_B_east",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            -0.10534750146888534,
+            -0.061649012926090735,
+            -1.53961905565944
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "B_east",
+            "ready": true,
+            "person_ids": [
+              "resident_06",
+              "resident_01"
+            ],
+            "plate_texts": [],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 4,
+          "view": "plate_1",
+          "route_point": "observe_plate_1",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            1.1046779159105058,
+            -1.7418837845974287,
+            1.5643344365234735
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "plate_1",
+            "ready": true,
+            "person_ids": [],
+            "plate_texts": [
+              "苏AB8Q62"
+            ],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 4,
+          "view": "plate_2",
+          "route_point": "observe_plate_2",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            1.0964946026513014,
+            -1.1301088481986301,
+            1.5875170851281044
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "plate_2",
+            "ready": true,
+            "person_ids": [],
+            "plate_texts": [
+              "鄂D7B5Q2"
+            ],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        },
+        {
+          "run_id": "3766e5aa04ac",
+          "lap_id": 4,
+          "view": "plate_3",
+          "route_point": "observe_plate_3",
+          "pan_rad": -1.5707963267948966,
+          "pose": [
+            1.1013660212627763,
+            -0.5292591711224943,
+            1.5976965517491184
+          ],
+          "attempt": 0,
+          "confirmed": true,
+          "elapsed_s": 5.6,
+          "feedback": {
+            "view": "plate_3",
+            "ready": true,
+            "person_ids": [],
+            "plate_texts": [
+              "苏APL12A"
+            ],
+            "pending_person_ids": [],
+            "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+          }
+        }
+      ],
+      "passed": true,
+      "run_id": "3766e5aa04ac",
+      "lap_id": 4,
+      "mode": "normal autonomous lap",
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "sim_elapsed_s": 226.89999999999998,
+      "physical_distance_m": 12.553855843155317,
+      "waypoints": [
+        "top_approach",
+        "top_stop",
+        "observe_A_north",
+        "top_west",
+        "observe_A_west",
+        "left_south",
+        "observe_middle",
+        "middle_east",
+        "observe_B_east",
+        "lower_approach",
+        "lower_stop",
+        "lower_south",
+        "bottom_east",
+        "observe_plate_1",
+        "observe_plate_2",
+        "observe_plate_3",
+        "right_north"
+      ],
+      "observations": [
+        "A_north",
+        "A_west",
+        "A_south",
+        "B_north",
+        "B_east",
+        "plate_1",
+        "plate_2",
+        "plate_3"
+      ],
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "initial_phase": "yellow",
+      "crossings": [
+        {
+          "gate": 1,
+          "time": 824.9,
+          "phase": "green",
+          "legal": true
+        },
+        {
+          "gate": 2,
+          "time": 936.85,
+          "phase": "green",
+          "legal": true
+        }
+      ],
+      "red_waits": [
+        {
+          "gate": 1,
+          "red_wait_samples": 197,
+          "min_front_clearance_m": 0.1325637619692186,
+          "max_speed_m_s": 0.0
+        },
+        {
+          "gate": 2,
+          "red_wait_samples": 196,
+          "min_front_clearance_m": 0.12639899039080887,
+          "max_speed_m_s": 0.0
+        }
+      ],
+      "max_fresh_position_error_m": 0.0628107094269796,
+      "max_fresh_yaw_error_deg": 7.10287993079111,
+      "road_violation_samples": 0,
+      "samples": 4539,
+      "camera_frames": 1842,
+      "scan_frames": 2262,
+      "raw_image_topic_event_frames_seen": 25,
+      "image_correspondence_method": "Rendered JPEG frame number independently read with OCR; best-effort raw topic reception remains a diagnostic, not a guarantee of delivery",
+      "image_report": "lap-004-images.json",
+      "report": "lap-004.json"
+    }
+  ],
+  "evaluation_only_subscribers": {
+    "/model/patrol_bot/ground_truth": [
+      "patrol_cycle_audit"
+    ],
+    "/simulation/traffic_light_state": [
+      "patrol_cycle_audit"
+    ]
+  },
+  "limits": [
+    "One fixed supplied-gallery scene",
+    "Road footprint evaluated at sampled ground-truth poses",
+    "Fault lap is labelled and excluded from normal autonomous-lap count",
+    "No altered training weights or thresholds"
+  ],
+  "local_photo_root": "/home/ubuntu/projects/smart-community/log/patrol-cycle-review"
+}

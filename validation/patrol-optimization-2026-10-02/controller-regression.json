@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "late_green_does_not_release": true,
+  "fresh_transition_requires_five_green_samples": true,
+  "sensor_outage_requires_new_transition": true,
+  "two_pan_retries_before_timeout": true,
+  "timeout_is_explicitly_unconfirmed": true,
+  "successful_view_completes": true,
+  "scope": "Offline actual controller methods; complements live physical laps; no injected ROS answers"
+}

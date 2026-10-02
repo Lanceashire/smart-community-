@@ -8,6 +8,7 @@ from pathlib import Path
 import time
 
 import rclpy
+from rclpy.qos import qos_profile_sensor_data
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import String
@@ -72,7 +73,7 @@ def main():
 
     node.create_subscription(Odometry, '/model/patrol_bot/ground_truth', pose, 100)
     node.create_subscription(String, '/patrol/status', status, 20)
-    node.create_subscription(LaserScan, '/scan', scan, 10)
+    node.create_subscription(LaserScan, '/scan', scan, qos_profile_sensor_data)
     if args.restart:
         client = node.create_client(Trigger, '/patrol/restart')
         if not client.wait_for_service(timeout_sec=5):

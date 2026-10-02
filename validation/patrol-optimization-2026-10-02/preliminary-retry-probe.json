@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "perception_pause_seconds": 7,
+  "saw_retry_status": true,
+  "outcome": {
+    "run_id": "5b2508dbb2dc",
+    "lap_id": 1,
+    "view": "plate_1",
+    "route_point": "observe_plate_1",
+    "pan_rad": -1.6507963267948966,
+    "pose": [
+      1.1016378593799785,
+      -1.7389362956195509,
+      1.5703491939836693
+    ],
+    "attempt": 2,
+    "confirmed": true,
+    "elapsed_s": 9.5,
+    "feedback": {
+      "view": "plate_1",
+      "ready": true,
+      "person_ids": [],
+      "plate_texts": [
+        "苏AB8Q62"
+      ],
+      "pending_person_ids": [],
+      "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+    }
+  },
+  "method": "SIGSTOP/SIGCONT of actual perception at stationary observation; no substituted labels or robot poses"
+}

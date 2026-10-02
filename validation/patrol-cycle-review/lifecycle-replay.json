@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "new_lap_clears_counts_votes_and_light_history": true,
+  "delayed_previous_complete_ignored": true,
+  "completed_same_run_lap_recovers_own_saved_events": true,
+  "method": "Call actual Perception lifecycle handlers with delayed recorded messages; no ROS topic publishing, model changes or scene answers"
+}

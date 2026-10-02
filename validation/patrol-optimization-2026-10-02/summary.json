@@ -1,0 +1,684 @@
+{
+  "review_time": "2026-10-02T13:58:38.148888+08:00",
+  "passed": true,
+  "completed_laps": 6,
+  "normal_laps": 5,
+  "controlled_fault_laps": 1,
+  "all_edges_green": true,
+  "road_violation_samples": 0,
+  "checked_event_count": 165,
+  "confirmed_observations": 48,
+  "retry_probe": {
+    "passed": true,
+    "perception_pause_seconds": 7,
+    "saw_retry_status": true,
+    "outcome": {
+      "run_id": "3766e5aa04ac",
+      "lap_id": 1,
+      "view": "plate_1",
+      "route_point": "observe_plate_1",
+      "pan_rad": -1.4907963267948965,
+      "pose": [
+        1.1002718669214318,
+        -1.7341670083541114,
+        1.5663868112472352
+      ],
+      "attempt": 1,
+      "confirmed": true,
+      "elapsed_s": 8.9,
+      "feedback": {
+        "view": "plate_1",
+        "ready": true,
+        "person_ids": [],
+        "plate_texts": [
+          "苏AB8Q62"
+        ],
+        "pending_person_ids": [],
+        "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+      }
+    },
+    "method": "SIGSTOP/SIGCONT of actual perception at stationary observation; no substituted labels or robot poses"
+  },
+  "controller_regression": {
+    "passed": true,
+    "late_green_does_not_release": true,
+    "fresh_transition_requires_five_green_samples": true,
+    "sensor_outage_requires_new_transition": true,
+    "two_pan_retries_before_timeout": true,
+    "timeout_is_explicitly_unconfirmed": true,
+    "successful_view_completes": true,
+    "scope": "Offline actual controller methods; complements live physical laps; no injected ROS answers"
+  },
+  "laps": [
+    {
+      "scenario": "main",
+      "report": "main/lap-001.json",
+      "run_id": "3766e5aa04ac",
+      "lap_id": 1,
+      "mode": "fault injection",
+      "passed": true,
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "fault_stop_and_recovery": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "physical_distance_m": 12.540776269794941,
+      "sim_elapsed_s": 203.54999999999998,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "max_fresh_position_error_m": 0.14541533440244897,
+      "max_fresh_yaw_error_deg": 5.884662953648803,
+      "road_violation_samples": 0,
+      "red_waits": [
+        {
+          "gate": 1,
+          "red_wait_samples": 102,
+          "min_front_clearance_m": 0.1576577710304905,
+          "max_speed_m_s": 0.0
+        },
+        {
+          "gate": 2,
+          "red_wait_samples": 197,
+          "min_front_clearance_m": 0.11955342839744393,
+          "max_speed_m_s": 0.0
+        }
+      ],
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 12.9,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 14.1,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 124.75,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 125.95,
+          "phase": "green"
+        }
+      ],
+      "waypoint_count": 17,
+      "observation_count": 8,
+      "events": 26,
+      "confirmed_views": 8,
+      "retry_views": [
+        {
+          "view": "plate_1",
+          "attempt": 1,
+          "elapsed_s": 8.9,
+          "confirmed": true
+        }
+      ],
+      "green_wait_at_stop_samples": 304,
+      "faults": [
+        {
+          "node": "perception",
+          "passed": true,
+          "pause_s": 2.5005496199999016,
+          "settled_speed_max": 0.0
+        },
+        {
+          "node": "localization",
+          "passed": true,
+          "pause_s": 2.508214871999826,
+          "settled_speed_max": 0.0
+        },
+        {
+          "node": "patrol",
+          "passed": true,
+          "pause_s": 2.5008689840001352,
+          "settled_speed_max": 0.0
+        }
+      ],
+      "raw_topic_events_seen": 23
+    },
+    {
+      "scenario": "main",
+      "report": "main/lap-002.json",
+      "run_id": "3766e5aa04ac",
+      "lap_id": 2,
+      "mode": "normal autonomous lap",
+      "passed": true,
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "physical_distance_m": 12.527525513659517,
+      "sim_elapsed_s": 230.7,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "max_fresh_position_error_m": 0.0728351342631006,
+      "max_fresh_yaw_error_deg": 6.13354712751913,
+      "road_violation_samples": 0,
+      "red_waits": [
+        {
+          "gate": 1,
+          "red_wait_samples": 196,
+          "min_front_clearance_m": 0.12943982829964262,
+          "max_speed_m_s": 0.0
+        },
+        {
+          "gate": 2,
+          "red_wait_samples": 197,
+          "min_front_clearance_m": 0.12000356313607102,
+          "max_speed_m_s": 0.0
+        }
+      ],
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 292.9,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 294.2,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 404.85,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 406.05,
+          "phase": "green"
+        }
+      ],
+      "waypoint_count": 17,
+      "observation_count": 8,
+      "events": 31,
+      "confirmed_views": 8,
+      "retry_views": [],
+      "green_wait_at_stop_samples": 580,
+      "faults": [],
+      "raw_topic_events_seen": 28
+    },
+    {
+      "scenario": "main",
+      "report": "main/lap-003.json",
+      "run_id": "3766e5aa04ac",
+      "lap_id": 3,
+      "mode": "normal autonomous lap",
+      "passed": true,
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "physical_distance_m": 12.536747460950723,
+      "sim_elapsed_s": 195.0999999999999,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "max_fresh_position_error_m": 0.05188122274080193,
+      "max_fresh_yaw_error_deg": 6.7968784822721675,
+      "road_violation_samples": 0,
+      "red_waits": [
+        {
+          "gate": 1,
+          "red_wait_samples": 59,
+          "min_front_clearance_m": 0.14832406752359029,
+          "max_speed_m_s": 3.427219735638506e-11
+        },
+        {
+          "gate": 2,
+          "red_wait_samples": 195,
+          "min_front_clearance_m": 0.12391046487649654,
+          "max_speed_m_s": 0.0
+        }
+      ],
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 545.2,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 546.45,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 656.85,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 658.1,
+          "phase": "green"
+        }
+      ],
+      "waypoint_count": 17,
+      "observation_count": 8,
+      "events": 26,
+      "confirmed_views": 8,
+      "retry_views": [],
+      "green_wait_at_stop_samples": 312,
+      "faults": [],
+      "raw_topic_events_seen": 19
+    },
+    {
+      "scenario": "main",
+      "report": "main/lap-004.json",
+      "run_id": "3766e5aa04ac",
+      "lap_id": 4,
+      "mode": "normal autonomous lap",
+      "passed": true,
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "physical_distance_m": 12.553855843155317,
+      "sim_elapsed_s": 226.89999999999998,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "max_fresh_position_error_m": 0.0628107094269796,
+      "max_fresh_yaw_error_deg": 7.10287993079111,
+      "road_violation_samples": 0,
+      "red_waits": [
+        {
+          "gate": 1,
+          "red_wait_samples": 197,
+          "min_front_clearance_m": 0.1325637619692186,
+          "max_speed_m_s": 0.0
+        },
+        {
+          "gate": 2,
+          "red_wait_samples": 196,
+          "min_front_clearance_m": 0.12639899039080887,
+          "max_speed_m_s": 0.0
+        }
+      ],
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 824.9,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 826.15,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 936.85,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 938.05,
+          "phase": "green"
+        }
+      ],
+      "waypoint_count": 17,
+      "observation_count": 8,
+      "events": 30,
+      "confirmed_views": 8,
+      "retry_views": [],
+      "green_wait_at_stop_samples": 605,
+      "faults": [],
+      "raw_topic_events_seen": 25
+    },
+    {
+      "scenario": "start-plus",
+      "report": "start-plus/lap-001.json",
+      "run_id": "9e036a25d8e0",
+      "lap_id": 1,
+      "mode": "normal autonomous lap",
+      "passed": true,
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "physical_distance_m": 12.543546120337878,
+      "sim_elapsed_s": 196.04999999999998,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "max_fresh_position_error_m": 0.041399795328944416,
+      "max_fresh_yaw_error_deg": 6.387027183951798,
+      "road_violation_samples": 0,
+      "red_waits": [
+        {
+          "gate": 1,
+          "red_wait_samples": 95,
+          "min_front_clearance_m": 0.17959817372522746,
+          "max_speed_m_s": 0.0
+        },
+        {
+          "gate": 2,
+          "red_wait_samples": 197,
+          "min_front_clearance_m": 0.11799908252562002,
+          "max_speed_m_s": 0.0
+        }
+      ],
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 13.1,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 14.3,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 124.75,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 126.0,
+          "phase": "green"
+        }
+      ],
+      "waypoint_count": 17,
+      "observation_count": 8,
+      "events": 26,
+      "confirmed_views": 8,
+      "retry_views": [],
+      "green_wait_at_stop_samples": 302,
+      "faults": [],
+      "raw_topic_events_seen": 24
+    },
+    {
+      "scenario": "start-minus",
+      "report": "start-minus/lap-001.json",
+      "run_id": "0ef3d6a48524",
+      "lap_id": 1,
+      "mode": "normal autonomous lap",
+      "passed": true,
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "physical_distance_m": 12.507899814375438,
+      "sim_elapsed_s": 195.45,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "max_fresh_position_error_m": 0.07959733484089718,
+      "max_fresh_yaw_error_deg": 6.609675206058051,
+      "road_violation_samples": 0,
+      "red_waits": [
+        {
+          "gate": 1,
+          "red_wait_samples": 101,
+          "min_front_clearance_m": 0.1169829425251358,
+          "max_speed_m_s": 3.727392507762498e-11
+        },
+        {
+          "gate": 2,
+          "red_wait_samples": 196,
+          "min_front_clearance_m": 0.11779227354171129,
+          "max_speed_m_s": 0.0
+        }
+      ],
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 13.05,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 14.3,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 124.8,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 126.05,
+          "phase": "green"
+        }
+      ],
+      "waypoint_count": 17,
+      "observation_count": 8,
+      "events": 26,
+      "confirmed_views": 8,
+      "retry_views": [],
+      "green_wait_at_stop_samples": 317,
+      "faults": [],
+      "raw_topic_events_seen": 21
+    }
+  ],
+  "model": "YOLO11s comparison candidate; unchanged weights and thresholds",
+  "source_hashes": {
+    "src/community_demo/community_demo/patrol.py": "f19e4872c07f348e03cdd12a44fe3832927fe594a6c536724824596352abba90",
+    "src/community_demo/community_demo/perception.py": "84f6622e7554c004efb5e248add3d982125845f587edcb77c2163dac18df5761",
+    "src/community_demo/community_demo/signal_gate.py": "95226e8e04a2a095126f241d5ed89683e8057a5aef56ac7443e299846c38e104",
+    "src/community_demo/launch/demo.launch.py": "4aa5c364353efc917581a5991f391a5c1b7eddbb4f78c02a88a38e44ffbd6b9d",
+    "tools/audit_patrol_cycles.py": "f13dd267752cb726a7c4adb63354dd4107a25f02b82b62347aaf3780a2241f03",
+    "tools/probe_observation_retry.py": "b7be4ccc2f99df4d05aee979cb6656767f5d0761c2591716a7d64108081a2026"
+  },
+  "unchanged_inputs": {
+    "src/community_demo/models/perception/best.pt": "c344dccefe49d8d3ba12a00abb59034ef40ea7442a2252d1ce6bdf5f6677af96",
+    "src/community_demo/models/perception/yolo11s-comparison.pt": "f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa",
+    "src/community_demo/worlds/community.sdf": "bb1dc2cfff3bc47efc48736f041e4e8981cc00550e8fda351d4ea15e1fc093f6"
+  },
+  "previous_strict_failure": "baseline-summary.json: normal lower gate rear cleared on yellow; retained unchanged",
+  "preliminary": "preliminary/: initial recovery lap retained; retry-at-completion bookkeeping then corrected; only final-code laps counted above",
+  "scope": [
+    "Supplied identities, three supplied plates, unchanged fixed layout",
+    "Three normal restart timings: late green, red and yellow",
+    "Two initial spawn offsets: x/y +/- 0.025 m, yaw +/- 0.035 rad; nominal localization prior unchanged",
+    "Three 2.5-second node pauses plus a 7-second perception pause at a stationary plate view",
+    "No real camera, unseen identity, arbitrary starting pose, GPU-reset or dynamic-obstacle coverage",
+    "Read-only simulator truth for audit; runtime does not subscribe to truth or simulator signal state",
+    "View confirmation requires repeated visible evidence; cannot prove absence of unseen/occluded targets",
+    "Road and stop-line checks use sampled true body footprint; best-effort raw image drops remain diagnostic"
+  ],
+  "photos": "Local ignored log/ only; GitHub contains source and textual evidence"
+}

@@ -1,0 +1,8 @@
+{
+  "src/community_demo/community_demo/patrol.py": "f19e4872c07f348e03cdd12a44fe3832927fe594a6c536724824596352abba90",
+  "src/community_demo/community_demo/perception.py": "84f6622e7554c004efb5e248add3d982125845f587edcb77c2163dac18df5761",
+  "src/community_demo/community_demo/signal_gate.py": "95226e8e04a2a095126f241d5ed89683e8057a5aef56ac7443e299846c38e104",
+  "src/community_demo/launch/demo.launch.py": "4aa5c364353efc917581a5991f391a5c1b7eddbb4f78c02a88a38e44ffbd6b9d",
+  "tools/audit_patrol_cycles.py": "f13dd267752cb726a7c4adb63354dd4107a25f02b82b62347aaf3780a2241f03",
+  "tools/probe_observation_retry.py": "b7be4ccc2f99df4d05aee979cb6656767f5d0761c2591716a7d64108081a2026"
+}

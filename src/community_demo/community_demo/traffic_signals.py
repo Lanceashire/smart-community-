@@ -33,8 +33,9 @@ class TrafficSignals(Node):
     def tick(self):
         t=self.get_clock().now().nanoseconds/1e9 % sum(self.durations)
         wanted='red' if t<self.durations[0] else ('green' if t<sum(self.durations[:2]) else 'yellow')
-        self.debug.publish(String(data=wanted))
-        if wanted==self.state:return
+        if wanted==self.state:
+            self.debug.publish(String(data=self.state));return
+        self.debug.publish(String(data='unknown'))
         poses=[]
         for lamp in self.lamps:
             visible=(lamp['state']=='on')==(lamp['colour']==wanted)
@@ -48,6 +49,8 @@ class TrafficSignals(Node):
                 self.state=wanted;self.get_logger().info(f'SIGNAL {wanted}')
             else:self.get_logger().error(f'Could not update lamp visuals: {result.stderr or result.stdout}')
         except subprocess.TimeoutExpired:self.get_logger().error('Gazebo lamp update timed out')
+        # Evaluation observes the acknowledged visual state, never an unconfirmed request.
+        self.debug.publish(String(data=self.state))
 
 
 def main():

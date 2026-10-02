@@ -1,0 +1,13 @@
+{
+  "passed": false,
+  "run_id": "7e59e25ca5ae",
+  "lap_id": 3,
+  "error": "Lap timed out: WAIT_FRESH_LOCALIZATION",
+  "trigger": "SIGSTOP/SIGCONT localization for 2.5 seconds after controlled lower red wait",
+  "safe_stop": true,
+  "recovered_within_330_second_audit": false,
+  "eventually_completed_after_audit_exit": true,
+  "root_cause_status": "Realtime reliable sensor subscriptions can backpressure publishers when a process pauses; transport isolation fix requires the same fault replay to validate. Exact DDS internal deadlock mechanism not established.",
+  "changes": "Sensor publishers/readers use best effort with short history; audit image subscriber cannot block runtime; retain reliable low-rate lap lifecycle",
+  "log": "log/patrol-cycle-audit.log"
+}

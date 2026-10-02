@@ -3,13 +3,14 @@
 import argparse,json,math,time
 from pathlib import Path
 import rclpy
+from rclpy.qos import qos_profile_sensor_data
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
 from community_demo.road_rules import footprint,in_road
 from community_demo.patrol import yaw_from_quaternion,wrap
 p=argparse.ArgumentParser();p.add_argument('--timeout',type=float,default=300);p.add_argument('--output',default='validation/navigation-audit.json');a=p.parse_args()
 rclpy.init();n=rclpy.create_node('independent_navigation_audit');state={'estimated':None,'phase':'unknown','status':''};records=[];crossings=[];last=None
-n.create_subscription(Odometry,'/localization/pose',lambda m:state.update(estimated=(m.pose.pose.position.x,m.pose.pose.position.y,yaw_from_quaternion(m.pose.pose.orientation))),10)
+n.create_subscription(Odometry,'/localization/pose',lambda m:state.update(estimated=(m.pose.pose.position.x,m.pose.pose.position.y,yaw_from_quaternion(m.pose.pose.orientation))),qos_profile_sensor_data)
 n.create_subscription(String,'/simulation/traffic_light_state',lambda m:state.update(phase=m.data),10)
 n.create_subscription(String,'/patrol/status',lambda m:state.update(status=m.data),10)
 def truth(m):

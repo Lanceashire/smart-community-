@@ -1,0 +1,338 @@
+{
+  "passed": true,
+  "method": "OCR of the actual saved JPEG top banner; compare rendered Frame number with terminal/JSON event frame_id",
+  "unique_images": 29,
+  "event_count": 30,
+  "events": [
+    {
+      "sequence": 1,
+      "image": "3766e5aa04ac-lap-004-event-001.jpg",
+      "expected_frame_id": 3694,
+      "sha256": "93af32374514e2b02d2e5f76024d72b5c992f09bb1e8dd42487011db3fbec849",
+      "rendered_frame_id": 3694,
+      "header_ocr": [
+        "Frame 3694 | 居民 0 / 访客 0 / 总计 0 | 灯 yellow"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 2,
+      "image": "3766e5aa04ac-lap-004-event-002.jpg",
+      "expected_frame_id": 3700,
+      "sha256": "bb15cd8d4bd3ad6e259a2709bbddadd3f90fbb45d980e24e735919d2bb8db912",
+      "rendered_frame_id": 3700,
+      "header_ocr": [
+        "Frame 3700 | 居民 1 / 访客 0 / 总计 1 | 灯 unknown"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 3,
+      "image": "3766e5aa04ac-lap-004-event-003.jpg",
+      "expected_frame_id": 3701,
+      "sha256": "a14950c985fdf91d397ce7018802576575e6ff241794ac82c94db39cfaea3c2e",
+      "rendered_frame_id": 3701,
+      "header_ocr": [
+        "Frame 3701 |居民 1 / 访客 0 / 总计 1 |灯 red"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 4,
+      "image": "3766e5aa04ac-lap-004-event-004.jpg",
+      "expected_frame_id": 3702,
+      "sha256": "d51842bb8893a0b37fb5a8b23633ee835c9cbfcf0fe3b8a646e251f536cc4687",
+      "rendered_frame_id": 3702,
+      "header_ocr": [
+        "Frame 3702 |居民 1 / 访客 1 / 总计 2 |灯 red"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 5,
+      "image": "3766e5aa04ac-lap-004-event-005.jpg",
+      "expected_frame_id": 3703,
+      "sha256": "5ed7f6db0cf206887449cd95a4c2d202e7f6bf92aca3d47843eea3eb381dbbe9",
+      "rendered_frame_id": 3703,
+      "header_ocr": [
+        "Frame 3703 |居民 2 / 访客 1 / 总计 3 |灯 red"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 6,
+      "image": "3766e5aa04ac-lap-004-event-006.jpg",
+      "expected_frame_id": 3749,
+      "sha256": "6bc07c75307d16c98af64d2942edea9662dc8889d0596d2a299364d2415f8a25",
+      "rendered_frame_id": 3749,
+      "header_ocr": [
+        "Frame 3749 |居民 2 /访客 1／总计 3 |灯 green"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 7,
+      "image": "3766e5aa04ac-lap-004-event-007.jpg",
+      "expected_frame_id": 3821,
+      "sha256": "33ea92adc2fd00910ff3e34e6b39836407012f0d0c5d6600bdc265d04ec22ab1",
+      "rendered_frame_id": 3821,
+      "header_ocr": [
+        "Frame 3821 |居民 2 / 访客 1 / 总计 3 | 灯 yellow"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 8,
+      "image": "3766e5aa04ac-lap-004-event-008.jpg",
+      "expected_frame_id": 3836,
+      "sha256": "f7dfbf2201ec4fbcd3bc88439d894c5240b1925d6310e7b25b780c4ddfd8c8e4",
+      "rendered_frame_id": 3836,
+      "header_ocr": [
+        "Frame 3836 |居民 2 / 访客 1 / 总计 3 |灯 red"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 9,
+      "image": "3766e5aa04ac-lap-004-event-009.jpg",
+      "expected_frame_id": 3885,
+      "sha256": "70d3b6aa42f3a71e1672a61c971f06d1e80fd437a371ff41c4c5bd8f2d4eae63",
+      "rendered_frame_id": 3885,
+      "header_ocr": [
+        "Frame 3885 |居民 2 /访客 1 ／总计 3 |灯 green"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 10,
+      "image": "3766e5aa04ac-lap-004-event-010.jpg",
+      "expected_frame_id": 3936,
+      "sha256": "162f8e6a398bd0c91cd1bab7dd60fe634711f9c9c0241db07baf371adcb3f74f",
+      "rendered_frame_id": 3936,
+      "header_ocr": [
+        "Frame 3936 | 居民 4 / 访客 1 / 总计 5 | 灯 green"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 11,
+      "image": "3766e5aa04ac-lap-004-event-011.jpg",
+      "expected_frame_id": 3936,
+      "sha256": "162f8e6a398bd0c91cd1bab7dd60fe634711f9c9c0241db07baf371adcb3f74f",
+      "rendered_frame_id": 3936,
+      "header_ocr": [
+        "Frame 3936 | 居民 4 / 访客 1 / 总计 5 | 灯 green"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 12,
+      "image": "3766e5aa04ac-lap-004-event-012.jpg",
+      "expected_frame_id": 3958,
+      "sha256": "938f401bff1ca716b917ed625fe43c477de8b571a10ff770bd7af2cf566d229c",
+      "rendered_frame_id": 3958,
+      "header_ocr": [
+        "Frame 3958 |居民 4 / 访客 1 / 总计 5 | 灯 yellow"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 13,
+      "image": "3766e5aa04ac-lap-004-event-013.jpg",
+      "expected_frame_id": 4008,
+      "sha256": "e1741703c3c31bc341c0d181ef83c1eaf031d7cbb3b005a00cd01fde5b18c6bf",
+      "rendered_frame_id": 4008,
+      "header_ocr": [
+        "Frame 4008 | 居民 4 / 访客 1 / 总计 5 |灯 red"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 14,
+      "image": "3766e5aa04ac-lap-004-event-014.jpg",
+      "expected_frame_id": 4021,
+      "sha256": "572ecef84bf8142146cf31e83bd920499ab3fca93032c07bcb5d4744563370f1",
+      "rendered_frame_id": 4021,
+      "header_ocr": [
+        "Frame 4021 |居民 4 /访客 1 /总计 5 |灯 green"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 15,
+      "image": "3766e5aa04ac-lap-004-event-015.jpg",
+      "expected_frame_id": 4037,
+      "sha256": "2dddd7aa5cfe54fc94432e6bd638256ad6cae6b0b2835c3f587f5e10f436eed4",
+      "rendered_frame_id": 4037,
+      "header_ocr": [
+        "Frame 4037 | 居民 4 / 访客 2 / 总计 6 | 灯 unknown"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 16,
+      "image": "3766e5aa04ac-lap-004-event-016.jpg",
+      "expected_frame_id": 4092,
+      "sha256": "fe690c2f66e0833b44647ad14c36f972ace60a7d6c22bff1f3e8fa0b8b4dbc89",
+      "rendered_frame_id": 4092,
+      "header_ocr": [
+        "Frame 4092 | 居民 4 / 访客 2 / 总计 6 | 灯 yellow"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 17,
+      "image": "3766e5aa04ac-lap-004-event-017.jpg",
+      "expected_frame_id": 4101,
+      "sha256": "298e132f4232687e24ac2b530336bb403a3c5474775a30746c01f4ffedc7ea0b",
+      "rendered_frame_id": 4101,
+      "header_ocr": [
+        "Frame 4101 | 居民 5 / 访客 2 / 总计 7 | 灯 unknown"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 18,
+      "image": "3766e5aa04ac-lap-004-event-018.jpg",
+      "expected_frame_id": 4108,
+      "sha256": "350764997634e0ac34f68d301adf8f0ad83f2c615bff4f6bd85939c1142dc5c1",
+      "rendered_frame_id": 4108,
+      "header_ocr": [
+        "Frame 4108 | 居民 6 / 访客 2 / 总计 8 | 灯 unknown"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 19,
+      "image": "3766e5aa04ac-lap-004-event-019.jpg",
+      "expected_frame_id": 4131,
+      "sha256": "231039cd3118ebf6c5851329ab97cbfa84f4a59cafe9bbe65dc60fef2e03cb39",
+      "rendered_frame_id": 4131,
+      "header_ocr": [
+        "Frame 4131 | 居民 7 / 访客 2 / 总计 9 | 灯 unknown"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 20,
+      "image": "3766e5aa04ac-lap-004-event-020.jpg",
+      "expected_frame_id": 4159,
+      "sha256": "7f573975b99c8605581a1f228d8b598f31f05a330da3df280689b06e607c60f1",
+      "rendered_frame_id": 4159,
+      "header_ocr": [
+        "Frame 4159 |居民 7 /访客 2 ／总计 9|灯 green"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 21,
+      "image": "3766e5aa04ac-lap-004-event-021.jpg",
+      "expected_frame_id": 4227,
+      "sha256": "013b4e4fe837dd3d0bceb99e16e425d81370e7d33157d58626016d20fd59ffe0",
+      "rendered_frame_id": 4227,
+      "header_ocr": [
+        "Frame 4227 | 居民 7 / 访客 2 / 总计 9 | 灯 yellow"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 22,
+      "image": "3766e5aa04ac-lap-004-event-022.jpg",
+      "expected_frame_id": 4242,
+      "sha256": "b427b66775873660c9ec0aecb36b401178d84470e92579d5a2b7dae3bbd17a36",
+      "rendered_frame_id": 4242,
+      "header_ocr": [
+        "Frame 4242 |居民 7 / 访客 2 / 总计 9 |灯 red"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 23,
+      "image": "3766e5aa04ac-lap-004-event-023.jpg",
+      "expected_frame_id": 4256,
+      "sha256": "0e2ae3d6fcad11e4436c503f0bc7f1486794b144181f63f13be2a170c44f22da",
+      "rendered_frame_id": 4256,
+      "header_ocr": [
+        "Frame 4256 | 居民 8 / 访客 2 / 总计 10 | 灯 unknown"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 24,
+      "image": "3766e5aa04ac-lap-004-event-024.jpg",
+      "expected_frame_id": 4289,
+      "sha256": "a391e1308aa7a51f102e21ed9c0a2577901c7498b8c37d9675ec5884c439d347",
+      "rendered_frame_id": 4289,
+      "header_ocr": [
+        "Frame 4289 |居民 8 /访客 2 ／总计 10 |灯 green"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 25,
+      "image": "3766e5aa04ac-lap-004-event-025.jpg",
+      "expected_frame_id": 4361,
+      "sha256": "2b0be92b0ecf1ec2c467e60bfd71f490f01bb07e8ddba673c2ed986ad6447b7f",
+      "rendered_frame_id": 4361,
+      "header_ocr": [
+        "Frame 4361 | 居民 8 / 访客 2 / 总计 10 | 灯 yellow"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 26,
+      "image": "3766e5aa04ac-lap-004-event-026.jpg",
+      "expected_frame_id": 4374,
+      "sha256": "499bb8cd7def1a3ce10cc142b019de07776328bf4c341faf59a13b0a318d2721",
+      "rendered_frame_id": 4374,
+      "header_ocr": [
+        "Frame 4374 | 居民 8 / 访客 2 / 总计 10 | 灯 red"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 27,
+      "image": "3766e5aa04ac-lap-004-event-027.jpg",
+      "expected_frame_id": 4422,
+      "sha256": "d40c1485aa0080510e29a400f4bfb7e2376434371ca657fdfd3316ab88c93e02",
+      "rendered_frame_id": 4422,
+      "header_ocr": [
+        "Frame 4422 |居民 8 /访客 2 /总计 10 |灯 green"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 28,
+      "image": "3766e5aa04ac-lap-004-event-028.jpg",
+      "expected_frame_id": 4562,
+      "sha256": "db7cabda9871535203b6c82fb3a0c3579040df081ef3708f1b398c3240146d81",
+      "rendered_frame_id": 4562,
+      "header_ocr": [
+        "Frame 4562 | 居民 8 / 访客 2 / 总计 10 | 灯 unknown"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 29,
+      "image": "3766e5aa04ac-lap-004-event-029.jpg",
+      "expected_frame_id": 4620,
+      "sha256": "2bfaca880ea559ef6e8333c2b74645f9be837ba8c8685afbcbc9e821e908cd37",
+      "rendered_frame_id": 4620,
+      "header_ocr": [
+        "Frame 4620 | 居民 8 / 访客 2 / 总计 10 | 灯 unknown"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 30,
+      "image": "3766e5aa04ac-lap-004-event-030.jpg",
+      "expected_frame_id": 4670,
+      "sha256": "7bf797412c924097a123df7cd514b1213c6d10af70e9b1b6d0aa46240b446541",
+      "rendered_frame_id": 4670,
+      "header_ocr": [
+        "Frame 4670 | 居民 8 / 访客 2 / 总计 10 | 灯 unknown"
+      ],
+      "passed": true
+    }
+  ]
+}

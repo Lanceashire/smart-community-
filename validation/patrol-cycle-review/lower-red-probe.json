@@ -1,0 +1,95 @@
+{
+  "passed": true,
+  "lap_id": 3,
+  "purpose": "Deliberately create a lower-stop red arrival; excluded from normal autonomous laps",
+  "events": [
+    {
+      "action": "hold_stationary_controller",
+      "pid": 38379,
+      "state": {
+        "lap": 3,
+        "phase": "green",
+        "status": "STOP lower_stop: light=green"
+      }
+    },
+    {
+      "action": "resume_controller",
+      "hold_seconds": 14.695107809999172,
+      "state": {
+        "lap": 3,
+        "phase": "red",
+        "status": "STOP lower_stop: light=green"
+      }
+    },
+    {
+      "action": "after_resume",
+      "elapsed": 0.0,
+      "lap": 3,
+      "phase": "red",
+      "status": "STOP lower_stop: light=green"
+    },
+    {
+      "action": "after_resume",
+      "elapsed": 0.0008179360011126846,
+      "lap": 3,
+      "phase": "red",
+      "status": "WAIT_FRESH_LOCALIZATION"
+    },
+    {
+      "action": "after_resume",
+      "elapsed": 0.10486735599988606,
+      "lap": 3,
+      "phase": "red",
+      "status": "STOP lower_stop: light=yellow"
+    },
+    {
+      "action": "after_resume",
+      "elapsed": 0.3049161359995196,
+      "lap": 3,
+      "phase": "red",
+      "status": "STOP lower_stop: light=unknown"
+    },
+    {
+      "action": "after_resume",
+      "elapsed": 0.704920141997718,
+      "lap": 3,
+      "phase": "red",
+      "status": "STOP lower_stop: light=red"
+    },
+    {
+      "action": "after_resume",
+      "elapsed": 9.834900990001188,
+      "lap": 3,
+      "phase": "unknown",
+      "status": "STOP lower_stop: light=red"
+    },
+    {
+      "action": "after_resume",
+      "elapsed": 10.10100353300004,
+      "lap": 3,
+      "phase": "green",
+      "status": "STOP lower_stop: light=red"
+    },
+    {
+      "action": "after_resume",
+      "elapsed": 10.40494151600069,
+      "lap": 3,
+      "phase": "green",
+      "status": "STOP lower_stop: light=unknown"
+    },
+    {
+      "action": "after_resume",
+      "elapsed": 10.804950255998847,
+      "lap": 3,
+      "phase": "green",
+      "status": "STOP lower_stop: light=green"
+    },
+    {
+      "action": "after_resume",
+      "elapsed": 11.804904917000385,
+      "lap": 3,
+      "phase": "green",
+      "status": "REACHED lower_stop (11/17) estimated=(-0.098,-0.255)"
+    }
+  ]
+}

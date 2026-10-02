@@ -1,0 +1,18 @@
+{
+  "review_time": "2026-10-02T00:08:55.417085+08:00",
+  "requirements_match_original_zip": true,
+  "requirements_sha256": "25b94cde754fbb1342e20b28671eb47fbd4839ec6c6c4727b481d15ca3755b34",
+  "field_dimensions_m": [
+    4.2,
+    4.2
+  ],
+  "road_width_m": 0.6,
+  "physical_body_footprint_m": [
+    0.22,
+    0.225
+  ],
+  "evidence": "SDF chassis length .22; wheel centres +/- .10, half thickness .0125; support balls contained within .11 half length",
+  "world_sha256": "bb1dc2cfff3bc47efc48736f041e4e8981cc00550e8fda351d4ea15e1fc093f6",
+  "model_sha256": "f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa",
+  "scope": "Task requires one autonomous lap, repeatability and synchronized detections; indefinite looping is not required"
+}

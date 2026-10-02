@@ -22,8 +22,8 @@ class Localization(Node):
     def __init__(self):
         super().__init__('community_localization')
         self.tf=TransformBroadcaster(self);self.static=StaticTransformBroadcaster(self)
-        self.poses=self.create_publisher(Odometry,'/localization/pose',10)
-        self.scans=self.create_publisher(LaserScan,'/scan',10)
+        self.poses=self.create_publisher(Odometry,'/localization/pose',qos_profile_sensor_data)
+        self.scans=self.create_publisher(LaserScan,'/scan',qos_profile_sensor_data)
         self.status=self.create_publisher(String,'/localization/status',10)
         self.xy=np.array([1.1,1.7]);self.yaw=math.pi;self.previous=None;self.pan=0.;self.pan_time=-1e9;self.frame_time=-1e9;self.odom_time=None;self.odom_received=-1e9;self.camera_received=-1e9
         source=Path(get_package_share_directory('community_demo'))/'models/community_assets/materials/textures/floor.png'
@@ -31,10 +31,10 @@ class Localization(Node):
         self.map_n=floor.shape[0];self.score=None
         grid=np.array(np.meshgrid(np.linspace(-.045,.045,7),np.linspace(-.045,.045,7),np.linspace(-.04,.04,7),indexing='ij')).reshape(3,-1).T
         self.grid=grid
-        self.create_subscription(Odometry,'/model/patrol_bot/odometry',self.odom,10)
+        self.create_subscription(Odometry,'/model/patrol_bot/odometry',self.odom,qos_profile_sensor_data)
         self.create_subscription(PointCloud2,'/lidar/raw/points',self.cloud,qos_profile_sensor_data)
         self.create_subscription(Image,'/camera/image',self.image,qos_profile_sensor_data)
-        self.create_subscription(Float64,'/model/patrol_bot/camera_pan',self.on_pan,10)
+        self.create_subscription(Float64,'/model/patrol_bot/camera_pan',self.on_pan,qos_profile_sensor_data)
         static=[]
         for parent,child,xyz,yaw in [('field','slam_map',(1.1,1.7,0),math.pi),('slam_base','laser_frame',(0,0,.235),0)]:
             t=TransformStamped();t.header.stamp=self.get_clock().now().to_msg();t.header.frame_id=parent;t.child_frame_id=child

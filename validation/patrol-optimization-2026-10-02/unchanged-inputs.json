@@ -1,0 +1,5 @@
+{
+  "src/community_demo/models/perception/best.pt": "c344dccefe49d8d3ba12a00abb59034ef40ea7442a2252d1ce6bdf5f6677af96",
+  "src/community_demo/models/perception/yolo11s-comparison.pt": "f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa",
+  "src/community_demo/worlds/community.sdf": "bb1dc2cfff3bc47efc48736f041e4e8981cc00550e8fda351d4ea15e1fc093f6"
+}

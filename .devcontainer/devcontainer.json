@@ -1,0 +1,58 @@
+{
+  "name": "智慧社区 ROS 2 Jazzy",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "workspaceFolder": "/home/ubuntu/projects/smart-community",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/ubuntu/projects/smart-community,type=bind",
+  "remoteUser": "ubuntu",
+  "containerUser": "ubuntu",
+  "updateRemoteUserUID": false,
+  "overrideCommand": true,
+  "shutdownAction": "stopContainer",
+  "runArgs": [
+    "--runtime=nvidia",
+    "--network=host",
+    "--ipc=host",
+    "--init"
+  ],
+  "containerEnv": {
+    "DISPLAY": "${localEnv:DISPLAY}",
+    "XAUTHORITY": "/home/ubuntu/.Xauthority",
+    "NVIDIA_DRIVER_CAPABILITIES": "compute,utility,graphics,display,video",
+    "NVIDIA_VISIBLE_DEVICES": "all",
+    "__NV_PRIME_RENDER_OFFLOAD": "1",
+    "__GLX_VENDOR_LIBRARY_NAME": "nvidia"
+  },
+  "remoteEnv": {
+    "ROS_DISTRO": "jazzy",
+    "PATH": "/opt/ros/jazzy/bin:${containerEnv:PATH}"
+  },
+  "mounts": [
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,readonly",
+    "source=${localEnv:XAUTHORITY},target=/home/ubuntu/.Xauthority,type=bind,readonly",
+    "source=/home/jiezichuan/.cache/aic-smart-community,target=/home/ubuntu/.cache,type=bind",
+    "source=/home/jiezichuan/.config/aic-smart-community,target=/home/ubuntu/.config,type=bind",
+    "source=/home/jiezichuan/.local/share/aic-smart-community,target=/home/ubuntu/.local/share,type=bind",
+    "source=/home/jiezichuan/.local/state/aic-smart-community,target=/home/ubuntu/.local/state,type=bind",
+    "source=/home/jiezichuan/.local/share/aic-smart-community/vscode-server,target=/home/ubuntu/.vscode-server,type=bind"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ranch-hand-robotics.rde-ros-2",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "morningfrog.urdf-visualizer"
+      ],
+      "settings": {
+        "ROS2.distro": "jazzy",
+        "ROS2.rosSetupScript": "/opt/ros/jazzy/setup.bash",
+        "python.defaultInterpreterPath": "/home/ubuntu/.local/share/aic-vision-venv/bin/python",
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  }
+}

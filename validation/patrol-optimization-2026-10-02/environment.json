@@ -1,0 +1,11 @@
+{
+  "python": "3.12.3",
+  "torch": "2.13.0+cu130",
+  "ultralytics": "8.4.164",
+  "cuda_available": true,
+  "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+  "ros_distro": "jazzy",
+  "simulator": "Gazebo Harmonic",
+  "container": "aic-development",
+  "display_repair": "Existing stale /run/user/1000/xauth_* bind restored from current desktop authentication; no cookies recorded"
+}
