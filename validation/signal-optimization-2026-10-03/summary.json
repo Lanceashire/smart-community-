@@ -1,0 +1,427 @@
+{
+  "passed": true,
+  "baseline": {
+    "source": "validation/performance-2026-10-02/candidate/lap-001.json",
+    "run_id": "9ab8f86bc291",
+    "lap_id": 1,
+    "physical_audit_passed": true,
+    "completion_sim_s": 179.8,
+    "position_error_max_m": 0.028398828900948084,
+    "checks": {
+      "completed": true,
+      "route_order": true,
+      "actual_distance": true,
+      "returned_to_start": true,
+      "road_boundary": true,
+      "two_green_crossings": true,
+      "red_wait_body_before_line": true,
+      "eight_observations": true,
+      "observation_log_reset": true,
+      "recognition_reset": true,
+      "people": true,
+      "plates": true,
+      "event_sequence": true,
+      "event_frame_correspondence": true,
+      "completion_frozen": true,
+      "stationary_after_completion": true,
+      "camera_and_scan_live": true,
+      "restart_while_running_rejected": true,
+      "front_and_rear_green": true,
+      "red_straddle_samples_zero": true,
+      "observation_confirmation": true,
+      "physical_post_clearance": true,
+      "rendered_image_frame_ids": true,
+      "terminal_events_exact": true
+    },
+    "counts": {
+      "residents": 8,
+      "visitors": 2,
+      "total": 10
+    },
+    "plates": [
+      "苏AB8Q62",
+      "鄂D7B5Q2",
+      "苏APL12A"
+    ],
+    "whole_body_crossings": [
+      {
+        "gate": 1,
+        "edge": "front_entered",
+        "time": 40.8,
+        "phase": "green"
+      },
+      {
+        "gate": 1,
+        "edge": "rear_cleared",
+        "time": 41.8,
+        "phase": "green"
+      },
+      {
+        "gate": 2,
+        "edge": "front_entered",
+        "time": 124.75,
+        "phase": "green"
+      },
+      {
+        "gate": 2,
+        "edge": "rear_cleared",
+        "time": 125.75,
+        "phase": "green"
+      }
+    ],
+    "gates": [
+      {
+        "gate": "top_stop",
+        "approach_sim_s": 0.25,
+        "new_green_transitions_sim_s": [
+          10.2,
+          38.2
+        ],
+        "release_sim_s": 39.75,
+        "stop_state_wait_s": 28.5,
+        "release_delay_from_first_new_green_s": 29.55,
+        "extra_green_cycles": 1,
+        "first_new_green_release": false,
+        "release_within_four_seconds": false
+      },
+      {
+        "gate": "lower_stop",
+        "approach_sim_s": 105.45,
+        "new_green_transitions_sim_s": [
+          122.2
+        ],
+        "release_sim_s": 123.75,
+        "stop_state_wait_s": 15.6,
+        "release_delay_from_first_new_green_s": 1.55,
+        "extra_green_cycles": 0,
+        "first_new_green_release": true,
+        "release_within_four_seconds": true
+      }
+    ],
+    "passed": false
+  },
+  "laps": [
+    {
+      "source": "validation/signal-optimization-2026-10-03/final/lap-001.json",
+      "run_id": "6b4a870117aa",
+      "lap_id": 1,
+      "physical_audit_passed": true,
+      "completion_sim_s": 151.8,
+      "position_error_max_m": 0.03009927603295747,
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 12.85,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 13.85,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 96.75,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 97.75,
+          "phase": "green"
+        }
+      ],
+      "gates": [
+        {
+          "gate": "top_stop",
+          "approach_sim_s": 0.25,
+          "new_green_transitions_sim_s": [
+            10.2
+          ],
+          "release_sim_s": 11.75,
+          "stop_state_wait_s": 6.8,
+          "release_delay_from_first_new_green_s": 1.55,
+          "extra_green_cycles": 0,
+          "first_new_green_release": true,
+          "release_within_four_seconds": true
+        },
+        {
+          "gate": "lower_stop",
+          "approach_sim_s": 77.95,
+          "new_green_transitions_sim_s": [
+            94.2
+          ],
+          "release_sim_s": 95.75,
+          "stop_state_wait_s": 15.1,
+          "release_delay_from_first_new_green_s": 1.55,
+          "extra_green_cycles": 0,
+          "first_new_green_release": true,
+          "release_within_four_seconds": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "source": "validation/signal-optimization-2026-10-03/final/lap-002.json",
+      "run_id": "6b4a870117aa",
+      "lap_id": 2,
+      "physical_audit_passed": true,
+      "completion_sim_s": 158.75,
+      "position_error_max_m": 0.03240542926862089,
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 236.8,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 237.85,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 320.95,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 321.95,
+          "phase": "green"
+        }
+      ],
+      "gates": [
+        {
+          "gate": "top_stop",
+          "approach_sim_s": 216.25,
+          "new_green_transitions_sim_s": [
+            234.2
+          ],
+          "release_sim_s": 235.75,
+          "stop_state_wait_s": 12.5,
+          "release_delay_from_first_new_green_s": 1.55,
+          "extra_green_cycles": 0,
+          "first_new_green_release": true,
+          "release_within_four_seconds": true
+        },
+        {
+          "gate": "lower_stop",
+          "approach_sim_s": 301.85,
+          "new_green_transitions_sim_s": [
+            318.2
+          ],
+          "release_sim_s": 319.95,
+          "stop_state_wait_s": 15.4,
+          "release_delay_from_first_new_green_s": 1.75,
+          "extra_green_cycles": 0,
+          "first_new_green_release": true,
+          "release_within_four_seconds": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "source": "validation/signal-optimization-2026-10-03/final/lap-003.json",
+      "run_id": "6b4a870117aa",
+      "lap_id": 3,
+      "physical_audit_passed": true,
+      "completion_sim_s": 151.15,
+      "position_error_max_m": 0.0303334940994743,
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 432.85,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 433.85,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 516.8,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 517.8,
+          "phase": "green"
+        }
+      ],
+      "gates": [
+        {
+          "gate": "top_stop",
+          "approach_sim_s": 420.25,
+          "new_green_transitions_sim_s": [
+            430.2
+          ],
+          "release_sim_s": 431.7,
+          "stop_state_wait_s": 4.35,
+          "release_delay_from_first_new_green_s": 1.5,
+          "extra_green_cycles": 0,
+          "first_new_green_release": true,
+          "release_within_four_seconds": true
+        },
+        {
+          "gate": "lower_stop",
+          "approach_sim_s": 497.95,
+          "new_green_transitions_sim_s": [
+            514.2
+          ],
+          "release_sim_s": 515.75,
+          "stop_state_wait_s": 15.1,
+          "release_delay_from_first_new_green_s": 1.55,
+          "extra_green_cycles": 0,
+          "first_new_green_release": true,
+          "release_within_four_seconds": true
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "controller_checks": {
+    "passed": true,
+    "approach_to_stop_retains_transition": true,
+    "new_junction_resets_history": true,
+    "unknown_age_green_does_not_release": true,
+    "sensor_gap_requires_new_transition": true,
+    "old_green_window_expires": true,
+    "unknown_does_not_renew_green": true,
+    "completion_resets_history": true,
+    "scope": "Actual controller callbacks, no injected ROS traffic states or answers"
+  },
+  "world_and_weights_unchanged": true,
+  "source_sha256": {
+    "src/community_demo/community_demo/patrol.py": "ff896612aa2515a1f83b71454c61b9831aa8ba20a0971fad746ff72ccaf27191",
+    "src/community_demo/community_demo/signal_gate.py": "d711dbafe050755c9f44fd8b43b8f1a50b15f5785a321f3e2af8de81e4130072",
+    "src/community_demo/worlds/community.sdf": "bb1dc2cfff3bc47efc48736f041e4e8981cc00550e8fda351d4ea15e1fc093f6",
+    "src/community_demo/models/perception/yolo11s-comparison.pt": "f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa"
+  },
+  "limits": [
+    "Three fixed-field laps, six junction passages; sampled physical truth is audit-only",
+    "Red 10 s / green 15 s / yellow 3 s, unchanged; shorter arbitrary cycles unverified",
+    "Already-green arrival with unknown onset still waits for a witnessed transition",
+    "Independent truth phase used to count green cycles; runtime only uses camera recognition",
+    "No claim about new detector accuracy; all photos remain local"
+  ]
+}

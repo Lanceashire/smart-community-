@@ -117,6 +117,7 @@ class Patrol(Node):
         self.green_streak = 0
         self.waiting_for_green = False
         self.signal_gate = FreshGreenGate()
+        self.signal_context = None
         self.completed = False
         self.last_log = ''
         self.speed_pid = BoundedPID(kp=.55, lower=0.0, upper=.22)
@@ -229,6 +230,7 @@ class Patrol(Node):
         self.green_streak = 0
         self.waiting_for_green = False
         self.signal_gate.reset()
+        self.signal_context = None
         self.motion_probe = None
         self.fault = None
         self.lap_id += 1
@@ -264,11 +266,20 @@ class Patrol(Node):
         self.scan_update = self.get_clock().now()
         self.clear_scans=0 if self.front_blocked() else min(5,self.clear_scans+1)
 
+    def update_signal_context(self):
+        name = ROUTE[self.index][0] if not self.completed and self.index < len(ROUTE) else ''
+        context = ('top' if name in ('top_approach', 'top_stop') else
+                   'lower' if name in ('lower_approach', 'lower_stop') else None)
+        if context != self.signal_context:
+            self.signal_gate.reset()
+            self.signal_context = context
+        return context
+
     def on_light(self, msg):
         self.light_state = msg.data
         self.light_update = self.get_clock().now()
-        if self.waiting_for_green:
-            self.signal_gate.observe(msg.data)
+        if self.update_signal_context() is not None:
+            self.signal_gate.observe(msg.data, self.light_update.nanoseconds / 1e9)
 
     def publish_command(self, linear=0.0, angular=0.0):
         self.command_guard=None
@@ -333,6 +344,7 @@ class Patrol(Node):
 
     def tick(self):
         now = self.get_clock().now()
+        self.update_signal_context()
         if self.pose is None or (now - self.pose_update).nanoseconds > 700_000_000:
             self.publish_command()
             self.motion_probe = None
@@ -375,7 +387,6 @@ class Patrol(Node):
                 if not self.waiting_for_green:
                     self.waiting_for_green = True
                     self.green_streak = 0
-                    self.signal_gate.reset()
                 recent = (self.light_update is not None and
                           (self.get_clock().now() - self.light_update).nanoseconds < 700_000_000)
                 if self.light_state != 'green' or not recent:

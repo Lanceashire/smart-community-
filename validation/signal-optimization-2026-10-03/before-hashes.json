@@ -1,0 +1,6 @@
+{
+  "src/community_demo/community_demo/patrol.py": "17ed2d2aefee5559045f0d5f35c5a06aa1c987c397803f852658eef3c647a72f",
+  "src/community_demo/community_demo/signal_gate.py": "95226e8e04a2a095126f241d5ed89683e8057a5aef56ac7443e299846c38e104",
+  "src/community_demo/worlds/community.sdf": "bb1dc2cfff3bc47efc48736f041e4e8981cc00550e8fda351d4ea15e1fc093f6",
+  "src/community_demo/models/perception/yolo11s-comparison.pt": "f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa"
+}

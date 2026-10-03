@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "approach_to_stop_retains_transition": true,
+  "new_junction_resets_history": true,
+  "unknown_age_green_does_not_release": true,
+  "sensor_gap_requires_new_transition": true,
+  "old_green_window_expires": true,
+  "unknown_does_not_renew_green": true,
+  "completion_resets_history": true,
+  "scope": "Actual controller callbacks, no injected ROS traffic states or answers"
+}
