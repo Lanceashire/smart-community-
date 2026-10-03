@@ -19,3 +19,20 @@ def safe_pose(x,y,yaw,margin=.008):
 def predict(x,y,yaw,v,w,dt):
     if abs(w)<1e-7:return x+v*dt*math.cos(yaw),y+v*dt*math.sin(yaw),yaw
     return x+v/w*(math.sin(yaw+w*dt)-math.sin(yaw)),y-v/w*(math.cos(yaw+w*dt)-math.cos(yaw)),yaw+w*dt
+
+
+def clear_of_posts(x, y, yaw, posts, margin=.012):
+    """Separating-axis test for chassis rectangle versus known physical post boxes."""
+    c,s=math.cos(yaw),math.sin(yaw)
+    body_axes=((c,s),(-s,c))
+    for post in posts:
+        pc,ps=math.cos(post['yaw']),math.sin(post['yaw'])
+        post_axes=((pc,ps),(-ps,pc));dx=post['x']-x;dy=post['y']-y
+        separated=False
+        for ax,ay in body_axes+post_axes:
+            body_radius=HALF_LENGTH*abs(ax*c+ay*s)+HALF_WIDTH*abs(-ax*s+ay*c)
+            post_radius=post['width']/2*abs(ax*pc+ay*ps)+post['depth']/2*abs(-ax*ps+ay*pc)
+            if abs(dx*ax+dy*ay)>body_radius+post_radius+margin:
+                separated=True;break
+        if not separated:return False
+    return True

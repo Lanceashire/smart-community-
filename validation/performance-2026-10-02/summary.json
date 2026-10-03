@@ -1,0 +1,820 @@
+{
+  "passed": true,
+  "final_laps": 5,
+  "normal_laps": 3,
+  "node_fault_laps": 1,
+  "physical_obstacle_laps": 1,
+  "baseline": {
+    "source": "/home/ubuntu/projects/smart-community/validation/performance-2026-10-02/baseline/lap-001.json",
+    "passed": true,
+    "mode": "normal autonomous lap",
+    "run_id": "5f36aef7a67f",
+    "lap_id": 1,
+    "completion_sim_s": 191.35,
+    "completion_wall_s": 193.259,
+    "real_time_factor": 0.99,
+    "state_sim_s": {
+      "GO": 105.7,
+      "GUARD": 0.1,
+      "REACHED": 1.35,
+      "STOP": 33.8,
+      "PLAN": 1.35,
+      "OBSERVE": 44.55,
+      "ALIGN_CAMERA": 4.5,
+      "COMPLETE": 3.95
+    },
+    "position_error_max_m": 0.05916019425490734,
+    "position_error_p95_m": 0.030190490296948553,
+    "position_error_rmse_m": 0.01886376199999394,
+    "processing_ms_p50": 20.0,
+    "processing_ms_p95": 23.3,
+    "image_age_sim_s_p95": 0.20000000000000284,
+    "perception_hz_wall": 4.72,
+    "observations": [
+      {
+        "view": "A_north",
+        "elapsed_s": 5.6,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "A_west",
+        "elapsed_s": 5.5,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "A_south",
+        "elapsed_s": 5.6,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "B_north",
+        "elapsed_s": 5.5,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "B_east",
+        "elapsed_s": 5.5,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "plate_1",
+        "elapsed_s": 5.6,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "plate_2",
+        "elapsed_s": 5.6,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "plate_3",
+        "elapsed_s": 5.6,
+        "confirmed": true,
+        "attempt": 0
+      }
+    ],
+    "minimum_post_clearance_m": null,
+    "counts": {
+      "residents": 8,
+      "visitors": 2,
+      "total": 10
+    },
+    "plates": [
+      "苏AB8Q62",
+      "鄂D7B5Q2",
+      "苏APL12A"
+    ],
+    "checks": {
+      "completed": true,
+      "route_order": true,
+      "actual_distance": true,
+      "returned_to_start": true,
+      "road_boundary": true,
+      "two_green_crossings": true,
+      "red_wait_body_before_line": true,
+      "eight_observations": true,
+      "observation_log_reset": true,
+      "recognition_reset": true,
+      "people": true,
+      "plates": true,
+      "event_sequence": true,
+      "event_frame_correspondence": true,
+      "completion_frozen": true,
+      "stationary_after_completion": true,
+      "camera_and_scan_live": true,
+      "restart_while_running_rejected": true,
+      "front_and_rear_green": true,
+      "red_straddle_samples_zero": true,
+      "observation_confirmation": true,
+      "rendered_image_frame_ids": true,
+      "terminal_events_exact": true
+    },
+    "road_violation_samples": 0
+  },
+  "comparison_nominal_start": {
+    "completion_sim_s": {
+      "baseline": 191.35,
+      "optimized": 179.8,
+      "change_percent": -6.04
+    },
+    "completion_wall_s": {
+      "baseline": 193.259,
+      "optimized": 181.723,
+      "change_percent": -5.97
+    },
+    "position_error_max_m": {
+      "baseline": 0.05916019425490734,
+      "optimized": 0.028398828900948084,
+      "change_percent": -52.0
+    },
+    "position_error_p95_m": {
+      "baseline": 0.030190490296948553,
+      "optimized": 0.023723718471754546,
+      "change_percent": -21.42
+    },
+    "position_error_rmse_m": {
+      "baseline": 0.01886376199999394,
+      "optimized": 0.011292803778084887,
+      "change_percent": -40.13
+    }
+  },
+  "laps": [
+    {
+      "source": "validation/performance-2026-10-02/candidate/lap-001.json",
+      "passed": true,
+      "mode": "normal autonomous lap",
+      "run_id": "9ab8f86bc291",
+      "lap_id": 1,
+      "completion_sim_s": 179.8,
+      "completion_wall_s": 181.723,
+      "real_time_factor": 0.989,
+      "state_sim_s": {
+        "": 0.1,
+        "WAIT_FRESH_LOCALIZATION": 0.1,
+        "PLAN": 1.5,
+        "GO": 96.7,
+        "GUARD": 6.3,
+        "REACHED": 1.7,
+        "STOP": 44.1,
+        "OBSERVE": 24.7,
+        "ALIGN_CAMERA": 4.6,
+        "COMPLETE": 4.15
+      },
+      "position_error_max_m": 0.028398828900948084,
+      "position_error_p95_m": 0.023723718471754546,
+      "position_error_rmse_m": 0.011292803778084887,
+      "processing_ms_p50": 15.4,
+      "processing_ms_p95": 19.5,
+      "image_age_sim_s_p95": 0.20000000000000284,
+      "perception_hz_wall": 4.776,
+      "observations": [
+        {
+          "view": "A_north",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_west",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_south",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_north",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_east",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_1",
+          "elapsed_s": 2.8,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_2",
+          "elapsed_s": 3.3,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_3",
+          "elapsed_s": 3.5,
+          "confirmed": true,
+          "attempt": 0
+        }
+      ],
+      "minimum_post_clearance_m": 0.04230389724695487,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "road_violation_samples": 0,
+      "scenario": "candidate"
+    },
+    {
+      "source": "validation/performance-2026-10-02/candidate/lap-002.json",
+      "passed": true,
+      "mode": "fault injection",
+      "run_id": "9ab8f86bc291",
+      "lap_id": 2,
+      "completion_sim_s": 156.25,
+      "completion_wall_s": 157.866,
+      "real_time_factor": 0.99,
+      "state_sim_s": {
+        "START": 0.05,
+        "PLAN": 1.45,
+        "GO": 101.35,
+        "GUARD": 0.2,
+        "REACHED": 1.7,
+        "STOP": 18.9,
+        "WAIT_FRESH_SCAN": 0.3,
+        "ALIGN_CAMERA": 5.3,
+        "OBSERVE": 25.1,
+        "WAIT_FRESH_LOCALIZATION": 1.9,
+        "COMPLETE": 4.15
+      },
+      "position_error_max_m": 0.17200963846866021,
+      "position_error_p95_m": 0.029595085329633203,
+      "position_error_rmse_m": 0.01695905104137391,
+      "processing_ms_p50": 15.2,
+      "processing_ms_p95": 19.9,
+      "image_age_sim_s_p95": 0.20000000000001705,
+      "perception_hz_wall": 4.691,
+      "observations": [
+        {
+          "view": "A_north",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_west",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_south",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_north",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_east",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_1",
+          "elapsed_s": 3.6,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_2",
+          "elapsed_s": 3.3,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_3",
+          "elapsed_s": 3.1,
+          "confirmed": true,
+          "attempt": 0
+        }
+      ],
+      "minimum_post_clearance_m": 0.050921596817476565,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "fault_stop_and_recovery": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "road_violation_samples": 0,
+      "scenario": "candidate"
+    },
+    {
+      "source": "validation/performance-2026-10-02/candidate/lap-003.json",
+      "passed": true,
+      "mode": "normal autonomous lap",
+      "run_id": "9ab8f86bc291",
+      "lap_id": 3,
+      "completion_sim_s": 186.85,
+      "completion_wall_s": 188.952,
+      "real_time_factor": 0.989,
+      "state_sim_s": {
+        "START": 0.05,
+        "PLAN": 1.5,
+        "GO": 99.0,
+        "GUARD": 11.9,
+        "REACHED": 1.7,
+        "STOP": 43.7,
+        "OBSERVE": 24.3,
+        "ALIGN_CAMERA": 4.7,
+        "COMPLETE": 4.15
+      },
+      "position_error_max_m": 0.02728720005350759,
+      "position_error_p95_m": 0.0205889164040325,
+      "position_error_rmse_m": 0.010594148846938196,
+      "processing_ms_p50": 15.2,
+      "processing_ms_p95": 19.5,
+      "image_age_sim_s_p95": 0.20000000000004547,
+      "perception_hz_wall": 4.811,
+      "observations": [
+        {
+          "view": "A_north",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_west",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_south",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_north",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_east",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_1",
+          "elapsed_s": 3.1,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_2",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_3",
+          "elapsed_s": 3.1,
+          "confirmed": true,
+          "attempt": 0
+        }
+      ],
+      "minimum_post_clearance_m": 0.04054947539617685,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "road_violation_samples": 0,
+      "scenario": "candidate"
+    },
+    {
+      "source": "validation/performance-2026-10-02/start-plus/lap-001.json",
+      "passed": true,
+      "mode": "initial offset plus controlled physical obstacle",
+      "run_id": "8db87254f652",
+      "lap_id": 1,
+      "completion_sim_s": 154.7,
+      "completion_wall_s": 156.537,
+      "real_time_factor": 0.988,
+      "state_sim_s": {
+        "": 0.1,
+        "WAIT_FRESH_LOCALIZATION": 0.2,
+        "PLAN": 1.6,
+        "GO": 98.1,
+        "GUARD": 0.2,
+        "REACHED": 1.7,
+        "STOP": 20.9,
+        "OBSERVE": 24.5,
+        "ALIGN_CAMERA": 3.5,
+        "BLOCKED": 3.4,
+        "RECOVER_OBSTACLE": 0.5,
+        "COMPLETE": 4.05
+      },
+      "position_error_max_m": 0.0461313767763686,
+      "position_error_p95_m": 0.03412530893859317,
+      "position_error_rmse_m": 0.016800478867074913,
+      "processing_ms_p50": 15.2,
+      "processing_ms_p95": 20.3,
+      "image_age_sim_s_p95": 0.20000000000000284,
+      "perception_hz_wall": 4.794,
+      "observations": [
+        {
+          "view": "A_north",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_west",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_south",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_north",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_east",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_1",
+          "elapsed_s": 3.2,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_2",
+          "elapsed_s": 3.1,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_3",
+          "elapsed_s": 3.1,
+          "confirmed": true,
+          "attempt": 0
+        }
+      ],
+      "minimum_post_clearance_m": 0.03254832091543988,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "road_violation_samples": 0,
+      "scenario": "start-plus"
+    },
+    {
+      "source": "validation/performance-2026-10-02/start-minus/lap-001.json",
+      "passed": true,
+      "mode": "normal autonomous lap",
+      "run_id": "140409692eed",
+      "lap_id": 1,
+      "completion_sim_s": 150.7,
+      "completion_wall_s": 152.307,
+      "real_time_factor": 0.989,
+      "state_sim_s": {
+        "": 0.1,
+        "WAIT_FRESH_LOCALIZATION": 0.1,
+        "PLAN": 1.7,
+        "GO": 96.75,
+        "GUARD": 0.1,
+        "REACHED": 1.75,
+        "STOP": 21.4,
+        "OBSERVE": 24.0,
+        "ALIGN_CAMERA": 4.8,
+        "COMPLETE": 4.05
+      },
+      "position_error_max_m": 0.04090808832384863,
+      "position_error_p95_m": 0.03215282507134274,
+      "position_error_rmse_m": 0.01703347266755006,
+      "processing_ms_p50": 15.2,
+      "processing_ms_p95": 20.1,
+      "image_age_sim_s_p95": 0.20000000000000284,
+      "perception_hz_wall": 4.751,
+      "observations": [
+        {
+          "view": "A_north",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_west",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_south",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_north",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_east",
+          "elapsed_s": 3.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_1",
+          "elapsed_s": 3.3,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_2",
+          "elapsed_s": 3.1,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_3",
+          "elapsed_s": 2.5,
+          "confirmed": true,
+          "attempt": 0
+        }
+      ],
+      "minimum_post_clearance_m": 0.0649293722197957,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "road_violation_samples": 0,
+      "scenario": "start-minus"
+    }
+  ],
+  "minimum_post_clearance_m": 0.03254832091543988,
+  "physical_obstacle": {
+    "passed": true,
+    "method": "Physical Gazebo box added then removed; evaluator reads truth; no robot teleport, velocity command or perception answer injection",
+    "spawn_pose": [
+      1.1,
+      0.75,
+      0.12
+    ],
+    "stopped_robot_pose": [
+      1.1018027027212876,
+      0.4312520325768072
+    ],
+    "settled_max_speed_m_s": 0.0,
+    "clearance_to_box_at_stop_m": 0.13874796742319284,
+    "replanned": true,
+    "resumed_y": 1.0036173869458405,
+    "recovery_wall_s": 3.651244501000292,
+    "events": [
+      {
+        "wall": 3422.709774315,
+        "status": "BLOCKED before right_north"
+      },
+      {
+        "wall": 3426.210769479,
+        "status": "RECOVER_OBSTACLE confirming clear scans"
+      },
+      {
+        "wall": 3426.611141712,
+        "status": "RECOVER_OBSTACLE replan permitted route"
+      }
+    ]
+  },
+  "control_regression": {
+    "passed": true,
+    "late_green_does_not_release": true,
+    "fresh_transition_requires_five_green_samples": true,
+    "sensor_outage_requires_new_transition": true,
+    "two_pan_retries_before_timeout": true,
+    "timeout_is_explicitly_unconfirmed": true,
+    "successful_view_completes": true,
+    "scope": "Offline actual controller methods; complements live physical laps; no injected ROS answers",
+    "static_post_collision_guard": true,
+    "registration_view_guard": true,
+    "blank_image_does_not_refresh_registration": true,
+    "localization_quality_states": true,
+    "clear_scan_debounce": true,
+    "early_finish_and_stale_feedback_guard": true
+  },
+  "unchanged_weights_and_world": {
+    "src/community_demo/models/perception/best.pt": true,
+    "src/community_demo/models/perception/yolo11s-comparison.pt": true,
+    "src/community_demo/worlds/community.sdf": true
+  },
+  "source_sha256": {
+    "src/community_demo/community_demo/patrol.py": "17ed2d2aefee5559045f0d5f35c5a06aa1c987c397803f852658eef3c647a72f",
+    "src/community_demo/community_demo/localization.py": "bac1273dfa8ac5be308e1668ec0b82dfbbb3733f6dd09dd6c327c48834a99207",
+    "src/community_demo/community_demo/perception.py": "00d29727f41c5d329cdea976a8fa0f3335ed216d07062e69b4a8919bae1b12c0",
+    "src/community_demo/launch/demo.launch.py": "3bd1ef3b06b6e1fffac2b224c2b28e76c64226c101e06baea1b8f8f090f5dbc7",
+    "tools/launch_full.sh": "8fed085ea97f05aff16ad96cb211ca97b9a9ee816202a3bbacf04b4b54d76ec0",
+    "tools/audit_patrol_cycles.py": "9103081ba74a70d63c5a4fafc1ee25a080d71fde5541a580a32a3a481e4fe948",
+    "tools/check_performance_controls.py": "436b2876b8d0c58e58703abec8fe2bf3c3460b094099d607b7fd4994927574fd",
+    "tools/probe_obstacle_recovery.py": "71b572e364e605b28782ff2dece9a5b03f144bebeddab608e64019b4191519ec",
+    "tools/audit_performance_variants.py": "76d51b8d1b31603d96ea894f80027e2964bc431c538a092e7904ab3e8543402c",
+    "tools/build_navigation_map.py": "4c39151da0abbd2558b3b436784f0a3b8693aff6a3cec326590c4a2b95e7f96d",
+    "src/community_demo/community_demo/road_rules.py": "85b9400dc90d580a98de06a5dac0b6c25584da758e6d9b63060f6282aafb2798",
+    "src/community_demo/maps/roads.pgm": "1dec85713b10a3042965d9e39d3f86816f9b728a845a817fbe17083b3b7f74b9",
+    "src/community_demo/maps/planning-obstacles.json": "91f58d6daa8533a9fffd41b04abf2982ec819e9bbcd018581876d4ce68721469"
+  },
+  "limits": [
+    "One baseline and one nominal-start candidate provide the direct comparison; phase/offset/fault runs are listed separately",
+    "YOLO weights and offline test metrics unchanged; no claim of improved mAP",
+    "Physical obstacle recovery waits for clearance and replans the permitted route; no dynamic bypass",
+    "Local encoder/paint/wheel localization, not arbitrary-pose global relocalization",
+    "True pose is audit-only; runtime receives wheel odometry, camera, lidar and camera joint encoder",
+    "Images remain local under log/performance"
+  ]
+}

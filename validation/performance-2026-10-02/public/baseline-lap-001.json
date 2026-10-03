@@ -1,0 +1,1847 @@
+{
+  "whole_body_crossings": [
+    {
+      "gate": 1,
+      "edge": "front_entered",
+      "time": 13.15,
+      "phase": "green"
+    },
+    {
+      "gate": 1,
+      "edge": "rear_cleared",
+      "time": 14.35,
+      "phase": "green"
+    },
+    {
+      "gate": 2,
+      "edge": "front_entered",
+      "time": 124.7,
+      "phase": "green"
+    },
+    {
+      "gate": 2,
+      "edge": "rear_cleared",
+      "time": 125.95,
+      "phase": "green"
+    }
+  ],
+  "red_straddle_samples": 0,
+  "observation_outcomes": [
+    {
+      "run_id": "5f36aef7a67f",
+      "lap_id": 1,
+      "view": "A_north",
+      "route_point": "observe_A_north",
+      "pan_rad": 1.5707963267948966,
+      "pose": [
+        -0.6949843050333443,
+        1.6999999754361872,
+        -3.1285934524057994
+      ],
+      "attempt": 0,
+      "confirmed": true,
+      "elapsed_s": 5.6,
+      "feedback": {
+        "view": "A_north",
+        "ready": true,
+        "person_ids": [
+          "resident_03",
+          "resident_07",
+          "resident_05",
+          "resident_08",
+          "visitor_02"
+        ],
+        "plate_texts": [],
+        "pending_person_ids": [],
+        "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+      }
+    },
+    {
+      "run_id": "5f36aef7a67f",
+      "lap_id": 1,
+      "view": "A_west",
+      "route_point": "observe_A_west",
+      "pan_rad": 1.5707963267948966,
+      "pose": [
+        -1.6940709705742978,
+        1.0725636658634916,
+        -1.5930552702721434
+      ],
+      "attempt": 0,
+      "confirmed": true,
+      "elapsed_s": 5.5,
+      "feedback": {
+        "view": "A_west",
+        "ready": true,
+        "person_ids": [
+          "visitor_01",
+          "resident_08"
+        ],
+        "plate_texts": [],
+        "pending_person_ids": [],
+        "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+      }
+    },
+    {
+      "run_id": "5f36aef7a67f",
+      "lap_id": 1,
+      "view": "A_south",
+      "route_point": "observe_middle",
+      "pan_rad": 1.5707963267948966,
+      "pose": [
+        -0.9480151145964063,
+        0.5005070375905359,
+        -0.020196981383208794
+      ],
+      "attempt": 0,
+      "confirmed": true,
+      "elapsed_s": 5.6,
+      "feedback": {
+        "view": "A_south",
+        "ready": true,
+        "person_ids": [
+          "resident_04",
+          "resident_02",
+          "resident_01"
+        ],
+        "plate_texts": [],
+        "pending_person_ids": [],
+        "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+      }
+    },
+    {
+      "run_id": "5f36aef7a67f",
+      "lap_id": 1,
+      "view": "B_north",
+      "route_point": "observe_middle",
+      "pan_rad": -1.5707963267948966,
+      "pose": [
+        -0.9411901145964059,
+        0.49953203759053594,
+        -0.04013031471624466
+      ],
+      "attempt": 0,
+      "confirmed": true,
+      "elapsed_s": 5.5,
+      "feedback": {
+        "view": "B_north",
+        "ready": true,
+        "person_ids": [
+          "resident_07",
+          "resident_08",
+          "resident_05",
+          "visitor_02"
+        ],
+        "plate_texts": [],
+        "pending_person_ids": [],
+        "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+      }
+    },
+    {
+      "run_id": "5f36aef7a67f",
+      "lap_id": 1,
+      "view": "B_east",
+      "route_point": "observe_B_east",
+      "pan_rad": -1.5707963267948966,
+      "pose": [
+        -0.10683898622314515,
+        -0.06607063668515518,
+        -1.5399863789961987
+      ],
+      "attempt": 0,
+      "confirmed": true,
+      "elapsed_s": 5.5,
+      "feedback": {
+        "view": "B_east",
+        "ready": true,
+        "person_ids": [
+          "resident_06",
+          "resident_01"
+        ],
+        "plate_texts": [],
+        "pending_person_ids": [],
+        "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+      }
+    },
+    {
+      "run_id": "5f36aef7a67f",
+      "lap_id": 1,
+      "view": "plate_1",
+      "route_point": "observe_plate_1",
+      "pan_rad": -1.5707963267948966,
+      "pose": [
+        1.101398897917741,
+        -1.7357847230785408,
+        1.5570453324596185
+      ],
+      "attempt": 0,
+      "confirmed": true,
+      "elapsed_s": 5.6,
+      "feedback": {
+        "view": "plate_1",
+        "ready": true,
+        "person_ids": [],
+        "plate_texts": [
+          "苏AB8Q62"
+        ],
+        "pending_person_ids": [],
+        "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+      }
+    },
+    {
+      "run_id": "5f36aef7a67f",
+      "lap_id": 1,
+      "view": "plate_2",
+      "route_point": "observe_plate_2",
+      "pan_rad": -1.5707963267948966,
+      "pose": [
+        1.1012035539864604,
+        -1.1379171758309445,
+        1.5976727855835045
+      ],
+      "attempt": 0,
+      "confirmed": true,
+      "elapsed_s": 5.6,
+      "feedback": {
+        "view": "plate_2",
+        "ready": true,
+        "person_ids": [],
+        "plate_texts": [
+          "鄂D7B5Q2"
+        ],
+        "pending_person_ids": [],
+        "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+      }
+    },
+    {
+      "run_id": "5f36aef7a67f",
+      "lap_id": 1,
+      "view": "plate_3",
+      "route_point": "observe_plate_3",
+      "pan_rad": -1.5707963267948966,
+      "pose": [
+        1.1064426129866158,
+        -0.5383774362281255,
+        1.600238515119912
+      ],
+      "attempt": 0,
+      "confirmed": true,
+      "elapsed_s": 5.6,
+      "feedback": {
+        "view": "plate_3",
+        "ready": true,
+        "person_ids": [],
+        "plate_texts": [
+          "苏APL12A"
+        ],
+        "pending_person_ids": [],
+        "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+      }
+    }
+  ],
+  "passed": true,
+  "run_id": "5f36aef7a67f",
+  "lap_id": 1,
+  "mode": "normal autonomous lap",
+  "checks": {
+    "completed": true,
+    "route_order": true,
+    "actual_distance": true,
+    "returned_to_start": true,
+    "road_boundary": true,
+    "two_green_crossings": true,
+    "red_wait_body_before_line": true,
+    "eight_observations": true,
+    "observation_log_reset": true,
+    "recognition_reset": true,
+    "people": true,
+    "plates": true,
+    "event_sequence": true,
+    "event_frame_correspondence": true,
+    "completion_frozen": true,
+    "stationary_after_completion": true,
+    "camera_and_scan_live": true,
+    "restart_while_running_rejected": true,
+    "front_and_rear_green": true,
+    "red_straddle_samples_zero": true,
+    "observation_confirmation": true,
+    "rendered_image_frame_ids": true,
+    "terminal_events_exact": true
+  },
+  "sim_elapsed_s": 195.29999999999998,
+  "physical_distance_m": 12.55635237869231,
+  "waypoints": [
+    "top_approach",
+    "top_stop",
+    "observe_A_north",
+    "top_west",
+    "observe_A_west",
+    "left_south",
+    "observe_middle",
+    "middle_east",
+    "observe_B_east",
+    "lower_approach",
+    "lower_stop",
+    "lower_south",
+    "bottom_east",
+    "observe_plate_1",
+    "observe_plate_2",
+    "observe_plate_3",
+    "right_north"
+  ],
+  "observations": [
+    "A_north",
+    "A_west",
+    "A_south",
+    "B_north",
+    "B_east",
+    "plate_1",
+    "plate_2",
+    "plate_3"
+  ],
+  "counts": {
+    "residents": 8,
+    "visitors": 2,
+    "total": 10
+  },
+  "plates": [
+    "苏AB8Q62",
+    "鄂D7B5Q2",
+    "苏APL12A"
+  ],
+  "initial_phase": "unknown",
+  "crossings": [
+    {
+      "gate": 1,
+      "time": 13.15,
+      "phase": "green",
+      "legal": true
+    },
+    {
+      "gate": 2,
+      "time": 124.7,
+      "phase": "green",
+      "legal": true
+    }
+  ],
+  "red_waits": [
+    {
+      "gate": 1,
+      "red_wait_samples": 102,
+      "min_front_clearance_m": 0.15549714853260077,
+      "max_speed_m_s": 0.0
+    },
+    {
+      "gate": 2,
+      "red_wait_samples": 197,
+      "min_front_clearance_m": 0.11155728648331781,
+      "max_speed_m_s": 0.0
+    }
+  ],
+  "max_fresh_position_error_m": 0.05916019425490734,
+  "max_fresh_yaw_error_deg": 6.330579028224609,
+  "road_violation_samples": 0,
+  "samples": 3902,
+  "camera_frames": 1517,
+  "scan_frames": 1936,
+  "event_checks": [
+    {
+      "sequence": 1,
+      "frame_id": 3,
+      "stamp": 1.9,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-001.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "a5632799f0228ffb9f4cdd2e7df7c258a1068d6e66cedf9e0fec55e8cd9d1921"
+    },
+    {
+      "sequence": 2,
+      "frame_id": 3,
+      "stamp": 1.9,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-002.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "a5632799f0228ffb9f4cdd2e7df7c258a1068d6e66cedf9e0fec55e8cd9d1921"
+    },
+    {
+      "sequence": 3,
+      "frame_id": 3,
+      "stamp": 1.9,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-003.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "a5632799f0228ffb9f4cdd2e7df7c258a1068d6e66cedf9e0fec55e8cd9d1921"
+    },
+    {
+      "sequence": 4,
+      "frame_id": 3,
+      "stamp": 1.9,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-004.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "a5632799f0228ffb9f4cdd2e7df7c258a1068d6e66cedf9e0fec55e8cd9d1921"
+    },
+    {
+      "sequence": 5,
+      "frame_id": 47,
+      "stamp": 10.7,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-005.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "0f25a3b06e00381331af1d6b5458771a486638f063c232e0405ae0e711778a56"
+    },
+    {
+      "sequence": 6,
+      "frame_id": 97,
+      "stamp": 21.2,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-006.jpg",
+      "annotated_topic_frame_seen": false,
+      "image_exists": true,
+      "sha256": "d289cb16c88b3f10d4060de8712f21c2bfce3dab5e5dd4be9eaa69575c4842ca"
+    },
+    {
+      "sequence": 7,
+      "frame_id": 97,
+      "stamp": 21.2,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-007.jpg",
+      "annotated_topic_frame_seen": false,
+      "image_exists": true,
+      "sha256": "d289cb16c88b3f10d4060de8712f21c2bfce3dab5e5dd4be9eaa69575c4842ca"
+    },
+    {
+      "sequence": 8,
+      "frame_id": 119,
+      "stamp": 25.7,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-008.jpg",
+      "annotated_topic_frame_seen": false,
+      "image_exists": true,
+      "sha256": "82e81ae218e4646529d7c5a1ee087fbe32c812048dea95af2cfb6e22b9a30920"
+    },
+    {
+      "sequence": 9,
+      "frame_id": 171,
+      "stamp": 36.3,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-009.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "fc9d8f40ba383933e89a1373dc01c2e32b71736268218cf7a332976763f00c78"
+    },
+    {
+      "sequence": 10,
+      "frame_id": 183,
+      "stamp": 38.7,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-010.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "38dc4f3a6a817ae839fa00c4cd1107a6f743a7084ff7d641140b258dfd53a9f6"
+    },
+    {
+      "sequence": 11,
+      "frame_id": 202,
+      "stamp": 42.7,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-011.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "466e25581c3d2a7c44f37b98ce909ed5fd6b022cba5f27192b86e6c964f8def7"
+    },
+    {
+      "sequence": 12,
+      "frame_id": 255,
+      "stamp": 53.7,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-012.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "327da88d02ca6267804df9138c83c8aa63f9beb3df0b980ec973d60df0d99e9d"
+    },
+    {
+      "sequence": 13,
+      "frame_id": 276,
+      "stamp": 57.9,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-013.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "ba3329687cde28e38dafda71b016511ec587a32f20d407e91a40c74f047fb9f5"
+    },
+    {
+      "sequence": 14,
+      "frame_id": 299,
+      "stamp": 62.9,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-014.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "e82dbe17b0849784c7e58226247e77b15e673d5743910a49c8ec3f50cfb2b448"
+    },
+    {
+      "sequence": 15,
+      "frame_id": 299,
+      "stamp": 62.9,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-015.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "e82dbe17b0849784c7e58226247e77b15e673d5743910a49c8ec3f50cfb2b448"
+    },
+    {
+      "sequence": 16,
+      "frame_id": 327,
+      "stamp": 68.6,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-016.jpg",
+      "annotated_topic_frame_seen": false,
+      "image_exists": true,
+      "sha256": "aba04ee9efbdab5c14ed70f35295376832a777570971d4b2c1e3753a22b883e6"
+    },
+    {
+      "sequence": 17,
+      "frame_id": 387,
+      "stamp": 81.9,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-017.jpg",
+      "annotated_topic_frame_seen": false,
+      "image_exists": true,
+      "sha256": "6436edc61e325dafec5322d5f7a1e379fc85e27bea5fe48d6e2a1ce40dd60b22"
+    },
+    {
+      "sequence": 18,
+      "frame_id": 401,
+      "stamp": 84.6,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-018.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "30bdfd6c2c2b9600c0424215343fb4443cb879793c5cce47715373e8f2b22f76"
+    },
+    {
+      "sequence": 19,
+      "frame_id": 421,
+      "stamp": 89.1,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-019.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "5eda108733b3f6fb87971db498a30e327853e2d1f801e405113d280520c7f192"
+    },
+    {
+      "sequence": 20,
+      "frame_id": 448,
+      "stamp": 94.7,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-020.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "822e2b62eedea445541a22585b4ac3a473b6fe7cff2cf150eb0d6a37cc32c974"
+    },
+    {
+      "sequence": 21,
+      "frame_id": 520,
+      "stamp": 109.7,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-021.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "d81946f4eb794bff2f4b4a20d852f17278c2b409bc81c7246c8579fb50f1f631"
+    },
+    {
+      "sequence": 22,
+      "frame_id": 534,
+      "stamp": 112.6,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-022.jpg",
+      "annotated_topic_frame_seen": false,
+      "image_exists": true,
+      "sha256": "62e833d01907c2c57304c5db104b6b37f77b2d5043d0022c8223f888e3d2e10a"
+    },
+    {
+      "sequence": 23,
+      "frame_id": 582,
+      "stamp": 122.7,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-023.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "cb0b5c6b0a3c36bef1e2f8f5cbbfa488eacb2a32bf44b73ad014351f89b47938"
+    },
+    {
+      "sequence": 24,
+      "frame_id": 722,
+      "stamp": 151.5,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-024.jpg",
+      "annotated_topic_frame_seen": false,
+      "image_exists": true,
+      "sha256": "e05a5f4ae763f023b7d007cbcf392fb19a08fa63d5b30e39eff3165507a4a14a"
+    },
+    {
+      "sequence": 25,
+      "frame_id": 773,
+      "stamp": 162.1,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-025.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "891c666661a670026fb716ae47201389f3a7e7cf7a4e72cf2e9602451e04b9d2"
+    },
+    {
+      "sequence": 26,
+      "frame_id": 826,
+      "stamp": 173.5,
+      "same_frame": true,
+      "matching_box_name_confidence": true,
+      "image": "5f36aef7a67f-lap-001-event-026.jpg",
+      "annotated_topic_frame_seen": true,
+      "image_exists": true,
+      "sha256": "44faa588956d9ee026a4218867bcad031840817481891673ea580b9c6913cb3f"
+    }
+  ],
+  "faults": [],
+  "status_changes": [
+    {
+      "wall_s": 0.2603616589994999,
+      "status": "WAIT_FRESH_LOCALIZATION"
+    },
+    {
+      "wall_s": 0.6552954279995902,
+      "status": "PLAN top_approach"
+    },
+    {
+      "wall_s": 0.6556209700002,
+      "status": "GO top_approach (1/17)"
+    },
+    {
+      "wall_s": 5.007969874999617,
+      "status": "GUARD signal changed or became stale before stop line"
+    },
+    {
+      "wall_s": 5.107833670000218,
+      "status": "REACHED top_approach (1/17) estimated=(0.570,1.700)"
+    },
+    {
+      "wall_s": 5.207838416999948,
+      "status": "STOP top_stop: light=red"
+    },
+    {
+      "wall_s": 10.807888571999683,
+      "status": "STOP top_stop: light=unknown"
+    },
+    {
+      "wall_s": 11.207853609999802,
+      "status": "STOP top_stop: light=green"
+    },
+    {
+      "wall_s": 12.207755172999896,
+      "status": "REACHED top_stop (2/17) estimated=(0.565,1.700)"
+    },
+    {
+      "wall_s": 12.30830898899967,
+      "status": "PLAN observe_A_north"
+    },
+    {
+      "wall_s": 12.408513745000164,
+      "status": "GO observe_A_north (3/17)"
+    },
+    {
+      "wall_s": 21.107972691000214,
+      "status": "OBSERVE A_north"
+    },
+    {
+      "wall_s": 26.722216540999398,
+      "status": "REACHED observe_A_north (3/17) estimated=(-0.695,1.700)"
+    },
+    {
+      "wall_s": 26.808275712999603,
+      "status": "PLAN top_west"
+    },
+    {
+      "wall_s": 26.90806901199994,
+      "status": "GO top_west (4/17)"
+    },
+    {
+      "wall_s": 34.007761664999634,
+      "status": "REACHED top_west (4/17) estimated=(-1.665,1.700)"
+    },
+    {
+      "wall_s": 34.10877433099995,
+      "status": "PLAN observe_A_west"
+    },
+    {
+      "wall_s": 34.208144626999456,
+      "status": "GO observe_A_west (5/17)"
+    },
+    {
+      "wall_s": 41.7079641549999,
+      "status": "ALIGN_CAMERA observe_A_west"
+    },
+    {
+      "wall_s": 42.808017559999826,
+      "status": "OBSERVE A_west"
+    },
+    {
+      "wall_s": 48.32180475899986,
+      "status": "REACHED observe_A_west (5/17) estimated=(-1.694,1.073)"
+    },
+    {
+      "wall_s": 48.40824628599967,
+      "status": "PLAN left_south"
+    },
+    {
+      "wall_s": 48.50816947899966,
+      "status": "GO left_south (6/17)"
+    },
+    {
+      "wall_s": 53.10779540800013,
+      "status": "REACHED left_south (6/17) estimated=(-1.698,0.537)"
+    },
+    {
+      "wall_s": 53.20811493099973,
+      "status": "PLAN observe_middle"
+    },
+    {
+      "wall_s": 53.30816762699942,
+      "status": "GO observe_middle (7/17)"
+    },
+    {
+      "wall_s": 62.00796196099964,
+      "status": "ALIGN_CAMERA observe_middle"
+    },
+    {
+      "wall_s": 63.20788338500006,
+      "status": "OBSERVE A_south"
+    },
+    {
+      "wall_s": 68.90779489599936,
+      "status": "OBSERVE B_north"
+    },
+    {
+      "wall_s": 74.42298061600013,
+      "status": "REACHED observe_middle (7/17) estimated=(-0.941,0.500)"
+    },
+    {
+      "wall_s": 74.50806293699952,
+      "status": "PLAN middle_east"
+    },
+    {
+      "wall_s": 74.60855525999978,
+      "status": "GO middle_east (8/17)"
+    },
+    {
+      "wall_s": 80.80780041700018,
+      "status": "REACHED middle_east (8/17) estimated=(-0.137,0.500)"
+    },
+    {
+      "wall_s": 80.90832651799974,
+      "status": "PLAN observe_B_east"
+    },
+    {
+      "wall_s": 81.00813837900023,
+      "status": "GO observe_B_east (9/17)"
+    },
+    {
+      "wall_s": 88.50810334800008,
+      "status": "ALIGN_CAMERA observe_B_east"
+    },
+    {
+      "wall_s": 89.70782134799992,
+      "status": "OBSERVE B_east"
+    },
+    {
+      "wall_s": 95.22117470099965,
+      "status": "REACHED observe_B_east (9/17) estimated=(-0.107,-0.066)"
+    },
+    {
+      "wall_s": 95.30834644599963,
+      "status": "PLAN lower_approach"
+    },
+    {
+      "wall_s": 95.40814543399938,
+      "status": "GO lower_approach (10/17)"
+    },
+    {
+      "wall_s": 97.90779635599938,
+      "status": "REACHED lower_approach (10/17) estimated=(-0.098,-0.246)"
+    },
+    {
+      "wall_s": 98.007829958,
+      "status": "STOP lower_stop: light=green"
+    },
+    {
+      "wall_s": 110.80799691899938,
+      "status": "STOP lower_stop: light=unknown"
+    },
+    {
+      "wall_s": 111.20797633299935,
+      "status": "STOP lower_stop: light=yellow"
+    },
+    {
+      "wall_s": 113.90800671699981,
+      "status": "STOP lower_stop: light=unknown"
+    },
+    {
+      "wall_s": 114.30785119899974,
+      "status": "STOP lower_stop: light=red"
+    },
+    {
+      "wall_s": 124.00783978399977,
+      "status": "STOP lower_stop: light=unknown"
+    },
+    {
+      "wall_s": 124.40783951799949,
+      "status": "STOP lower_stop: light=green"
+    },
+    {
+      "wall_s": 125.20821045299999,
+      "status": "REACHED lower_stop (11/17) estimated=(-0.099,-0.262)"
+    },
+    {
+      "wall_s": 125.30821520100017,
+      "status": "PLAN lower_south"
+    },
+    {
+      "wall_s": 125.40829206599938,
+      "status": "GO lower_south (12/17)"
+    },
+    {
+      "wall_s": 135.40811099199982,
+      "status": "REACHED lower_south (12/17) estimated=(-0.100,-1.783)"
+    },
+    {
+      "wall_s": 135.50842482000007,
+      "status": "PLAN bottom_east"
+    },
+    {
+      "wall_s": 135.60868948499956,
+      "status": "GO bottom_east (13/17)"
+    },
+    {
+      "wall_s": 147.00801571400007,
+      "status": "REACHED bottom_east (13/17) estimated=(1.071,-1.802)"
+    },
+    {
+      "wall_s": 147.10832850099996,
+      "status": "PLAN observe_plate_1"
+    },
+    {
+      "wall_s": 147.20814072399935,
+      "status": "GO observe_plate_1 (14/17)"
+    },
+    {
+      "wall_s": 151.4080732579996,
+      "status": "ALIGN_CAMERA observe_plate_1"
+    },
+    {
+      "wall_s": 151.5081098089995,
+      "status": "OBSERVE plate_1"
+    },
+    {
+      "wall_s": 157.11894728799962,
+      "status": "REACHED observe_plate_1 (14/17) estimated=(1.101,-1.736)"
+    },
+    {
+      "wall_s": 157.20837538900014,
+      "status": "PLAN observe_plate_2"
+    },
+    {
+      "wall_s": 157.30824252899947,
+      "status": "GO observe_plate_2 (15/17)"
+    },
+    {
+      "wall_s": 162.20813040199937,
+      "status": "ALIGN_CAMERA observe_plate_2"
+    },
+    {
+      "wall_s": 162.40810481799963,
+      "status": "OBSERVE plate_2"
+    },
+    {
+      "wall_s": 168.02098378400024,
+      "status": "REACHED observe_plate_2 (15/17) estimated=(1.101,-1.138)"
+    },
+    {
+      "wall_s": 168.108317317,
+      "status": "PLAN observe_plate_3"
+    },
+    {
+      "wall_s": 168.2082056899999,
+      "status": "GO observe_plate_3 (16/17)"
+    },
+    {
+      "wall_s": 173.30810373999975,
+      "status": "ALIGN_CAMERA observe_plate_3"
+    },
+    {
+      "wall_s": 174.00797270899966,
+      "status": "OBSERVE plate_3"
+    },
+    {
+      "wall_s": 179.62087574999987,
+      "status": "REACHED observe_plate_3 (16/17) estimated=(1.106,-0.538)"
+    },
+    {
+      "wall_s": 179.70832835700003,
+      "status": "PLAN right_north"
+    },
+    {
+      "wall_s": 179.80842381799994,
+      "status": "GO right_north (17/17)"
+    },
+    {
+      "wall_s": 193.80769944299936,
+      "status": "REACHED right_north (17/17) estimated=(1.100,1.666)"
+    },
+    {
+      "wall_s": 193.90774615400005,
+      "status": "COMPLETE single lap; travelled=12.86 m"
+    }
+  ],
+  "perception": {
+    "run_id": "5f36aef7a67f",
+    "lap_id": 1,
+    "lap_active": false,
+    "frame_id": 926,
+    "stamp": 195.5,
+    "status": "COMPLETE single lap; travelled=12.86 m",
+    "view": "transit",
+    "traffic_light": "unknown",
+    "counts": {
+      "residents": 8,
+      "visitors": 2,
+      "total": 10
+    },
+    "people": {
+      "resident_03": {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 1,
+        "frame_id": 3,
+        "stamp": 1.9,
+        "category": "resident",
+        "content": "resident_03",
+        "confidence": 0.6286,
+        "bbox": [
+          369,
+          461,
+          385,
+          522
+        ],
+        "image": "5f36aef7a67f-lap-001-event-001.jpg"
+      },
+      "visitor_02": {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 2,
+        "frame_id": 3,
+        "stamp": 1.9,
+        "category": "visitor",
+        "content": "visitor_02",
+        "confidence": 0.7542,
+        "bbox": [
+          6,
+          453,
+          32,
+          506
+        ],
+        "image": "5f36aef7a67f-lap-001-event-002.jpg"
+      },
+      "resident_05": {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 3,
+        "frame_id": 3,
+        "stamp": 1.9,
+        "category": "resident",
+        "content": "resident_05",
+        "confidence": 0.6318,
+        "bbox": [
+          85,
+          451,
+          101,
+          497
+        ],
+        "image": "5f36aef7a67f-lap-001-event-003.jpg"
+      },
+      "resident_07": {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 6,
+        "frame_id": 97,
+        "stamp": 21.2,
+        "category": "resident",
+        "content": "resident_07",
+        "confidence": 0.8847,
+        "bbox": [
+          635,
+          455,
+          655,
+          504
+        ],
+        "image": "5f36aef7a67f-lap-001-event-006.jpg"
+      },
+      "resident_08": {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 7,
+        "frame_id": 97,
+        "stamp": 21.2,
+        "category": "resident",
+        "content": "resident_08",
+        "confidence": 0.8329,
+        "bbox": [
+          567,
+          458,
+          589,
+          511
+        ],
+        "image": "5f36aef7a67f-lap-001-event-007.jpg"
+      },
+      "visitor_01": {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 11,
+        "frame_id": 202,
+        "stamp": 42.7,
+        "category": "visitor",
+        "content": "visitor_01",
+        "confidence": 0.9564,
+        "bbox": [
+          664,
+          537,
+          720,
+          692
+        ],
+        "image": "5f36aef7a67f-lap-001-event-011.jpg"
+      },
+      "resident_01": {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 13,
+        "frame_id": 276,
+        "stamp": 57.9,
+        "category": "resident",
+        "content": "resident_01",
+        "confidence": 0.7818,
+        "bbox": [
+          0,
+          521,
+          56,
+          733
+        ],
+        "image": "5f36aef7a67f-lap-001-event-013.jpg"
+      },
+      "resident_04": {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 14,
+        "frame_id": 299,
+        "stamp": 62.9,
+        "category": "resident",
+        "content": "resident_04",
+        "confidence": 0.9729,
+        "bbox": [
+          1017,
+          531,
+          1101,
+          682
+        ],
+        "image": "5f36aef7a67f-lap-001-event-014.jpg"
+      },
+      "resident_02": {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 15,
+        "frame_id": 299,
+        "stamp": 62.9,
+        "category": "resident",
+        "content": "resident_02",
+        "confidence": 0.9637,
+        "bbox": [
+          647,
+          538,
+          707,
+          694
+        ],
+        "image": "5f36aef7a67f-lap-001-event-015.jpg"
+      },
+      "resident_06": {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 19,
+        "frame_id": 421,
+        "stamp": 89.1,
+        "category": "resident",
+        "content": "resident_06",
+        "confidence": 0.9448,
+        "bbox": [
+          586,
+          507,
+          624,
+          628
+        ],
+        "image": "5f36aef7a67f-lap-001-event-019.jpg"
+      }
+    },
+    "plates": {
+      "苏AB8Q62": {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 24,
+        "frame_id": 722,
+        "stamp": 151.5,
+        "category": "plate",
+        "content": "苏AB8Q62",
+        "confidence": 0.994,
+        "bbox": [
+          524,
+          610,
+          619,
+          640
+        ],
+        "image": "5f36aef7a67f-lap-001-event-024.jpg"
+      },
+      "鄂D7B5Q2": {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 25,
+        "frame_id": 773,
+        "stamp": 162.1,
+        "category": "plate",
+        "content": "鄂D7B5Q2",
+        "confidence": 0.9476,
+        "bbox": [
+          543,
+          612,
+          638,
+          642
+        ],
+        "image": "5f36aef7a67f-lap-001-event-025.jpg"
+      },
+      "苏APL12A": {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 26,
+        "frame_id": 826,
+        "stamp": 173.5,
+        "category": "plate",
+        "content": "苏APL12A",
+        "confidence": 0.9898,
+        "bbox": [
+          544,
+          613,
+          639,
+          643
+        ],
+        "image": "5f36aef7a67f-lap-001-event-026.jpg"
+      }
+    },
+    "detections": [],
+    "overlay_labels": [],
+    "events": [
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 1,
+        "frame_id": 3,
+        "stamp": 1.9,
+        "category": "resident",
+        "content": "resident_03",
+        "confidence": 0.6286,
+        "bbox": [
+          369,
+          461,
+          385,
+          522
+        ],
+        "image": "5f36aef7a67f-lap-001-event-001.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 2,
+        "frame_id": 3,
+        "stamp": 1.9,
+        "category": "visitor",
+        "content": "visitor_02",
+        "confidence": 0.7542,
+        "bbox": [
+          6,
+          453,
+          32,
+          506
+        ],
+        "image": "5f36aef7a67f-lap-001-event-002.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 3,
+        "frame_id": 3,
+        "stamp": 1.9,
+        "category": "resident",
+        "content": "resident_05",
+        "confidence": 0.6318,
+        "bbox": [
+          85,
+          451,
+          101,
+          497
+        ],
+        "image": "5f36aef7a67f-lap-001-event-003.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 4,
+        "frame_id": 3,
+        "stamp": 1.9,
+        "category": "traffic_light",
+        "content": "red",
+        "confidence": 0.91,
+        "bbox": [
+          718,
+          299,
+          788,
+          370
+        ],
+        "image": "5f36aef7a67f-lap-001-event-004.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 5,
+        "frame_id": 47,
+        "stamp": 10.7,
+        "category": "traffic_light",
+        "content": "green",
+        "confidence": 0.8803,
+        "bbox": [
+          436,
+          256,
+          532,
+          353
+        ],
+        "image": "5f36aef7a67f-lap-001-event-005.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 6,
+        "frame_id": 97,
+        "stamp": 21.2,
+        "category": "resident",
+        "content": "resident_07",
+        "confidence": 0.8847,
+        "bbox": [
+          635,
+          455,
+          655,
+          504
+        ],
+        "image": "5f36aef7a67f-lap-001-event-006.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 7,
+        "frame_id": 97,
+        "stamp": 21.2,
+        "category": "resident",
+        "content": "resident_08",
+        "confidence": 0.8329,
+        "bbox": [
+          567,
+          458,
+          589,
+          511
+        ],
+        "image": "5f36aef7a67f-lap-001-event-007.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 8,
+        "frame_id": 119,
+        "stamp": 25.7,
+        "category": "traffic_light",
+        "content": "yellow",
+        "confidence": 0.7031,
+        "bbox": [
+          517,
+          378,
+          540,
+          401
+        ],
+        "image": "5f36aef7a67f-lap-001-event-008.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 9,
+        "frame_id": 171,
+        "stamp": 36.3,
+        "category": "traffic_light",
+        "content": "red",
+        "confidence": 0.8233,
+        "bbox": [
+          200,
+          375,
+          226,
+          400
+        ],
+        "image": "5f36aef7a67f-lap-001-event-009.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 10,
+        "frame_id": 183,
+        "stamp": 38.7,
+        "category": "traffic_light",
+        "content": "green",
+        "confidence": 0.9485,
+        "bbox": [
+          325,
+          371,
+          352,
+          398
+        ],
+        "image": "5f36aef7a67f-lap-001-event-010.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 11,
+        "frame_id": 202,
+        "stamp": 42.7,
+        "category": "visitor",
+        "content": "visitor_01",
+        "confidence": 0.9564,
+        "bbox": [
+          664,
+          537,
+          720,
+          692
+        ],
+        "image": "5f36aef7a67f-lap-001-event-011.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 12,
+        "frame_id": 255,
+        "stamp": 53.7,
+        "category": "traffic_light",
+        "content": "yellow",
+        "confidence": 0.3658,
+        "bbox": [
+          497,
+          366,
+          521,
+          396
+        ],
+        "image": "5f36aef7a67f-lap-001-event-012.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 13,
+        "frame_id": 276,
+        "stamp": 57.9,
+        "category": "resident",
+        "content": "resident_01",
+        "confidence": 0.7818,
+        "bbox": [
+          0,
+          521,
+          56,
+          733
+        ],
+        "image": "5f36aef7a67f-lap-001-event-013.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 14,
+        "frame_id": 299,
+        "stamp": 62.9,
+        "category": "resident",
+        "content": "resident_04",
+        "confidence": 0.9729,
+        "bbox": [
+          1017,
+          531,
+          1101,
+          682
+        ],
+        "image": "5f36aef7a67f-lap-001-event-014.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 15,
+        "frame_id": 299,
+        "stamp": 62.9,
+        "category": "resident",
+        "content": "resident_02",
+        "confidence": 0.9637,
+        "bbox": [
+          647,
+          538,
+          707,
+          694
+        ],
+        "image": "5f36aef7a67f-lap-001-event-015.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 16,
+        "frame_id": 327,
+        "stamp": 68.6,
+        "category": "traffic_light",
+        "content": "green",
+        "confidence": 0.9122,
+        "bbox": [
+          287,
+          349,
+          331,
+          390
+        ],
+        "image": "5f36aef7a67f-lap-001-event-016.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 17,
+        "frame_id": 387,
+        "stamp": 81.9,
+        "category": "traffic_light",
+        "content": "yellow",
+        "confidence": 0.6587,
+        "bbox": [
+          976,
+          344,
+          1026,
+          387
+        ],
+        "image": "5f36aef7a67f-lap-001-event-017.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 18,
+        "frame_id": 401,
+        "stamp": 84.6,
+        "category": "traffic_light",
+        "content": "red",
+        "confidence": 0.8575,
+        "bbox": [
+          550,
+          342,
+          594,
+          386
+        ],
+        "image": "5f36aef7a67f-lap-001-event-018.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 19,
+        "frame_id": 421,
+        "stamp": 89.1,
+        "category": "resident",
+        "content": "resident_06",
+        "confidence": 0.9448,
+        "bbox": [
+          586,
+          507,
+          624,
+          628
+        ],
+        "image": "5f36aef7a67f-lap-001-event-019.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 20,
+        "frame_id": 448,
+        "stamp": 94.7,
+        "category": "traffic_light",
+        "content": "green",
+        "confidence": 0.9208,
+        "bbox": [
+          761,
+          325,
+          816,
+          379
+        ],
+        "image": "5f36aef7a67f-lap-001-event-020.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 21,
+        "frame_id": 520,
+        "stamp": 109.7,
+        "category": "traffic_light",
+        "content": "yellow",
+        "confidence": 0.9138,
+        "bbox": [
+          556,
+          315,
+          616,
+          376
+        ],
+        "image": "5f36aef7a67f-lap-001-event-021.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 22,
+        "frame_id": 534,
+        "stamp": 112.6,
+        "category": "traffic_light",
+        "content": "red",
+        "confidence": 0.9194,
+        "bbox": [
+          457,
+          314,
+          518,
+          375
+        ],
+        "image": "5f36aef7a67f-lap-001-event-022.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 23,
+        "frame_id": 582,
+        "stamp": 122.7,
+        "category": "traffic_light",
+        "content": "green",
+        "confidence": 0.8836,
+        "bbox": [
+          655,
+          317,
+          713,
+          376
+        ],
+        "image": "5f36aef7a67f-lap-001-event-023.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 24,
+        "frame_id": 722,
+        "stamp": 151.5,
+        "category": "plate",
+        "content": "苏AB8Q62",
+        "confidence": 0.994,
+        "bbox": [
+          524,
+          610,
+          619,
+          640
+        ],
+        "image": "5f36aef7a67f-lap-001-event-024.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 25,
+        "frame_id": 773,
+        "stamp": 162.1,
+        "category": "plate",
+        "content": "鄂D7B5Q2",
+        "confidence": 0.9476,
+        "bbox": [
+          543,
+          612,
+          638,
+          642
+        ],
+        "image": "5f36aef7a67f-lap-001-event-025.jpg"
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "sequence": 26,
+        "frame_id": 826,
+        "stamp": 173.5,
+        "category": "plate",
+        "content": "苏APL12A",
+        "confidence": 0.9898,
+        "bbox": [
+          544,
+          613,
+          639,
+          643
+        ],
+        "image": "5f36aef7a67f-lap-001-event-026.jpg"
+      }
+    ],
+    "observation_feedback": {
+      "view": "transit",
+      "ready": false,
+      "person_ids": [],
+      "plate_texts": [],
+      "pending_person_ids": [],
+      "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+    },
+    "observation_outcomes": [
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "view": "A_north",
+        "route_point": "observe_A_north",
+        "pan_rad": 1.5707963267948966,
+        "pose": [
+          -0.6949843050333443,
+          1.6999999754361872,
+          -3.1285934524057994
+        ],
+        "attempt": 0,
+        "confirmed": true,
+        "elapsed_s": 5.6,
+        "feedback": {
+          "view": "A_north",
+          "ready": true,
+          "person_ids": [
+            "resident_03",
+            "resident_07",
+            "resident_05",
+            "resident_08",
+            "visitor_02"
+          ],
+          "plate_texts": [],
+          "pending_person_ids": [],
+          "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+        }
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "view": "A_west",
+        "route_point": "observe_A_west",
+        "pan_rad": 1.5707963267948966,
+        "pose": [
+          -1.6940709705742978,
+          1.0725636658634916,
+          -1.5930552702721434
+        ],
+        "attempt": 0,
+        "confirmed": true,
+        "elapsed_s": 5.5,
+        "feedback": {
+          "view": "A_west",
+          "ready": true,
+          "person_ids": [
+            "visitor_01",
+            "resident_08"
+          ],
+          "plate_texts": [],
+          "pending_person_ids": [],
+          "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+        }
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "view": "A_south",
+        "route_point": "observe_middle",
+        "pan_rad": 1.5707963267948966,
+        "pose": [
+          -0.9480151145964063,
+          0.5005070375905359,
+          -0.020196981383208794
+        ],
+        "attempt": 0,
+        "confirmed": true,
+        "elapsed_s": 5.6,
+        "feedback": {
+          "view": "A_south",
+          "ready": true,
+          "person_ids": [
+            "resident_04",
+            "resident_02",
+            "resident_01"
+          ],
+          "plate_texts": [],
+          "pending_person_ids": [],
+          "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+        }
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "view": "B_north",
+        "route_point": "observe_middle",
+        "pan_rad": -1.5707963267948966,
+        "pose": [
+          -0.9411901145964059,
+          0.49953203759053594,
+          -0.04013031471624466
+        ],
+        "attempt": 0,
+        "confirmed": true,
+        "elapsed_s": 5.5,
+        "feedback": {
+          "view": "B_north",
+          "ready": true,
+          "person_ids": [
+            "resident_07",
+            "resident_08",
+            "resident_05",
+            "visitor_02"
+          ],
+          "plate_texts": [],
+          "pending_person_ids": [],
+          "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+        }
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "view": "B_east",
+        "route_point": "observe_B_east",
+        "pan_rad": -1.5707963267948966,
+        "pose": [
+          -0.10683898622314515,
+          -0.06607063668515518,
+          -1.5399863789961987
+        ],
+        "attempt": 0,
+        "confirmed": true,
+        "elapsed_s": 5.5,
+        "feedback": {
+          "view": "B_east",
+          "ready": true,
+          "person_ids": [
+            "resident_06",
+            "resident_01"
+          ],
+          "plate_texts": [],
+          "pending_person_ids": [],
+          "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+        }
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "view": "plate_1",
+        "route_point": "observe_plate_1",
+        "pan_rad": -1.5707963267948966,
+        "pose": [
+          1.101398897917741,
+          -1.7357847230785408,
+          1.5570453324596185
+        ],
+        "attempt": 0,
+        "confirmed": true,
+        "elapsed_s": 5.6,
+        "feedback": {
+          "view": "plate_1",
+          "ready": true,
+          "person_ids": [],
+          "plate_texts": [
+            "苏AB8Q62"
+          ],
+          "pending_person_ids": [],
+          "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+        }
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "view": "plate_2",
+        "route_point": "observe_plate_2",
+        "pan_rad": -1.5707963267948966,
+        "pose": [
+          1.1012035539864604,
+          -1.1379171758309445,
+          1.5976727855835045
+        ],
+        "attempt": 0,
+        "confirmed": true,
+        "elapsed_s": 5.6,
+        "feedback": {
+          "view": "plate_2",
+          "ready": true,
+          "person_ids": [],
+          "plate_texts": [
+            "鄂D7B5Q2"
+          ],
+          "pending_person_ids": [],
+          "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+        }
+      },
+      {
+        "run_id": "5f36aef7a67f",
+        "lap_id": 1,
+        "view": "plate_3",
+        "route_point": "observe_plate_3",
+        "pan_rad": -1.5707963267948966,
+        "pose": [
+          1.1064426129866158,
+          -0.5383774362281255,
+          1.600238515119912
+        ],
+        "attempt": 0,
+        "confirmed": true,
+        "elapsed_s": 5.6,
+        "feedback": {
+          "view": "plate_3",
+          "ready": true,
+          "person_ids": [],
+          "plate_texts": [
+            "苏APL12A"
+          ],
+          "pending_person_ids": [],
+          "criterion": "Repeated visual evidence in this view; does not prove every unseen/occluded person was counted"
+        }
+      }
+    ],
+    "unconfirmed_views": [],
+    "inference_and_ocr_ms": 17.0
+  },
+  "raw_image_topic_event_frames_seen": 19,
+  "image_correspondence_method": "Rendered JPEG frame number independently read with OCR; best-effort raw topic reception remains a diagnostic, not a guarantee of delivery",
+  "image_report": "lap-001-images.json",
+  "raw_evidence_note": "Full sampled pose/latency records in local engineering package; event JPEGs only in local log/"
+}

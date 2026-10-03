@@ -1,0 +1,41 @@
+{
+  "source": "Known supplied field geometry: drivable corridors plus physical gantry collision legs",
+  "posts": [
+    {
+      "name": "light_top/leg_-1_collision",
+      "x": -0.3,
+      "y": 1.3925,
+      "yaw": 0.0,
+      "width": 0.025,
+      "depth": 0.025
+    },
+    {
+      "name": "light_top/leg_1_collision",
+      "x": -0.3,
+      "y": 2.0075,
+      "yaw": 0.0,
+      "width": 0.025,
+      "depth": 0.025
+    },
+    {
+      "name": "light_bottom/leg_-1_collision",
+      "x": 0.2075,
+      "y": -1.62,
+      "yaw": 1.5707963267948966,
+      "width": 0.025,
+      "depth": 0.025
+    },
+    {
+      "name": "light_bottom/leg_1_collision",
+      "x": -0.4075,
+      "y": -1.62,
+      "yaw": 1.5707963267948966,
+      "width": 0.025,
+      "depth": 0.025
+    }
+  ],
+  "added_occupied_road_cells": 6,
+  "resolution": 0.02,
+  "physical_world_modified": false,
+  "overhead_panels": "Not occupied at robot clearance height"
+}

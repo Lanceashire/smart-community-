@@ -1,0 +1,95 @@
+[
+  {
+    "name": "attempt-01-clock-mismatch",
+    "included_in_final_acceptance": false,
+    "failure.json": {
+      "error": "FAULT commands present but chassis has not physically moved",
+      "max_fresh_position_error_m": 1.3322676295501878e-15
+    },
+    "completed_laps": []
+  },
+  {
+    "name": "attempt-02-commanded-pan",
+    "included_in_final_acceptance": false,
+    "failure.json": {
+      "error": "Unable to convert call argument '0' to Python object (#define PYBIND11_DETAILED_ERROR_MESSAGES or compile in debug mode for details)",
+      "max_fresh_position_error_m": 0.04377266951739003
+    },
+    "completed_laps": [
+      {
+        "lap_id": 1,
+        "passed": true,
+        "failed_checks": []
+      }
+    ]
+  },
+  {
+    "name": "attempt-03-corner-stop",
+    "included_in_final_acceptance": false,
+    "failure.json": {
+      "error": "Lap timed out: BLOCKED_TIMEOUT before bottom_east; waiting for permitted route to clear",
+      "max_fresh_position_error_m": 0.026715625724841967
+    },
+    "completed_laps": []
+  },
+  {
+    "name": "attempt-04-paused-world",
+    "included_in_final_acceptance": false,
+    "interruption.json": {
+      "reason": "Gazebo paused at simulation time 94.137; manually resumed after detection. Wall-time audit expired near final waypoint. Excluded from performance comparison.",
+      "corner_recovery": "Passed bottom_east and all three plate observation points after resuming."
+    },
+    "failure.json": {
+      "error": "Lap timed out: GO right_north (17/17)",
+      "max_fresh_position_error_m": 0.02944566845675263
+    },
+    "completed_laps": []
+  },
+  {
+    "name": "attempt-05-interrupted",
+    "included_in_final_acceptance": false,
+    "interruption.json": {
+      "reason": "Stopped for isolated headless rerun after guard stop and large discrepancy in live true/estimated pose. Root cause not established; this is not a passing run.",
+      "diagnostic_truth": [
+        0.1770533461,
+        -1.4772362147,
+        -2.0879185285
+      ],
+      "diagnostic_estimate": [
+        1.3440769441,
+        -1.8997903455,
+        1.0319772975
+      ]
+    },
+    "completed_laps": []
+  },
+  {
+    "name": "attempt-06-pre-gating",
+    "included_in_final_acceptance": false,
+    "failure.json": {
+      "error": "",
+      "max_fresh_position_error_m": 0.02498950284535149
+    },
+    "completed_laps": []
+  },
+  {
+    "name": "attempt-07-missing-post-map",
+    "included_in_final_acceptance": false,
+    "failure.json": {
+      "error": "Lap timed out: RECOVER_LOCALIZATION wait for fresh road-paint registration",
+      "max_fresh_position_error_m": 1.1168204154077526
+    },
+    "completed_laps": [
+      {
+        "lap_id": 1,
+        "passed": true,
+        "failed_checks": []
+      },
+      {
+        "lap_id": 2,
+        "passed": true,
+        "failed_checks": []
+      }
+    ]
+  }
+]

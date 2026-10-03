@@ -20,7 +20,8 @@ from std_msgs.msg import String, Float64
 from std_srvs.srv import Trigger
 
 from community_demo.bounded_pid import BoundedPID
-from community_demo.road_rules import safe_pose,predict,footprint
+from community_demo.road_rules import safe_pose,predict,footprint,clear_of_posts
+from ament_index_python.packages import get_package_share_directory
 from community_demo.signal_gate import FreshGreenGate
 
 
@@ -42,7 +43,7 @@ ROUTE = [
     ('observe_middle', -.90, .5, False), ('middle_east', -.1, .5, False),
     ('observe_B_east', -.1, -.09, False),
     ('lower_approach', -.1, -.29, False), ('lower_stop', -.1, -.29, True),
-    ('lower_south', -.1, -1.82, False), ('bottom_east', 1.1, -1.82, False),
+    ('lower_south', -.1, -1.82, False), ('bottom_east', 1.1, -1.78, False),
     ('observe_plate_1', 1.1, -1.7, False), ('observe_plate_2', 1.1, -1.1, False),
     ('observe_plate_3', 1.1, -.5, False), ('right_north', 1.1, 1.7, False),
 ]
@@ -78,6 +79,14 @@ class Patrol(Node):
         self.observation_outcomes=[]
         self.create_subscription(String,'/perception/results',self.on_perception,qos_profile_sensor_data)
         self.inspection_pub=self.create_publisher(String,'/inspection/outcome',10)
+        self.static_posts=json.loads((Path(get_package_share_directory('community_demo'))/'maps/planning-obstacles.json').read_text())['posts']
+        self.post_replan_time=-1e9
+        self.localization_quality={}
+        self.quality_update=None
+        self.blocked_since=None
+        self.clear_scans=0
+        self.recovery_count=0
+        self.create_subscription(String,'/localization/quality',self.on_quality,qos_profile_sensor_data)
         self.saved_views=[]
         inspection=Path('log/inspection');inspection.mkdir(parents=True,exist_ok=True)
         (inspection/'views.json').write_text('[]\n')
@@ -110,7 +119,7 @@ class Patrol(Node):
         self.signal_gate = FreshGreenGate()
         self.completed = False
         self.last_log = ''
-        self.speed_pid = BoundedPID(kp=.55, lower=0.0, upper=.18)
+        self.speed_pid = BoundedPID(kp=.55, lower=0.0, upper=.22)
         self.heading_pid = BoundedPID(kp=1.8, lower=-.65, upper=.65)
         self.create_timer(.1, self.tick)
         self.get_logger().info('Single-lap route ready; uses camera / wheel localization with separate laser SLAM mapping and camera-confirmed green.')
@@ -161,7 +170,9 @@ class Patrol(Node):
         event={'run_id':self.run_id,'lap_id':self.lap_id,'view':view,'route_point':name,'pan_rad':angle,'pose':self.pose,'attempt':self.observation_attempt}
         self.observation_pub.publish(String(data=json.dumps(event)))
         self.log_status(('OBSERVE ' if self.observation_attempt==0 else 'RETRY_OBSERVE ')+view)
-        if (now-self.observation_start).nanoseconds<5_500_000_000:return False
+        # Stable per-view evidence permits an early finish; uncertain views retain retries.
+        minimum_s=2.5 if view.startswith('plate_') else 3.0
+        if (now-self.observation_start).nanoseconds<minimum_s*1e9:return False
         if self.camera_frame is None:return False
         if not ready and elapsed<13.5:return False
         outcome={**event,'confirmed':bool(ready),'elapsed_s':round(elapsed,2),'feedback':feedback if fresh else {'reason':'stale or missing perception feedback'}}
@@ -211,6 +222,7 @@ class Patrol(Node):
             response.message = 'Restart requires a live simulation and a completed lap at the start area.'
             return response
         self.index = 0
+        self.blocked_since=None;self.clear_scans=0;self.recovery_count=0
         self.path_index=-1;self.path=None;self.path_pending=False
         self.completed = False
         self.distance_travelled = 0.0
@@ -242,9 +254,15 @@ class Patrol(Node):
         response.message = 'Starting another physical lap; Gazebo window stays open.'
         return response
 
+    def on_quality(self,msg):
+        try:self.localization_quality=json.loads(msg.data)
+        except ValueError:return
+        self.quality_update=self.get_clock().now()
+
     def on_scan(self, msg):
         self.scan = msg
         self.scan_update = self.get_clock().now()
+        self.clear_scans=0 if self.front_blocked() else min(5,self.clear_scans+1)
 
     def on_light(self, msg):
         self.light_state = msg.data
@@ -269,6 +287,13 @@ class Patrol(Node):
                     self.motion_probe=None
         if self.pose and (linear or angular):
             for dt in (.1,.3,.5):
+                if not clear_of_posts(*predict(*self.pose,linear,angular,dt),self.static_posts):
+                    self.command_guard='GUARD physical signal post would intersect footprint'
+                    self.motion_probe=None;linear=angular=0.0
+                    now=self.get_clock().now().nanoseconds/1e9
+                    if now-self.post_replan_time>1.0:
+                        self.post_replan_time=now;self.path_index=-1;self.path=None
+                    break
                 if not safe_pose(*predict(*self.pose,linear,angular,dt)):
                     self.command_guard="GUARD footprint would cross road paint"
                     self.motion_probe=None
@@ -286,12 +311,22 @@ class Patrol(Node):
         msg.data = value
         self.status_pub.publish(msg)
 
+    def path_heading_error(self):
+        if self.path is None or not self.path.poses:return None
+        x,y,yaw=self.pose
+        points=[(p.pose.position.x,p.pose.position.y) for p in self.path.poses]
+        nearest=min(range(len(points)),key=lambda i:math.hypot(points[i][0]-x,points[i][1]-y))
+        lookahead=nearest
+        while lookahead<len(points)-1 and math.hypot(points[lookahead][0]-x,points[lookahead][1]-y)<.14:lookahead+=1
+        gx,gy=points[lookahead]
+        return wrap(math.atan2(gy-y,gx-x)-yaw)
+
     def front_blocked(self):
         if self.scan is None or not self.scan.ranges:
             return False
         step = self.scan.angle_increment
         return any(
-            math.isfinite(r) and .04 < r < .22
+            math.isfinite(r) and .04 < r < .28
             for i, r in enumerate(self.scan.ranges)
             if abs(wrap(self.scan.angle_min + i * step)) < .35
         )
@@ -317,6 +352,12 @@ class Patrol(Node):
             self.publish_command()
             self.motion_probe = None
             self.log_status('WAIT_FRESH_SCAN')
+            return
+        quality_fresh=self.quality_update is not None and (now-self.quality_update).nanoseconds<700_000_000
+        if not quality_fresh or self.localization_quality.get('state')=='lost':
+            self.publish_command();self.motion_probe=None
+            self.pan_pub.publish(Float64(data=0.0))
+            self.log_status('RECOVER_LOCALIZATION wait for fresh road-paint registration')
             return
         name, tx, ty, stop = ROUTE[self.index]
         x, y, yaw = self.pose
@@ -357,25 +398,38 @@ class Patrol(Node):
                     self.publish_lap('completed')
             return
         if self.front_blocked():
+            if self.blocked_since is None:self.blocked_since=now
+            self.motion_probe=None
+            error=self.path_heading_error() if self.path_index==self.index else None
+            nearest=min((r for r in self.scan.ranges if math.isfinite(r) and .04<r),default=0.)
+            # Turning sweeps a 0.158 m radius. Only rotate with >0.19 m all-around clearance.
+            if error is not None and abs(error)>.15 and nearest>.19:
+                self.publish_command(0.,self.heading_pid.calculate(error))
+                self.log_status('RECOVER_OBSTACLE align within lane');return
             self.publish_command()
-            self.motion_probe = None
-            self.log_status(f'BLOCKED before {name}')
+            duration=(now-self.blocked_since).nanoseconds/1e9
+            self.log_status(f'BLOCKED before {name}' if duration<30 else f'BLOCKED_TIMEOUT before {name}; waiting for permitted route to clear')
             return
+        if self.blocked_since is not None:
+            self.publish_command();self.motion_probe=None
+            if self.clear_scans<5:
+                self.log_status('RECOVER_OBSTACLE confirming clear scans');return
+            self.blocked_since=None;self.recovery_count+=1
+            self.path_index=-1;self.path=None
+            self.log_status('RECOVER_OBSTACLE replan permitted route');return
         if self.path_index!=self.index:
             self.path=None;self.request_path(tx,ty);self.publish_command();self.log_status('PLAN '+name);return
         if self.path_pending or self.path is None:
             self.publish_command();self.log_status('WAIT_NAV2_PATH');return
-        points=[(p.pose.position.x,p.pose.position.y) for p in self.path.poses]
-        nearest=min(range(len(points)),key=lambda i:math.hypot(points[i][0]-x,points[i][1]-y))
-        lookahead=nearest
-        while lookahead<len(points)-1 and math.hypot(points[lookahead][0]-x,points[lookahead][1]-y)<.14:lookahead+=1
-        gx,gy=points[lookahead]
-        error = wrap(math.atan2(gy - y, gx - x) - yaw)
+        error = self.path_heading_error()
         angular = self.heading_pid.calculate(error)
         if abs(error) > .35:
             linear = 0.0
         else:
             linear = max(.06, self.speed_pid.calculate(dist))
+            # Extra speed only on straight, well-localized travel, away from stop approaches.
+            if abs(error)>.12 or 'approach' in name or stop or self.localization_quality.get('state')!='tracking':
+                linear=min(linear,.14 if self.localization_quality.get('state')=='degraded' else .18)
         if self.motion_probe is None:
             self.motion_probe = (now, x, y, yaw)
         elif (now - self.motion_probe[0]).nanoseconds > 4_000_000_000:

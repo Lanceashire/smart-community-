@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "method": "Physical Gazebo box added then removed; evaluator reads truth; no robot teleport, velocity command or perception answer injection",
+  "spawn_pose": [
+    1.1,
+    0.75,
+    0.12
+  ],
+  "stopped_robot_pose": [
+    1.1018027027212876,
+    0.4312520325768072
+  ],
+  "settled_max_speed_m_s": 0.0,
+  "clearance_to_box_at_stop_m": 0.13874796742319284,
+  "replanned": true,
+  "resumed_y": 1.0036173869458405,
+  "recovery_wall_s": 3.651244501000292,
+  "events": [
+    {
+      "wall": 3422.709774315,
+      "status": "BLOCKED before right_north"
+    },
+    {
+      "wall": 3426.210769479,
+      "status": "RECOVER_OBSTACLE confirming clear scans"
+    },
+    {
+      "wall": 3426.611141712,
+      "status": "RECOVER_OBSTACLE replan permitted route"
+    }
+  ]
+}

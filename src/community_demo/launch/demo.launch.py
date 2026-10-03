@@ -37,6 +37,7 @@ def generate_launch_description():
             '/model/patrol_bot/ground_truth@nav_msgs/msg/Odometry[gz.msgs.Odometry',
             '/lidar/raw/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked',
             '/camera/image@sensor_msgs/msg/Image[gz.msgs.Image',
+            '/world/community/model/patrol_bot/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model',
             '/model/patrol_bot/camera_pan@std_msgs/msg/Float64]gz.msgs.Double',
             '/model/patrol_bot/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
         ], output='screen',
@@ -45,11 +46,12 @@ def generate_launch_description():
         package='sentry_motion_manager', executable='sentry_motion_manager_node',
         name='motion_manager', output='screen', parameters=[{
             'command_output_enabled': True,
+            'use_sim_time': True,
             'command_frame_id': 'base_link',
             'nav_command_topic': '/cmd_vel_nav',
             'odometry_topic': '/model/patrol_bot/odometry',
             'output_command_topic': '/cmd_vel',
-            'max_linear_x': .20,
+            'max_linear_x': .24,
             'max_angular_z': .70,
             'max_linear_accel': .50,
             'max_angular_accel': 1.2,
@@ -58,7 +60,7 @@ def generate_launch_description():
     )
     vision = Node(package='community_demo', executable='vision', output='screen', condition=IfCondition(LaunchConfiguration('vision')))
     cmd_bridge = Node(package='community_demo', executable='cmd_bridge', output='screen')
-    patrol = Node(package='community_demo', executable='patrol', output='screen', condition=IfCondition(LaunchConfiguration('patrol')))
+    patrol = Node(package='community_demo', executable='patrol', parameters=[{'use_sim_time':True}], output='screen', condition=IfCondition(LaunchConfiguration('patrol')))
     localization = Node(package='community_demo', executable='localization', parameters=[{'use_sim_time':True}], output='screen')
     slam = Node(package='slam_toolbox', executable='async_slam_toolbox_node', name='slam_toolbox', parameters=[os.path.join(get_package_share_directory('community_demo'),'config','slam.yaml')], output='screen')
     signals = Node(package='community_demo', executable='traffic_signals', output='screen', parameters=[{'use_sim_time':True}])

@@ -1,0 +1,119 @@
+{
+  "passed": true,
+  "laps": [
+    {
+      "source": "validation/performance-2026-10-02/baseline/lap-001.json",
+      "passed": true,
+      "mode": "normal autonomous lap",
+      "run_id": "5f36aef7a67f",
+      "lap_id": 1,
+      "completion_sim_s": 191.35,
+      "completion_wall_s": 193.259,
+      "real_time_factor": 0.99,
+      "state_sim_s": {
+        "GO": 105.7,
+        "GUARD": 0.1,
+        "REACHED": 1.35,
+        "STOP": 33.8,
+        "PLAN": 1.35,
+        "OBSERVE": 44.55,
+        "ALIGN_CAMERA": 4.5,
+        "COMPLETE": 3.95
+      },
+      "position_error_max_m": 0.05916019425490734,
+      "position_error_p95_m": 0.030190490296948553,
+      "position_error_rmse_m": 0.01886376199999394,
+      "processing_ms_p50": 20.0,
+      "processing_ms_p95": 23.3,
+      "image_age_sim_s_p95": 0.20000000000000284,
+      "perception_hz_wall": 4.72,
+      "observations": [
+        {
+          "view": "A_north",
+          "elapsed_s": 5.6,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_west",
+          "elapsed_s": 5.5,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_south",
+          "elapsed_s": 5.6,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_north",
+          "elapsed_s": 5.5,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_east",
+          "elapsed_s": 5.5,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_1",
+          "elapsed_s": 5.6,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_2",
+          "elapsed_s": 5.6,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_3",
+          "elapsed_s": 5.6,
+          "confirmed": true,
+          "attempt": 0
+        }
+      ],
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "road_violation_samples": 0
+    }
+  ],
+  "note": "Completion excludes post-finish audit hold. Runtime processing includes detector, OCR and overlay but not every publishing/disk stage. Wall Hz and simulation time are distinct."
+}

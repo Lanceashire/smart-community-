@@ -66,7 +66,7 @@ class Audit(Node):
     def lap(self,m):
         d=json.loads(m.data);key=(d['run_id'],d['lap_id'])
         if key==self.key:return
-        self.key=key;self.current={'run_id':key[0],'lap_id':key[1],'records':[],'reached':[],'observations':[],'crossings':[],'statuses':[],'started_wall':time.monotonic(),'initial_phase':self.phase}
+        self.key=key;self.current={'run_id':key[0],'lap_id':key[1],'records':[],'reached':[],'observations':[],'crossings':[],'statuses':[],'started_wall':time.monotonic(),'initial_phase':self.phase,'performance_frames':[]}
         self.vision=None;self.first_counts=None;self.complete_at=None;self.complete_events=None;self.event_checks=[]
         self.camera_stamps=[];self.image_stamps=set();self.scans=0;self.faults=[];self.active_fault=None;self.restart_rejected=None
         print('AUDIT_LAP_START',json.dumps(d),flush=True)
@@ -89,6 +89,7 @@ class Audit(Node):
         d=json.loads(m.data)
         if self.current is None or (d.get('run_id'),d.get('lap_id'))!=self.key:return
         self.vision=d
+        self.current['performance_frames'].append({'wall':time.monotonic(), 'stamp':d['stamp'], 'processing_ms':d.get('inference_and_ocr_ms'), 'image_age_sim_s':self.pose[3]-d['stamp'] if self.pose else None})
         if self.first_counts is None:self.first_counts=copy.deepcopy(d['counts'])
         for e in d['events'][len(self.event_checks):]:
             candidates=[b for b in d['detections'] if b['name']==e['content'] and b['bbox']==e.get('bbox')]
@@ -168,7 +169,16 @@ class Audit(Node):
         if self.args.fault_lap==self.key[1]:checks['fault_stop_and_recovery']=len(self.faults)==3 and all(f['passed'] for f in self.faults)
         checks.update(front_and_rear_green=len(whole_body)==4 and all(x['phase']=='green' for x in whole_body),red_straddle_samples_zero=red_straddles==0,observation_confirmation=len(outcomes)==8 and all(x['confirmed'] for x in outcomes))
         extra={'whole_body_crossings':whole_body,'red_straddle_samples':red_straddles,'observation_outcomes':outcomes}
-        return {**extra,'passed':all(checks.values()),'run_id':self.key[0],'lap_id':self.key[1],'mode':'fault injection' if self.args.fault_lap==self.key[1] else 'normal autonomous lap','checks':checks,'sim_elapsed_s':records[-1]['t']-records[0]['t'] if records else 0,'physical_distance_m':distance,'waypoints':c['reached'],'observations':c['observations'],'counts':v.get('counts'),'plates':list(v.get('plates',{})),'initial_phase':c['initial_phase'],'crossings':c['crossings'],'red_waits':waits,'max_fresh_position_error_m':max((x[0] for x in errors),default=None),'max_fresh_yaw_error_deg':math.degrees(max((x[1] for x in errors),default=0)),'road_violation_samples':sum(r['outside'] for r in records),'samples':len(records),'camera_frames':len(self.camera_stamps),'scan_frames':self.scans,'event_checks':self.event_checks,'faults':self.faults,'status_changes':c['statuses'],'records':records,'perception':v}
+        posts=json.loads((ROOT/'src/community_demo/maps/planning-obstacles.json').read_text())['posts']
+        clearance=[]
+        for r in records:
+            x,y,a=r['pose'];co,si=math.cos(a),math.sin(a)
+            for p in posts:
+                dx=p['x']-x;dy=p['y']-y
+                clearance.append(math.hypot(max(abs(co*dx+si*dy)-.11,0),max(abs(-si*dx+co*dy)-.1125,0))-math.hypot(p['width']/2,p['depth']/2))
+        checks['physical_post_clearance']=bool(clearance) and min(clearance)>=-.002
+        extra['minimum_post_clearance_m']=min(clearance) if clearance else None
+        return {**extra,'performance_frames':c['performance_frames'],'passed':all(checks.values()),'run_id':self.key[0],'lap_id':self.key[1],'mode':'fault injection' if self.args.fault_lap==self.key[1] else 'normal autonomous lap','checks':checks,'sim_elapsed_s':records[-1]['t']-records[0]['t'] if records else 0,'physical_distance_m':distance,'waypoints':c['reached'],'observations':c['observations'],'counts':v.get('counts'),'plates':list(v.get('plates',{})),'initial_phase':c['initial_phase'],'crossings':c['crossings'],'red_waits':waits,'max_fresh_position_error_m':max((x[0] for x in errors),default=None),'max_fresh_yaw_error_deg':math.degrees(max((x[1] for x in errors),default=0)),'road_violation_samples':sum(r['outside'] for r in records),'samples':len(records),'camera_frames':len(self.camera_stamps),'scan_frames':self.scans,'event_checks':self.event_checks,'faults':self.faults,'status_changes':c['statuses'],'records':records,'perception':v}
     def cleanup(self):
         for pid in list(self.paused):
             try:os.kill(pid,signal.SIGCONT)
@@ -244,7 +254,7 @@ def main():
             archive=ROOT/'log/patrol-cycle-review'/n.key[0]/f'lap-{n.key[1]:03d}';archive.mkdir(parents=True,exist_ok=True)
             import shutil
             for e in report['perception']['events']:shutil.copy2(ROOT/'log/perception'/e['image'],archive/e['image'])
-            compact={k:v for k,v in report.items() if k not in ['records','perception','event_checks','status_changes','faults']};compact['report']=filename;reports.append(compact)
+            compact={k:v for k,v in report.items() if k not in ['records','perception','event_checks','status_changes','faults','performance_frames']};compact['report']=filename;reports.append(compact)
             print('LAP_RESULT',json.dumps(compact,ensure_ascii=False),flush=True)
             if not report['passed']:break
             if number<a.laps-1:
@@ -258,7 +268,7 @@ def main():
         summary={'passed':len(reports)==a.laps and all(r['passed'] for r in reports),'requested_laps':a.laps,'laps':reports,'evaluation_only_subscribers':subscribers,'limits':['One fixed supplied-gallery scene','Road footprint evaluated at sampled ground-truth poses','Fault lap is labelled and excluded from normal autonomous-lap count','No altered training weights or thresholds'],'local_photo_root':str(ROOT/'log/patrol-cycle-review')}
         (out/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n');print('CYCLE_AUDIT_DONE',summary['passed'],flush=True)
         return 0 if summary['passed'] else 1
-    except Exception as exc:
+    except (Exception,KeyboardInterrupt) as exc:
         partial=n.snapshot() if n.current and n.current['records'] else {}
         partial.update(passed=False,error=str(exc))
         (out/'failure.json').write_text(json.dumps(partial,ensure_ascii=False,indent=2)+'\n')

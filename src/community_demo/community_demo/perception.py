@@ -22,7 +22,7 @@ from PIL import Image as PILImage,ImageDraw,ImageFont
 class Perception(Node):
     def __init__(self):
         super().__init__('community_yolo_ocr')
-        self.declare_parameter('model','src/community_demo/models/perception/best.pt');self.declare_parameter('port',8765)
+        self.declare_parameter('model','src/community_demo/models/perception/yolo11s-comparison.pt');self.declare_parameter('port',8765)
         self.model=YOLO(self.get_parameter('model').value)
         self.ocr=RapidOCR(params={'Global.model_root_dir':'src/community_demo/models/ocr','EngineConfig.onnxruntime.intra_op_num_threads':2,'EngineConfig.onnxruntime.inter_op_num_threads':2})
         self.out=Path('log/perception');self.out.mkdir(parents=True,exist_ok=True)
@@ -40,6 +40,7 @@ class Perception(Node):
         self.create_subscription(String,'/inspection/outcome',self.on_outcome,qos_profile_sensor_data)
         fonts=['src/community_demo/models/fonts/wqy-zenhei.ttc','/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc','/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc']
         self.font=next((ImageFont.truetype(f,22) for f in fonts if Path(f).exists()),ImageFont.load_default())
+        self.view_key=None;self.view_started=0.;self.view_frames=0;self.evidence_signature=None;self.evidence_changed=0.
         self.create_timer(.2,self.tick)
         self.restart_client=self.create_client(Trigger,'/patrol/restart')
         node=self
@@ -96,8 +97,11 @@ class Perception(Node):
             data=json.loads(m.data)
             if data.get('view')!='transit' and (data.get('run_id'),data.get('lap_id'))!=(self.run_id,self.lap_id):return
             view=data.get('view','transit')
-            if view!=self.view:
+            key=(view,data.get('attempt',0),self.run_id,self.lap_id)
+            if key!=self.view_key:
                 self.view_people={};self.view_plates={};self.view_votes={}
+                self.view_key=key;self.view_frames=0;self.evidence_signature=None
+                self.view_started=self.get_clock().now().nanoseconds/1e9;self.evidence_changed=self.view_started
             self.view=view
         except ValueError:pass
     def on_outcome(self,m):
@@ -168,7 +172,13 @@ class Perception(Node):
             recent=[c for f,c in history if self.frame_id-f<8]
             if not name.startswith('plate:') and name not in self.view_people and len(recent)>=2 and np.mean(recent)>.45:pending.append(name)
         view_confirmed=bool(self.view_plates) if self.view.startswith('plate_') else bool(self.view_people) and not pending
-        feedback={'view':self.view,'ready':bool(self.view!='transit' and age<=.5 and view_confirmed),'person_ids':list(self.view_people),'plate_texts':list(self.view_plates),'pending_person_ids':pending,'criterion':'Repeated visual evidence in this view; does not prove every unseen/occluded person was counted'}
+        now_sim=self.get_clock().now().nanoseconds/1e9
+        self.view_frames+=1
+        signature=(tuple(sorted(self.view_people)),tuple(sorted(self.view_plates)),tuple(sorted(pending)))
+        if signature!=self.evidence_signature:
+            self.evidence_signature=signature;self.evidence_changed=now_sim
+        stable_evidence=self.view_frames>=6 and now_sim-self.view_started>=1.8 and now_sim-self.evidence_changed>=.8
+        feedback={'view':self.view,'ready':bool(self.view!='transit' and age<=.5 and view_confirmed and stable_evidence),'stable_frames':self.view_frames,'quiet_s':round(now_sim-self.evidence_changed,2),'person_ids':list(self.view_people),'plate_texts':list(self.view_plates),'pending_person_ids':pending,'criterion':'Repeated visual evidence in this view; does not prove every unseen/occluded person was counted'}
         canvas=PILImage.fromarray(cv2.cvtColor(frame,cv2.COLOR_BGR2RGB));draw=ImageDraw.Draw(canvas)
         overlay_labels=draw_detection_labels(canvas,detections,self.font)
         draw.rectangle((0,0,canvas.width,64),fill=(15,23,42));draw.text((12,4),f"Frame {self.frame_id} | 居民 {counts['residents']} / 访客 {counts['visitors']} / 总计 {counts['total']} | 灯 {stable}",font=self.font,fill=(255,255,255));draw.text((12,32),self.status[:95],font=self.font,fill=(180,210,255));frame=cv2.cvtColor(np.asarray(canvas),cv2.COLOR_RGB2BGR)
