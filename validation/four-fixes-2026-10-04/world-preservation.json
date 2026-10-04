@@ -1,0 +1,5 @@
+{
+  "passed": true,
+  "difference": "Exactly one added Gazebo SignalSystem plugin; existing geometry, robot, texture references and other plugins preserved, ignoring XML whitespace",
+  "baseline_commit": "b11a8f45fb61b81ac63919bf96d77192e84c98d0"
+}

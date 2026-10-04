@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "case": "main",
+      "passed": true
+    },
+    {
+      "case": "start-plus",
+      "passed": true
+    },
+    {
+      "case": "start-minus",
+      "passed": true
+    },
+    {
+      "case": "sensor-stress",
+      "passed": true
+    }
+  ],
+  "source_hashes_unchanged": true,
+  "original_live_suite_exit": 1,
+  "reason": "Final image worker timed out; exact immutable recorded images independently checked again, same thresholds",
+  "verification_wall_s": 0.797484930999417,
+  "unique_images": 17,
+  "event_count": 22,
+  "postprocessor_sha256": "5b2facb831661b6073d517ef4995df332d4682e3b051685f43c39f31508b87d4",
+  "live_laps_replayed": false
+}

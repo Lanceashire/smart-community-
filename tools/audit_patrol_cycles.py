@@ -50,12 +50,16 @@ class Audit(Node):
         self.pose=None;self.estimate=None;self.command=(0.,0.);self.camera_stamps=[];self.image_stamps=set();self.scans=0
         self.event_checks=[];self.paused={};self.active_fault=None;self.faults=[];self.record_start=time.monotonic()
         self.first_counts=None;self.complete_at=None;self.complete_events=None;self.restart_rejected=None
+        self.signal_diagnostics=[];self.signal_decisions=[];self.stress_statistics=[]
         self.restart_client=self.create_client(Trigger,'/patrol/restart')
         self.create_subscription(String,'/patrol/lap',self.lap,QoSProfile(depth=1,durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.create_subscription(String,'/patrol/status',self.on_status,50)
         self.create_subscription(String,'/simulation/traffic_light_state',lambda m:setattr(self,'phase',m.data),20)
         self.create_subscription(String,'/perception/results',self.perception,20)
         self.create_subscription(String,'/inspection/observation',self.observation,20)
+        self.create_subscription(String,'/simulation/traffic_light_diagnostics',lambda m:self.signal_diagnostics.append(json.loads(m.data)),20)
+        self.create_subscription(String,'/patrol/signal_decision',lambda m:self.signal_decisions.append(json.loads(m.data)),20)
+        self.create_subscription(String,'/stress/statistics',lambda m:self.stress_statistics.append(json.loads(m.data)),20)
         self.create_subscription(Odometry,'/model/patrol_bot/ground_truth',self.truth,qos_profile_sensor_data)
         self.create_subscription(Odometry,'/localization/pose',self.localization,qos_profile_sensor_data)
         self.create_subscription(Twist,'/model/patrol_bot/cmd_vel',lambda m:setattr(self,'command',(m.linear.x,m.angular.z)),20)
@@ -71,6 +75,7 @@ class Audit(Node):
         self.key=key;self.current={'run_id':key[0],'lap_id':key[1],'records':[],'reached':[],'observations':[],'crossings':[],'statuses':[],'started_wall':time.monotonic(),'initial_phase':self.phase,'performance_frames':[]}
         self.vision=None;self.first_counts=None;self.complete_at=None;self.complete_events=None;self.event_checks=[]
         self.camera_stamps=[];self.image_stamps=set();self.scans=0;self.faults=[];self.active_fault=None;self.restart_rejected=None
+        self.signal_diagnostics=[];self.signal_decisions=[];self.stress_statistics=[]
         print('AUDIT_LAP_START',json.dumps(d),flush=True)
     def on_status(self,m):
         self.status=m.data
@@ -91,7 +96,9 @@ class Audit(Node):
         d=json.loads(m.data)
         if self.current is None or (d.get('run_id'),d.get('lap_id'))!=self.key:return
         self.vision=d
-        self.current['performance_frames'].append({'wall':time.monotonic(), 'stamp':d['stamp'], 'processing_ms':d.get('inference_and_ocr_ms'), 'image_age_sim_s':self.pose[3]-d['stamp'] if self.pose else None})
+        self.current['performance_frames'].append({'wall':time.monotonic(), 'stamp':d['stamp'], 'processing_ms':d.get('inference_and_ocr_ms'), 'image_age_sim_s':self.pose[3]-d['stamp'] if self.pose else None,
+            'view':d.get('view'),'feedback':d.get('observation_feedback'),
+            'people_boxes':[b for b in d.get('detections',[]) if b.get('category') in ('resident','visitor')]})
         if self.first_counts is None:self.first_counts=copy.deepcopy(d['counts'])
         for e in d['events'][len(self.event_checks):]:
             candidates=[b for b in d['detections'] if b['name']==e['content'] and b['bbox']==e.get('bbox')]
@@ -170,7 +177,9 @@ class Audit(Node):
         checks={'completed':v.get('status','').startswith('COMPLETE'),'route_order':c['reached']==EXPECTED_ROUTE,'actual_distance':distance>12 and distance<14,'returned_to_start':bool(records) and math.hypot(records[-1]['pose'][0]-1.1,records[-1]['pose'][1]-1.7)<.10,'road_boundary':not any(r['outside'] for r in records),'two_green_crossings':len(c['crossings'])==2 and all(x['legal'] for x in c['crossings']),'red_wait_body_before_line':all(x['min_front_clearance_m'] is None or x['min_front_clearance_m']>=0 for x in waits),'eight_observations':c['observations']==EXPECTED_VIEWS,'observation_log_reset':len(views)==8 and all(x.get('lap_id')==self.key[1] and x.get('run_id')==self.key[0] for x in views),'recognition_reset':self.first_counts=={'residents':0,'visitors':0,'total':0},'people':set(v.get('people',{}))==expected,'plates':set(v.get('plates',{}))==EXPECTED_PLATES,'event_sequence':[e['sequence'] for e in events]==list(range(1,len(events)+1)),'event_frame_correspondence':bool(self.event_checks) and all(e['same_frame'] and e['matching_box_name_confidence'] and e['annotated_topic_frame_seen'] and e['image_exists'] for e in self.event_checks),'completion_frozen':events==self.complete_events,'stationary_after_completion':bool(tail) and max(r['speed'] for r in tail)<.015 and all(abs(r['command'][0])<.001 and abs(r['command'][1])<.001 for r in tail),'camera_and_scan_live':len(self.camera_stamps)>100 and self.scans>100,'restart_while_running_rejected':self.restart_rejected is True}
         if self.args.fault_lap==self.key[1]:checks['fault_stop_and_recovery']=len(self.faults)==3 and all(f['passed'] for f in self.faults)
         checks.update(front_and_rear_green=len(whole_body)==4 and all(x['phase']=='green' for x in whole_body),red_straddle_samples_zero=red_straddles==0,observation_confirmation=len(outcomes)==8 and all(x['confirmed'] for x in outcomes))
-        extra={'whole_body_crossings':whole_body,'red_straddle_samples':red_straddles,'observation_outcomes':outcomes}
+        extra={'whole_body_crossings':whole_body,'red_straddle_samples':red_straddles,'observation_outcomes':outcomes,
+               'signal_diagnostics':self.signal_diagnostics,'signal_decisions':self.signal_decisions,
+               'stress_statistics':self.stress_statistics}
         posts=json.loads((ROOT/'src/community_demo/maps/planning-obstacles.json').read_text())['posts']
         clearance=[]
         for r in records:
@@ -210,7 +219,7 @@ def wait_restart_phase(n,phase,delay):
     print('RESTART_PHASE',phase,'delay',delay,flush=True)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--laps',type=int,default=3);p.add_argument('--fault-lap',type=int,default=3);p.add_argument('--unpause',action='store_true');p.add_argument('--restart',action='store_true');p.add_argument('--restart-phases',default='');p.add_argument('--green-delay',type=float,default=10.);p.add_argument('--output',default='validation/patrol-cycle-review');p.add_argument('--timeout',type=float,default=300);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--laps',type=int,default=3);p.add_argument('--fault-lap',type=int,default=3);p.add_argument('--unpause',action='store_true');p.add_argument('--restart',action='store_true');p.add_argument('--restart-phases',default='');p.add_argument('--green-delay',type=float,default=10.);p.add_argument('--green-delays',default='');p.add_argument('--output',default='validation/patrol-cycle-review');p.add_argument('--timeout',type=float,default=300);a=p.parse_args()
     out=ROOT/a.output;out.mkdir(parents=True,exist_ok=True);rclpy.init();n=Audit(a);reports=[]
     try:
         if not spin_until(n,lambda:n.key is not None,50):raise RuntimeError('No explicit patrol lap lifecycle')
@@ -262,7 +271,9 @@ def main():
             if number<a.laps-1:
                 phases=a.restart_phases.split(',') if a.restart_phases else []
                 phase=phases[number%len(phases)] if phases else ''
-                wait_restart_phase(n,phase,a.green_delay if phase=='green' else 0.)
+                delays=[float(x) for x in a.green_delays.split(',')] if a.green_delays else []
+                delay=delays[number%len(delays)] if delays else a.green_delay
+                wait_restart_phase(n,phase,delay if phase=='green' else 0.)
                 previous=n.key;response=request_restart(n)
                 if not response.success:raise RuntimeError(response.message)
                 if not spin_until(n,lambda:n.key!=previous,5):raise RuntimeError('New lap lifecycle not received')

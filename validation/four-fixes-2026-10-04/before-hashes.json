@@ -1,0 +1,9 @@
+{
+  "src/community_demo/community_demo/signal_gate.py": "d711dbafe050755c9f44fd8b43b8f1a50b15f5785a321f3e2af8de81e4130072",
+  "src/community_demo/community_demo/traffic_signals.py": "61a47453bb6afd2c6e918b284c5256dd1255bf4ba7696f7881d9aff448bec1ea",
+  "src/community_demo/community_demo/patrol.py": "98ed65532ea9d5097a7ee95dddcd75c75afd01ebea391461ff232bfe7ef6ef19",
+  "src/community_demo/community_demo/perception.py": "170c5c6e1967df8be128d3533e0544f3996ca7e97c7be5e14284d647bc2cc392",
+  "src/community_demo/launch/demo.launch.py": "b24035b57e4f0ecefcb1a3676f5d914393981650e69648d999b006aa35dacc82",
+  "tools/launch_full.sh": "bb06709063d0697dc82c2df43e38ae3e7c96b8d4fb8f1070d994258cdaa91f77",
+  "src/community_demo/worlds/community.sdf": "bb1dc2cfff3bc47efc48736f041e4e8981cc00550e8fda351d4ea15e1fc093f6"
+}

@@ -22,7 +22,9 @@ class PersonEvidence:
             for t in self.tracks:
                 if t['id'] in used:continue
                 old=t['bbox'];ocx=(old[0]+old[2])/2;ocy=(old[1]+old[3])/2
-                expected=width/2+f*math.tan(math.atan((ocx-width/2)/f)-(pan-t['pan']))
+                # Image u increases to the right, opposite to camera-local y.
+                # Positive camera yaw therefore moves a fixed target rightward.
+                expected=width/2+f*math.tan(math.atan((ocx-width/2)/f)+(pan-t['pan']))
                 dx=abs(cx-expected)/max(12.,old[2]-old[0]);dy=abs(cy-ocy)/max(15.,old[3]-old[1])
                 if dx<1.1 and dy<.45:choices.append((dx+dy,t))
             if choices:t=min(choices,key=lambda x:x[0])[1]

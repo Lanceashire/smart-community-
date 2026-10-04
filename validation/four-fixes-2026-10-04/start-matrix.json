@@ -1,0 +1,21 @@
+{
+  "variants": [
+    {
+      "name": "start-plus",
+      "world": "four-fixes-start-plus.sdf",
+      "dx_m": 0.025,
+      "dy_m": -0.025,
+      "yaw_delta_rad": 0.035,
+      "sha256": "b5acb10149801c512e766f351c0ca43eaf49ea1be47262c68c4522654207fff6"
+    },
+    {
+      "name": "start-minus",
+      "world": "four-fixes-start-minus.sdf",
+      "dx_m": -0.025,
+      "dy_m": 0.025,
+      "yaw_delta_rad": -0.035,
+      "sha256": "9317352999648dcd485b5495a1a58311d33408cc6d20376cc08a257a2c189c40"
+    }
+  ],
+  "method": "Change initial spawn only; nominal localization prior unchanged; no teleport while driving"
+}

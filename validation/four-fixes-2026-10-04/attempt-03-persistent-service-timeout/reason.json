@@ -1,0 +1,4 @@
+{
+  "status": "rejected_development_run",
+  "reason": "One native service request timed out at 400 ms; service-based switching rejected in favour of simulation plugin"
+}

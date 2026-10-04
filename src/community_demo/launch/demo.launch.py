@@ -2,10 +2,10 @@
 
 import os
 
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import get_package_share_directory, get_package_prefix
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, OpaqueFunction, Shutdown, TimerAction
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch.conditions import IfCondition
 from launch_ros.actions import Node
 
@@ -21,11 +21,16 @@ def start_gazebo(context):
             os.path.join(share, 'worlds', LaunchConfiguration('world').perform(context))]
     return [ExecuteProcess(cmd=cmd, output='screen', on_exit=[Shutdown(reason='Gazebo exited')], additional_env={
         'GZ_SIM_RESOURCE_PATH': os.path.join(share,'models') + ':' + os.environ.get('GZ_SIM_RESOURCE_PATH',''),
+        'GZ_SIM_SYSTEM_PLUGIN_PATH': os.path.join(get_package_prefix('community_signal_system'),'lib') + ':' + os.environ.get('GZ_SIM_SYSTEM_PLUGIN_PATH',''),
         'QT_AUTO_SCREEN_SCALE_FACTOR': '0', 'QT_SCALE_FACTOR': '1', 'QT_FONT_DPI': '96',
     })]
 
 
 def generate_launch_description():
+    stress=LaunchConfiguration('stress')
+    def sensor_topic(normal,perturbed):
+        return PythonExpression(['"',perturbed,'" if "',stress,'" == "true" else "',normal,'"'])
+    camera_remap=('/camera/image',sensor_topic('/camera/image','/stress/camera/image'))
     bridge = Node(
         package='ros_gz_bridge', executable='parameter_bridge', name='gz_bridge',
         parameters=[{f'qos_overrides.{topic}.publisher.{key}': value
@@ -61,8 +66,10 @@ def generate_launch_description():
     )
     vision = Node(package='community_demo', executable='vision', output='screen', condition=IfCondition(LaunchConfiguration('vision')))
     cmd_bridge = Node(package='community_demo', executable='cmd_bridge', output='screen')
-    patrol = Node(package='community_demo', executable='patrol', parameters=[{'use_sim_time':True}], output='screen', condition=IfCondition(LaunchConfiguration('patrol')))
-    localization = Node(package='community_demo', executable='localization', parameters=[{'use_sim_time':True}], output='screen')
+    patrol = Node(package='community_demo', executable='patrol', parameters=[{'use_sim_time':True}], remappings=[camera_remap], output='screen', condition=IfCondition(LaunchConfiguration('patrol')))
+    localization = Node(package='community_demo', executable='localization', parameters=[{'use_sim_time':True}],
+        remappings=[camera_remap,('/model/patrol_bot/odometry',sensor_topic('/model/patrol_bot/odometry','/stress/odometry')),('/lidar/raw/points',sensor_topic('/lidar/raw/points','/stress/points'))],output='screen')
+    perturbations=Node(package='community_demo',executable='sensor_stress',parameters=[{'use_sim_time':True}],output='screen',condition=IfCondition(stress))
     slam = Node(package='slam_toolbox', executable='async_slam_toolbox_node', name='slam_toolbox', parameters=[os.path.join(get_package_share_directory('community_demo'),'config','slam.yaml')], output='screen')
     signals = Node(package='community_demo', executable='traffic_signals', output='screen', parameters=[{'use_sim_time':True}])
     return LaunchDescription([
@@ -71,8 +78,9 @@ def generate_launch_description():
         DeclareLaunchArgument('paused', default_value='false'),
         DeclareLaunchArgument('patrol', default_value='true'),
         DeclareLaunchArgument('vision', default_value='true'),
+        DeclareLaunchArgument('stress', default_value='false'),
         OpaqueFunction(function=start_gazebo),
-        bridge, localization, slam,
+        bridge, perturbations, localization, slam,
         Node(package='nav2_map_server',executable='map_server',name='map_server',parameters=[os.path.join(get_package_share_directory('community_demo'),'config/navigation.yaml'),{'yaml_filename':os.path.join(get_package_share_directory('community_demo'),'maps/roads.yaml')}],output='screen'),
         Node(package='nav2_planner',executable='planner_server',name='planner_server',parameters=[os.path.join(get_package_share_directory('community_demo'),'config/navigation.yaml')],output='screen'),
         Node(package='nav2_lifecycle_manager',executable='lifecycle_manager',name='nav_lifecycle',parameters=[{'use_sim_time':True,'autostart':True,'node_names':['map_server','planner_server']}],output='screen'),

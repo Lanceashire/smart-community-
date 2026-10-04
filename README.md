@@ -18,7 +18,65 @@
 
 **尚缺的原素材：** ZIP 内 `车牌背景.png.baiduyun.p.downloading`、`黄灯暗.png.baiduyun.p.downloading` 不能解码。按用户要求暂缓替换，保留生成的薄车头板和暗黄灯几何模型。其余 27 张原图保持原始字节，哈希写入素材清单。
 
-## 2026-10-04 可靠性与转弯保护（当前版本）
+## 2026-10-04 四项修复与严格验收（当前版本）
+
+**最终同一版本六圈全部通过，全部严格门槛为 true。** 运行源码、场景、YOLO11s 与实际加载的 C++ 插件二进制在六圈期间冻结，原始失败保留，不能加入成功圈数。
+
+| 要处理的缺点 | 实际修改 | 验收 |
+|---|---|---|
+| 灯光切换服务超时 | 新增 `community_signal_system` C++17 Gazebo 系统；同一 PreUpdate 设置 12 个灯面，PostUpdate 核对实际 ECM 位姿；ROS 节点只读核验 | 服务调用路径移除；应用数与更新数一致，12 灯面全部匹配，零应用不一致 |
+| B_north 正常圈重复重试 | 修正云台转动与图像横坐标关联方向；转动时不累积身份确认；采用已验证首角 | 主三圈均首次成功；双角度、5/3 帧与 0.05 rad 门槛保留 |
+| 已经绿灯仍保守等下一轮 | 相机颜色变化建立绿灯开始区间；跨路口保留相位、重建局部新鲜帧；剩余下界 ≥3.2 s 才放行 | 两次已亮绿灯在同一绿灯内通过，STOP 等待均 0 s；晚绿仍安全等待 |
+| 最终版本起点偏移及传感器干扰未实跑 | 同一最终版本跑两种偏移和噪声/丢帧/断流整圈；修正完赛状态被丢帧覆盖 | 三圈全部完成；断流停车后恢复，完赛后状态与零命令持续保持 |
+
+### 最终六圈结果
+
+| 条件 | 完成仿真秒 | 新鲜定位最大误差 cm | B_north 重试次数 / 耗时 s | 物理与图像检查 |
+|---|---:|---:|---:|---|
+| 正常首圈 | 155.20 | 2.98 | 0 / 6.3 | 全部通过 |
+| 绿灯后 2 秒重新开始 | 146.00 | 3.31 | 0 / 6.3 | 全部通过 |
+| 绿灯后 6 秒重新开始 | 166.50 | 4.07 | 0 / 6.1 | 全部通过 |
+| 起点 +2.5/-2.5 cm，+0.035 rad | 154.30 | 3.63 | 0 / 6.3 | 全部通过 |
+| 起点 -2.5/+2.5 cm，-0.035 rad | 153.10 | 4.17 | 0 / 6.3 | 全部通过 |
+| 噪声、丢消息、2 秒全传感器断流 | 167.30 | 5.74 | 1 / 10.1 | 全部通过 |
+
+正常首圈与上次实际复查比较：181.70 → **155.20 s**，减少 **26.50 s（14.6%）**。这是各一圈的观测对照，不能当成跨场景或统计保证；不同启动相位不混成统一加速比例。定位误差均在预设门限内，不宣称精度全面提高。
+
+每圈独立核对 17 路点、8 个确认观察、8 居民+2 访客和 3 块正确车牌；六圈共 30 个人物观察均有实际双角度证据。整车道路边界违规采样为 0；12 次路口的车头进入和车尾清线都在实际绿灯；结束停车、持续完成状态、终端顺序与事件图像框/名称/置信度及 OCR 帧号检查全部通过。
+
+已亮绿灯的两个路口 STOP 等待均为 **0 秒**，没有再经历一轮红/黄。第三圈晚绿灯上方路口仍等了 **15.95 秒**，因为当前绿灯的剩余下界不足整车预算；不能将这次必要等待描述为零等待。控制器只读相机灯态和视觉历史，不读仿真灯色、真值位置或灯光服务结果。
+
+独立灯面观察有效核对 **37159 次**，观察 **133 次**变化，稳定阶段不一致 **0**（跨进程切换递送容许 0.3 墙钟秒）。原服务请求/超时/失败均为 0，因为服务路径已移除。Gazebo 内部应用延迟最大 **0 仿真毫秒**，仅指 ECM 位姿应用，不是相机、ROS 或 GUI 端到端延迟。
+
+干扰强度：图像 σ=3 灰度级，里程计位置 σ=1 mm、航向 σ=0.001 rad，激光 xyz σ=5 mm，各流约 10% 随机丢消息，种子 20261004。另有实际 2 仿真秒的三流同时断流；控制输入保持源时间戳。
+断流记录中约 **0.5 秒**时已达到实际速度 <0.015 m/s 且零命令，1.5 秒后全部检查满足停车条件，恢复后跑完整圈。干扰条件下允许真实观察重试；不宣称强噪声也永不重试。
+
+断流全段另核对定位误差保守上界 **2.59 cm**：新鲜样本实测，过期样本按最后实测误差加实际位移求上界，不将缺失填零。
+
+### 失败保留与边界
+
+四次开发尝试均不算最终成功圈：B_north 仍重试、跨圈相位失效、持久服务仍超时，以及干扰下 COMPLETE 被 WAIT_FRESH_LOCALIZATION 覆盖。第四次实际完成路线但严格 completed 为 false，修正后重跑了完整六圈；没有改验收条件掩盖失败。
+
+另保留图片后处理超时及局部文字检测失败。原矩阵进程退出码为 1；六圈实际运行数据未变，最终用同一 JPEG 左上帧号单行 OCR，在原 90 秒限制内约 0.80 秒完成干扰圈 17 张图、22 条事件的独立复核，并拒绝了错误帧号反例。恢复的是独立后处理，不计为额外跑圈；不冒称原脚本一遍退出 0。
+
+结论限于原资料布局、同步红/绿/黄 10/15/3 秒及上述偏移/噪声幅度。冷启动首次看到绿灯、没有任何相机相位依据时仍不能确定它还能亮多久；不足安全预算的晚绿灯仍等待。任意地图、未知灯周期、陌生人物及实车未验证。YOLO11s 权重与离线 mAP 不变，本轮没有训练。原有实体障碍及节点暂停测试属于前版本证据，本轮不冒称重跑。
+
+### 环境与复现
+
+实测现有 `aic-development` 容器：ROS 2 Jazzy、Gazebo Sim 8.15.0、Python 3.12.3、PyTorch 2.13.0+cu130、RTX 5060 Laptop GPU。新增插件依赖 `gz_sim_vendor/gz_plugin_vendor/gz_transport_vendor/gz_msgs_vendor`，Dockerfile 已补显式依赖。现有容器实际构建、GPU/YOLO/OCR 与插件启动检查通过；干净新机器镜像配方仍未独立重建。
+
+```bash
+source /opt/ros/jazzy/setup.bash
+colcon build --symlink-install --packages-select sentry_motion_manager community_signal_system community_demo --cmake-args -DCMAKE_BUILD_TYPE=Release
+source install/setup.bash
+bash tools/launch_full.sh gui:=true paused:=false
+```
+
+完整矩阵须先备份旧验收目录，再按 [METHOD.md](validation/four-fixes-2026-10-04/METHOD.md) 启动独立信号观察器、`run_four_fixes_acceptance.py`，最后 `summarize_four_fixes.py`。不要与桌面演示同时启动另一套世界。
+
+证据：[严格汇总](validation/four-fixes-2026-10-04/summary.json)、[预设门槛](validation/four-fixes-2026-10-04/acceptance-criteria.json)、[实际环境](validation/four-fixes-2026-10-04/environment.json)、[世界保持核对](validation/four-fixes-2026-10-04/world-preservation.json)、`runtime-hashes.json` 和回调/控制回归。本机保留完整原始采样与事件图像，GitHub 仅更新代码、方法和数值证据；验收图片、视频及截图材料不上传。队伍信息和两张缺失素材继续暂缓。
+
+## 2026-10-04 可靠性与转弯保护（前版本记录）
 
 本轮重点是人物证据一致性、实测云台角度、传感器断流恢复和弯前保护。**原YOLO11s权重保留，离线检测精度没有新的提升声明。**
 
@@ -69,7 +127,7 @@
 
 ```bash
 source /opt/ros/jazzy/setup.bash
-colcon build --symlink-install --packages-select sentry_motion_manager community_demo --cmake-args -DCMAKE_BUILD_TYPE=Release
+colcon build --symlink-install --packages-select sentry_motion_manager community_signal_system community_demo --cmake-args -DCMAKE_BUILD_TYPE=Release
 source install/setup.bash
 bash tools/launch_full.sh gui:=false paused:=true
 ```
@@ -289,7 +347,7 @@ python3 tools/audit_patrol_cycles.py --laps 2 --fault-lap 1 --unpause \
 | 建图与定位 | 多线激光 → 过滤后的扫描 → SLAM Toolbox 建图；轮速增量 + 相机地面标线配准输出导航位置 |
 | 人物识别与统计 | YOLO11n / YOLO11s 的 18 个资料人像身份类别（当前优化验收使用 S）；多帧确认，按视觉身份去重，再统计居民/访客 |
 | 车牌位置及字符 | YOLO 车牌检测 + 蓝色背景边界补检/修框，选择中央车牌后 RapidOCR 识别，多帧确认 |
-| 红灯停绿灯行 | 相机确认非绿→新绿灯后连续帧放行，进入停止线前检查灯态新鲜度；识别不确定时停止 |
+| 红灯停绿灯行 | 相机颜色变化建立相位区间，连续新鲜绿灯且剩余下界足够整车通过时放行；进入停止线前继续检查新鲜度，识别不确定时停止 |
 | 不压道路边线 | Nav2 道路栅格约束；含外轮面的整车轮廓预测检查；独立真值评估实际轮廓 |
 | 框、名称、置信度及终端顺序 | 同一帧产生带框图像和 JSON，首次确认事件按序打印并保存对应画面 |
 
@@ -421,7 +479,7 @@ AIC_PERCEPTION_MODEL=src/community_demo/models/perception/yolo11s-comparison.pt 
   bash tools/launch_full.sh gui:=true
 ```
 
-不设置变量仍使用原 nano，启动脚本不会覆盖权重。S checkpoint SHA256：`f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa`。
+当前完整巡航不设置变量时默认使用 YOLO11s；原 nano 权重仍保留，可显式选择。启动脚本不会覆盖权重。S checkpoint SHA256：`f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa`。
 
 ### 复现比较流程
 
@@ -482,7 +540,7 @@ GPU 虚拟环境只读挂载：`/home/ubuntu/.local/share/aic-vision-venv`。
 ```bash
 cd /home/ubuntu/projects/smart-community
 source /opt/ros/jazzy/setup.bash
-colcon build --symlink-install --packages-select sentry_motion_manager community_demo \
+colcon build --symlink-install --packages-select sentry_motion_manager community_signal_system community_demo \
   --cmake-args -DCMAKE_BUILD_TYPE=Release
 source install/setup.bash
 # 只需首次安装 OCR 依赖；已有 .deps 时可跳过。

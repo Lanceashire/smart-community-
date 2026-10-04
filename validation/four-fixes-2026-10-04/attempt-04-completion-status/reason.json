@@ -1,0 +1,12 @@
+{
+  "accepted": false,
+  "reason": "Sensor noise completed the physical lap, but terminal COMPLETE status was overwritten by late stale-localization checks. Strict completed check false. Fix tick ordering; rerun entire frozen six-lap matrix.",
+  "passed_cases": [
+    "main (3 laps)",
+    "start-plus",
+    "start-minus"
+  ],
+  "failed_case": "sensor-stress",
+  "sensor_stop_recovery": true,
+  "physical_and_image_checks_except_completed": true
+}

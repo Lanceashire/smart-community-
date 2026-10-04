@@ -193,6 +193,7 @@ def main():
   <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
   <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
   <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors"><render_engine>ogre2</render_engine></plugin>
+  <plugin filename="libcommunity_signal_system.so" name="community::SignalSystem"><red_seconds>10</red_seconds><green_seconds>15</green_seconds><yellow_seconds>3</yellow_seconds></plugin>
   {body}
 </world></sdf>'''
     OUT.parent.mkdir(parents=True,exist_ok=True);OUT.write_text(sdf)

@@ -1,0 +1,22 @@
+{
+  "scope": "Actually tested existing container; clean-machine image recipe not independently rebuilt",
+  "container": "aic-development",
+  "container_root": "/home/ubuntu/projects/smart-community",
+  "ROS": "Jazzy",
+  "Gazebo_Sim": "8.15.0",
+  "GPU_environment": {
+    "python": "3.12.3",
+    "torch": "2.13.0+cu130",
+    "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU"
+  },
+  "new_plugin": "C++17 / ament_cmake / Gazebo Harmonic native system",
+  "vendor_packages": {
+    "ros-jazzy-gz-sim-vendor": "0.0.13-1noble.20260905.073557",
+    "ros-jazzy-gz-plugin-vendor": "0.0.5-1noble.20260820.145930",
+    "ros-jazzy-gz-transport-vendor": "0.0.9-1noble.20260905.065154",
+    "ros-jazzy-gz-msgs-vendor": "0.0.8-1noble.20260905.033532"
+  },
+  "build": "colcon build --symlink-install --packages-select sentry_motion_manager community_signal_system community_demo --cmake-args -DCMAKE_BUILD_TYPE=Release",
+  "default_model": "YOLO11s unchanged",
+  "inference_entrypoint": "bash tools/launch_full.sh; tools/vision_env.sh sets PYTHONPATH and GPU interpreter"
+}

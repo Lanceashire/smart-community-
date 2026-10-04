@@ -7,6 +7,7 @@
   <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
   <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
   <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors"><render_engine>ogre2</render_engine></plugin>
+  <plugin filename="libcommunity_signal_system.so" name="community::SignalSystem"><red_seconds>10</red_seconds><green_seconds>15</green_seconds><yellow_seconds>3</yellow_seconds></plugin>
   <model name="ground"><static>true</static><pose>0 0 -0.015 0 0 0</pose>
       <link name="body"><inertial><mass>1</mass><inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia></inertial><collision name="collision"><geometry><box><size>4.2 4.2 0.03</size></box></geometry></collision><visual name="visual"><geometry><box><size>4.2 4.2 0.03</size></box></geometry>
       <material><ambient>0.03 0.03 0.03 1</ambient><diffuse>0.03 0.03 0.03 1</diffuse></material></visual></link></model>

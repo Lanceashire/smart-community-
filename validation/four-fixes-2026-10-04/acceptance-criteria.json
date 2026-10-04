@@ -1,0 +1,57 @@
+{
+  "specified_field_and_original_model_weights_unchanged": true,
+  "normal_and_initial_spawn_variants": {
+    "full_laps": 5,
+    "required_checks": "Every existing physical, road, crossing, identity, OCR and event-image audit check true",
+    "max_normal_position_error_m": 0.06,
+    "max_start_variant_position_error_m": 0.1
+  },
+  "B_north_normal": {
+    "retry_attempt": 0,
+    "max_observation_sim_s": 6.5,
+    "preserve_first_angle_min_frames": 5,
+    "preserve_second_angle_min_frames": 3,
+    "min_actual_angle_delta_rad": 0.05
+  },
+  "signal_transport": {
+    "normal_requests_timeouts": 0,
+    "normal_requests_failures": 0,
+    "independent_actual_lens_pose_phase_transitions_min": 12,
+    "stable_phase_mismatches": 0,
+    "interprocess_transition_grace_wall_s": 0.3,
+    "service_path": "Removed, replaced by Gazebo simulation plugin",
+    "native_model_updates_min": 12,
+    "native_mismatch_iterations": 0,
+    "max_native_apply_delay_sim_ms": 2
+  },
+  "green_arrival": {
+    "each_release_fresh_green": true,
+    "minimum_predicted_remaining_s": 3.2,
+    "both_front_and_rear_actual_green": true,
+    "already_green_without_new_non_green_release_min_count": 2,
+    "unnecessary_known_safe_green_skip_cycles": 0,
+    "max_stop_wait_when_already_green_and_safe_s": 2.0,
+    "late_green_less_than_crossing_budget": "Wait; do not relax whole-body green constraint"
+  },
+  "sensor_stress": {
+    "seed": 20261004,
+    "image_sigma_levels": 3,
+    "odometry_position_sigma_m": 0.001,
+    "odometry_yaw_sigma_rad": 0.001,
+    "lidar_xyz_sigma_m": 0.005,
+    "drop_probability": 0.1,
+    "actual_all_sensor_blackout_sim_s": 2,
+    "zero_command_and_actual_speed_below_m_s_after_1p5_s": 0.015,
+    "full_lap_after_recovery": true,
+    "max_position_error_including_blackout_m": 0.12
+  },
+  "limits": [
+    "Known synchronized 10/15/3-second signals; camera establishes and revalidates the phase anchor",
+    "An initial green with no camera-observed phase anchor cannot reveal its remaining duration; no invented phase or simulator-state shortcut",
+    "No arbitrary scene or unknown-person accuracy claim"
+  ],
+  "terminal_completion": {
+    "latched_through_all_post_finish_samples": true,
+    "sensor_loss_after_completion": "Maintain zero command and COMPLETE; retain a latched fault if present"
+  }
+}

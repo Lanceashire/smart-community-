@@ -6,7 +6,8 @@ from pathlib import Path
 def main():
     p=argparse.ArgumentParser();p.add_argument('--model',required=True);p.add_argument('--output',default='log/preflight.json');a=p.parse_args()
     root=Path(__file__).resolve().parents[1];checks={};errors=[];details={}
-    for file in [a.model,'src/community_demo/maps/roads.pgm','src/community_demo/maps/roads.yaml','src/community_demo/maps/planning-obstacles.json','install/setup.bash']:
+    for file in [a.model,'src/community_demo/maps/roads.pgm','src/community_demo/maps/roads.yaml','src/community_demo/maps/planning-obstacles.json','install/setup.bash',
+                 'install/community_signal_system/lib/libcommunity_signal_system.so']:
         checks['file:'+file]=(root/file).is_file()
     try:
         import torch,numpy as np

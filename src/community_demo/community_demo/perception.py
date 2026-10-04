@@ -137,7 +137,9 @@ class Perception(Node):
             if name.startswith(('resident_','visitor_')):
                 coords=list(map(int,box.xyxy[0].cpu().numpy()));coords=[max(0,coords[0]),max(0,coords[1]),min(frame.shape[1],coords[2]),min(frame.shape[0],coords[3])]
                 person_boxes.append({'name':name,'confidence':float(box.conf.item()),'bbox':coords})
-        person_tracks=self.person_evidence.update(person_boxes,self.frame_id,pan,frame.shape[1])
+        # Reject identity votes while the camera sweeps between observation views.
+        person_tracks=(self.person_evidence.update(person_boxes,self.frame_id,pan,frame.shape[1])
+                       if self.view=='transit' or stable_pan else [])
         tracked={(e['name'],tuple(e['bbox'])):e for e in person_tracks}
         pixel_plates=blue_plates(frame,min_width=42)
         plate_boxes=[b for b in result.boxes if result.names[int(b.cls.item())]=='plate']

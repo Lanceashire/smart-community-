@@ -10,6 +10,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-jazzy-cv-bridge ros-jazzy-image-transport \
     ros-jazzy-navigation2 ros-jazzy-nav2-bringup \
     ros-jazzy-robot-localization ros-jazzy-ros-gz \
+    ros-jazzy-gz-sim-vendor ros-jazzy-gz-plugin-vendor \
+    ros-jazzy-gz-transport-vendor ros-jazzy-gz-msgs-vendor \
     ros-jazzy-ros2-control ros-jazzy-ros2-controllers \
     ros-jazzy-slam-toolbox && \
     rm -rf /var/lib/apt/lists/*

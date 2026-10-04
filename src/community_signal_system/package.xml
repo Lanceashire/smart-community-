@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>community_signal_system</name><version>0.1.0</version>
+  <description>Atomic community traffic light updates within Gazebo simulation.</description>
+  <maintainer email="noreply@example.com">Lanceashire</maintainer><license>Apache-2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>gz_sim_vendor</depend><depend>gz_plugin_vendor</depend>
+  <depend>gz_transport_vendor</depend><depend>gz_msgs_vendor</depend>
+  <export><build_type>ament_cmake</build_type></export>
+</package>

@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": {
+    "already_green_new_junction_releases_without_new_red": true,
+    "remaining_lower_does_not_exceed_true_remaining": true,
+    "late_green_insufficient_whole_body_budget_stops": true,
+    "message_gap_does_not_reuse_green_streak": true,
+    "unobserved_cold_start_phase_not_invented": true,
+    "unobserved_long_gap_not_claimed_as_an_edge": true,
+    "expired_anchor_cannot_release": true,
+    "fresh_matching_visual_phase_revalidates_clock": true,
+    "physical_yaw_sweep_keeps_one_track": true,
+    "resolved_identity_flip_still_cannot_double_count": true
+  },
+  "scope": "Phase counterexamples and independent physical projection; full Gazebo acceptance separate"
+}

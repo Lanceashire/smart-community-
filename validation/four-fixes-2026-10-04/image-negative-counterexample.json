@@ -1,0 +1,27 @@
+{
+  "passed": false,
+  "method": "Direct single-line OCR of actual saved JPEG Frame prefix (x 0:180, y 0:32); compare independently read digits with terminal/JSON event frame_id",
+  "unique_images": 1,
+  "event_count": 1,
+  "events": [
+    {
+      "sequence": 1,
+      "image": "d5ad81d33dfb-lap-001-event-001.jpg",
+      "expected_frame_id": 9999,
+      "sha256": "05f03fed2d1b810801105f902bbd2809fb13ea38f78c4efea992bf15f8c05675",
+      "rendered_frame_id": 3,
+      "header_ocr": [
+        "Frame 3 | 居民 1"
+      ],
+      "passed": false
+    }
+  ],
+  "verification_wall_s": 0.135,
+  "cpu_pool_threads": 2,
+  "read_only_roi": [
+    0,
+    0,
+    180,
+    32
+  ]
+}

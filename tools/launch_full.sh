@@ -9,7 +9,11 @@ mkdir -p log
 source tools/vision_env.sh
 source tools/ros_transport.sh
 "$AIC_VISION_PYTHON" tools/preflight.py --model "${AIC_PERCEPTION_MODEL:-src/community_demo/models/perception/yolo11s-comparison.pt}"
-env --default-signal=INT,QUIT bash tools/start_perception.sh --ros-args -p use_sim_time:=true \
+sensor_remaps=()
+for launch_argument in "$@"; do
+  if [[ "$launch_argument" == 'stress:=true' ]]; then sensor_remaps=(-r /camera/image:=/stress/camera/image); fi
+done
+env --default-signal=INT,QUIT bash tools/start_perception.sh --ros-args "${sensor_remaps[@]}" -p use_sim_time:=true \
   -p model:="${AIC_PERCEPTION_MODEL:-src/community_demo/models/perception/yolo11s-comparison.pt}" > log/perception-terminal.log 2>&1 &
 perception_pid=$!
 ros_pid=''

@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "actual_callback_approach_to_stop_retains_evidence": true,
+  "new_junction_reuses_phase_but_requires_fresh_green_streak": true,
+  "vision_gap_invalidates_local_green_streak": true,
+  "late_green_stops": true,
+  "unknown_cannot_invent_a_new_green": true,
+  "completion_resets_local_gate": true,
+  "completed_lap_stays_stopped_and_latched_with_all_sensors_missing": true,
+  "completion_does_not_mask_a_latched_fault": true,
+  "scope": "Actual patrol callbacks; camera colours only, no simulator topic"
+}

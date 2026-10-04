@@ -1,0 +1,16 @@
+{
+  "src/community_demo/community_demo/patrol.py": "d77be2cd03b3562196d1c66d974f9326696c88c0bb62005806f663cecb100e9c",
+  "src/community_demo/community_demo/perception.py": "0fb701dcf5d3cba23bc24a76de16bbdc15f6695fe7d4543e8657b47d8a72399d",
+  "src/community_demo/community_demo/localization.py": "5dd653397df6cc3ea912482aae9409c737341b86eb12884c59306a11de7df178",
+  "src/community_demo/community_demo/person_evidence.py": "9456e2f06c02bfbbc906807222c7934572d731c7e5882e5379f4184c9d250bb0",
+  "src/community_demo/community_demo/signal_gate.py": "bea6fa1f053f0eed25b58fa5960f39168074cedb572a1ceabb845e9c18b1aa1f",
+  "src/community_demo/community_demo/traffic_signals.py": "1cf94b471fc12a4b13a6f57ffe3a653e8ab4fa4e944b0578f14b4b5adc3d7416",
+  "src/community_demo/community_demo/sensor_stress.py": "e7da7ca2cb721bf812245cb669fbf57a205582347958fda95daa43486ae30699",
+  "src/community_demo/launch/demo.launch.py": "e22cad3668ce3d3315f09fc651b5134d5312f50d5e43f6a07ba0d7e3ff2505ab",
+  "src/community_demo/worlds/community.sdf": "c4d8bb8a8ee7365d31b268a4e6bbe0fc91d0474e1a861b6cf33f048ca622bbef",
+  "src/community_demo/models/perception/yolo11s-comparison.pt": "f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa",
+  "tools/audit_patrol_cycles.py": "6dd4853b88d440f40b5cc6994b728e4193a97502e1f6592bf3247c61564822ff",
+  "tools/launch_full.sh": "ff28face0e8a51889956642cb0a52e1a75825bbbc837bd608a680330f4df2156",
+  "src/community_signal_system/src/SignalSystem.cc": "4a817d262928b8b34c96e68e61581fbd2dd89555199d29b69d8c7c8295088f94",
+  "install/community_signal_system/lib/libcommunity_signal_system.so": "17dc5cec80b0bb0081547ba3a95828f0fc4139f8b38669a2e6d81e5bd253b497"
+}

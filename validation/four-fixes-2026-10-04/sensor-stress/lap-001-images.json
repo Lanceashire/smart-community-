@@ -1,0 +1,258 @@
+{
+  "passed": true,
+  "method": "Direct single-line OCR of actual saved JPEG Frame prefix (x 0:180, y 0:32); compare independently read digits with terminal/JSON event frame_id",
+  "unique_images": 17,
+  "event_count": 22,
+  "events": [
+    {
+      "sequence": 1,
+      "image": "d5ad81d33dfb-lap-001-event-001.jpg",
+      "expected_frame_id": 3,
+      "sha256": "05f03fed2d1b810801105f902bbd2809fb13ea38f78c4efea992bf15f8c05675",
+      "rendered_frame_id": 3,
+      "header_ocr": [
+        "Frame 3 | 居民 1"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 2,
+      "image": "d5ad81d33dfb-lap-001-event-002.jpg",
+      "expected_frame_id": 3,
+      "sha256": "05f03fed2d1b810801105f902bbd2809fb13ea38f78c4efea992bf15f8c05675",
+      "rendered_frame_id": 3,
+      "header_ocr": [
+        "Frame 3 | 居民 1"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 3,
+      "image": "d5ad81d33dfb-lap-001-event-003.jpg",
+      "expected_frame_id": 10,
+      "sha256": "dd335a05ab7c69a0add851514a6e4b9875b53f8191bac797077a31b9c1d429c0",
+      "rendered_frame_id": 10,
+      "header_ocr": [
+        "Frame 10 | 居民 2"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 4,
+      "image": "d5ad81d33dfb-lap-001-event-004.jpg",
+      "expected_frame_id": 35,
+      "sha256": "4d0a11e57f9d9ab0e07c23bc6e4bdfe42e8e63a8fa5751cb6b3e0f58c840823c",
+      "rendered_frame_id": 35,
+      "header_ocr": [
+        "Frame 35 | 居民 2"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 5,
+      "image": "d5ad81d33dfb-lap-001-event-005.jpg",
+      "expected_frame_id": 87,
+      "sha256": "4064782ea5b63a002a0d05595817b352515f4d2af039fc259214cdd7db70d24a",
+      "rendered_frame_id": 87,
+      "header_ocr": [
+        "Frame 87 | 居民4"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 6,
+      "image": "d5ad81d33dfb-lap-001-event-006.jpg",
+      "expected_frame_id": 87,
+      "sha256": "4064782ea5b63a002a0d05595817b352515f4d2af039fc259214cdd7db70d24a",
+      "rendered_frame_id": 87,
+      "header_ocr": [
+        "Frame 87 | 居民4"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 7,
+      "image": "d5ad81d33dfb-lap-001-event-007.jpg",
+      "expected_frame_id": 87,
+      "sha256": "4064782ea5b63a002a0d05595817b352515f4d2af039fc259214cdd7db70d24a",
+      "rendered_frame_id": 87,
+      "header_ocr": [
+        "Frame 87 | 居民4"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 8,
+      "image": "d5ad81d33dfb-lap-001-event-008.jpg",
+      "expected_frame_id": 91,
+      "sha256": "b62240b673f1fc9c6123f9a5b1a24cd47f6145df7a894cf59093d5b2c6bd834f",
+      "rendered_frame_id": 91,
+      "header_ocr": [
+        "Frame 91 |居民4"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 9,
+      "image": "d5ad81d33dfb-lap-001-event-009.jpg",
+      "expected_frame_id": 133,
+      "sha256": "5e1561f8c16c5ef12e070afab6595d10ca9635c077b13ec87a9c6f67685b5f0f",
+      "rendered_frame_id": 133,
+      "header_ocr": [
+        "Frame 133 | 居民"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 10,
+      "image": "d5ad81d33dfb-lap-001-event-010.jpg",
+      "expected_frame_id": 176,
+      "sha256": "29c7656e38f5725b8d33ab6c66d7cc54e5f1e6de25253945c84f7f7c25efbef7",
+      "rendered_frame_id": 176,
+      "header_ocr": [
+        "Frame 176 |居民"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 11,
+      "image": "d5ad81d33dfb-lap-001-event-011.jpg",
+      "expected_frame_id": 203,
+      "sha256": "c701d068ca00b459ea1f27e490a9aa536d62fdb7dcd8dc600e32993551439d2f",
+      "rendered_frame_id": 203,
+      "header_ocr": [
+        "Frame 203 | 居民"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 12,
+      "image": "d5ad81d33dfb-lap-001-event-012.jpg",
+      "expected_frame_id": 218,
+      "sha256": "990aa9e387265b9e0258d11ca18819eeae79d3a0a9e6801174a9b903610e689c",
+      "rendered_frame_id": 218,
+      "header_ocr": [
+        "Frame 218 | 居民"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 13,
+      "image": "d5ad81d33dfb-lap-001-event-013.jpg",
+      "expected_frame_id": 266,
+      "sha256": "2d3b18fa1c718276b407db21d03e5257cf3379ea685eaf5a26374cf037b245b0",
+      "rendered_frame_id": 266,
+      "header_ocr": [
+        "Frame 266 | 居民"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 14,
+      "image": "d5ad81d33dfb-lap-001-event-014.jpg",
+      "expected_frame_id": 266,
+      "sha256": "2d3b18fa1c718276b407db21d03e5257cf3379ea685eaf5a26374cf037b245b0",
+      "rendered_frame_id": 266,
+      "header_ocr": [
+        "Frame 266 | 居民"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 15,
+      "image": "d5ad81d33dfb-lap-001-event-015.jpg",
+      "expected_frame_id": 266,
+      "sha256": "2d3b18fa1c718276b407db21d03e5257cf3379ea685eaf5a26374cf037b245b0",
+      "rendered_frame_id": 266,
+      "header_ocr": [
+        "Frame 266 | 居民"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 16,
+      "image": "d5ad81d33dfb-lap-001-event-016.jpg",
+      "expected_frame_id": 278,
+      "sha256": "080da683f2a3e7d2dc19fa812f129b30b8a1ff4be21454af19d3e7f1a9cd119a",
+      "rendered_frame_id": 278,
+      "header_ocr": [
+        "Frame 278 |居民"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 17,
+      "image": "d5ad81d33dfb-lap-001-event-017.jpg",
+      "expected_frame_id": 348,
+      "sha256": "8299c9e98c312f8d5de772a4249768ff9e147ed3df99b22c28578267eaf312e8",
+      "rendered_frame_id": 348,
+      "header_ocr": [
+        "Frame 348 | 居民"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 18,
+      "image": "d5ad81d33dfb-lap-001-event-018.jpg",
+      "expected_frame_id": 366,
+      "sha256": "c729113066210c860fbc430fe2b17162605ca198fa8748a4fb741be33a8858b8",
+      "rendered_frame_id": 366,
+      "header_ocr": [
+        "Frame 366 | 居民"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 19,
+      "image": "d5ad81d33dfb-lap-001-event-019.jpg",
+      "expected_frame_id": 389,
+      "sha256": "bdf52b09218061b07676d1299336b1ffe9a6938d6c9969f7710667ee52bf62cf",
+      "rendered_frame_id": 389,
+      "header_ocr": [
+        "Frame 389 | 居民"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 20,
+      "image": "d5ad81d33dfb-lap-001-event-020.jpg",
+      "expected_frame_id": 526,
+      "sha256": "bea260b6915ea68c180ca8f38a5c38270010a0ac739641dbf9d483ad54015fbd",
+      "rendered_frame_id": 526,
+      "header_ocr": [
+        "Frame 526 | 居民"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 21,
+      "image": "d5ad81d33dfb-lap-001-event-021.jpg",
+      "expected_frame_id": 563,
+      "sha256": "f00240eefb3a38784dd4115170e2d0a839fb686fac3416090ac098579ffe2b09",
+      "rendered_frame_id": 563,
+      "header_ocr": [
+        "Frame 563 | 居民"
+      ],
+      "passed": true
+    },
+    {
+      "sequence": 22,
+      "image": "d5ad81d33dfb-lap-001-event-022.jpg",
+      "expected_frame_id": 598,
+      "sha256": "546c6f9297e179f5259e75d289205fb2184653423ebf5ede36754e8df5c0116c",
+      "rendered_frame_id": 598,
+      "header_ocr": [
+        "Frame 598 | 居民"
+      ],
+      "passed": true
+    }
+  ],
+  "verification_wall_s": 0.373,
+  "cpu_pool_threads": 2,
+  "read_only_roi": [
+    0,
+    0,
+    180,
+    32
+  ]
+}

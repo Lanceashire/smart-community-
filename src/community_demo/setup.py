@@ -26,5 +26,6 @@ setup(
         'vision = community_demo.vision:main',
         'cmd_bridge = community_demo.cmd_bridge:main',
         'traffic_signals = community_demo.traffic_signals:main',
+        'sensor_stress = community_demo.sensor_stress:main',
     ]},
 )

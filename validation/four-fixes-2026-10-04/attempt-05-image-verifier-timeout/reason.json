@@ -1,0 +1,7 @@
+{
+  "accepted": false,
+  "reason": "Independent saved-image OCR subprocess exceeded 90 wall seconds after completed physical lap; record was written before final image and terminal checks. Keep raw record and verify exact same persisted frames; no change to runtime code or acceptance thresholds.",
+  "runtime_sha256_preserved": true,
+  "physical_completed": true,
+  "image_check_pending": true
+}

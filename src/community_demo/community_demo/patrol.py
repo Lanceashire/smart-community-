@@ -22,7 +22,7 @@ from std_srvs.srv import Trigger
 from community_demo.bounded_pid import BoundedPID
 from community_demo.road_rules import safe_pose,predict,footprint,clear_of_posts
 from ament_index_python.packages import get_package_share_directory
-from community_demo.signal_gate import FreshGreenGate
+from community_demo.signal_gate import FreshGreenGate, VisualPhaseClock
 from community_demo.motion_profile import bend_limit
 
 
@@ -52,7 +52,7 @@ OBSERVATION_HEADING={'observe_A_north':math.pi,'observe_A_west':-math.pi/2,'obse
 OBSERVATIONS = {
     'observe_A_north':[('A_north', math.pi/2)],
     'observe_A_west':[('A_west', math.pi/2)],
-    'observe_middle':[('A_south', math.pi/2),('B_north', -math.pi/2)],
+    'observe_middle':[('A_south', math.pi/2),('B_north', -math.pi/2+.08)],
     'observe_B_east':[('B_east', -math.pi/2)],
     'observe_plate_1':[('plate_1', -math.pi/2)],
     'observe_plate_2':[('plate_2', -math.pi/2)],
@@ -99,6 +99,7 @@ class Patrol(Node):
         self.path=None;self.path_pending=False;self.path_index=-1;self.path_pub=self.create_publisher(__import__('nav_msgs.msg',fromlist=['Path']).Path,'/patrol/path',10)
         self.command_pub = self.create_publisher(TwistStamped, '/cmd_vel_nav', 10)
         self.status_pub = self.create_publisher(String, '/patrol/status', 10)
+        self.signal_decisions = self.create_publisher(String, '/patrol/signal_decision', 10)
         self.lap_pub = self.create_publisher(String, '/patrol/lap', QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.run_id = uuid.uuid4().hex[:12]
         self.lap_id = 1
@@ -121,7 +122,8 @@ class Patrol(Node):
         self.index = 0
         self.green_streak = 0
         self.waiting_for_green = False
-        self.signal_gate = FreshGreenGate()
+        self.phase_clock = VisualPhaseClock()
+        self.signal_gate = FreshGreenGate(self.phase_clock)
         self.signal_context = None
         self.completed = False
         self.last_log = ''
@@ -300,6 +302,7 @@ class Patrol(Node):
     def on_light(self, msg):
         self.light_state = msg.data
         self.light_update = self.get_clock().now()
+        self.phase_clock.observe(msg.data, self.light_update.nanoseconds / 1e9)
         if self.update_signal_context() is not None:
             self.signal_gate.observe(msg.data, self.light_update.nanoseconds / 1e9)
 
@@ -368,21 +371,24 @@ class Patrol(Node):
     def tick(self):
         now = self.get_clock().now()
         self.update_signal_context()
-        if (self.pose is None or (now - self.pose_update).nanoseconds > 700_000_000 or
-                self.pose_source_time is None or now.nanoseconds/1e9-self.pose_source_time>.15):
-            self.publish_command()
-            self.motion_probe = None
-            self.log_status('WAIT_FRESH_LOCALIZATION')
-            return
         if self.tilt > .35:
             self.fault = 'FAULT chassis tilted beyond 20 degrees'
         if self.fault:
             self.publish_command()
             self.log_status(self.fault)
             return
+        # Completion is a latched stopped state. Later sensor dropout must
+        # not replace it with a transient moving-lap recovery status.
         if self.completed:
             self.publish_command()
+            self.motion_probe = None
             self.log_status(f'COMPLETE single lap; travelled={self.distance_travelled:.2f} m')
+            return
+        if (self.pose is None or (now - self.pose_update).nanoseconds > 700_000_000 or
+                self.pose_source_time is None or now.nanoseconds/1e9-self.pose_source_time>.15):
+            self.publish_command()
+            self.motion_probe = None
+            self.log_status('WAIT_FRESH_LOCALIZATION')
             return
         if self.require_vision and (self.perception_update is None or
                 (now-self.perception_update).nanoseconds>800_000_000 or
@@ -422,10 +428,19 @@ class Patrol(Node):
                     self.green_streak = 0
                 if not recent:self.signal_gate.invalidate()
                 if not self.signal_gate.ready and self.require_vision:
-                    self.log_status(f'STOP {name}: light={self.light_state}')
+                    remaining=self.signal_gate.remaining
+                    self.log_status(f'STOP {name}: light={self.light_state}; remaining_lower={remaining}; visual_edges={self.phase_clock.edges}')
                     return
                 self.green_streak = 0
                 self.waiting_for_green = False
+                self.signal_decisions.publish(String(data=json.dumps({
+                    'run_id':self.run_id,'lap_id':self.lap_id,'gate':name,
+                    'stamp':now.nanoseconds/1e9,'colour':self.light_state,
+                    'remaining_lower_s':self.signal_gate.remaining,
+                    'crossing_budget_s':self.signal_gate.crossing_budget,
+                    'camera_edge_count':self.phase_clock.edges,
+                    'camera_anchor_interval':self.phase_clock.anchor,
+                    'source':'Camera-observed phase edges and fresh green; no simulator state'})))
                 self.signal_gate.reset()
             self.pan_pub.publish(Float64(data=0.0))
             self.log_status(f'REACHED {name} ({self.index + 1}/{len(ROUTE)}) estimated=({x:.3f},{y:.3f})')
