@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "late_green_does_not_release": true,
+  "fresh_transition_requires_five_green_samples": true,
+  "sensor_outage_requires_new_transition": true,
+  "two_pan_retries_before_timeout": true,
+  "timeout_is_explicitly_unconfirmed": true,
+  "successful_view_completes": true,
+  "scope": "Offline actual controller methods; complements live physical laps; no injected ROS answers",
+  "odometry_stamp_preserved_and_stale_pose_withheld": true,
+  "static_post_collision_guard": true,
+  "registration_view_guard": true,
+  "blank_image_does_not_refresh_registration": true,
+  "localization_quality_states": true,
+  "clear_scan_debounce": true,
+  "early_finish_and_stale_feedback_guard": true
+}

@@ -1,0 +1,21 @@
+{
+  "passed": false,
+  "checks": {
+    "file:/tmp/aic-missing-model.pt": false,
+    "file:src/community_demo/maps/roads.pgm": true,
+    "file:src/community_demo/maps/roads.yaml": true,
+    "file:src/community_demo/maps/planning-obstacles.json": true,
+    "file:install/setup.bash": true,
+    "cuda_available": true
+  },
+  "errors": [
+    "[Errno 2] No such file or directory: '/tmp/aic-missing-model.pt'"
+  ],
+  "details": {
+    "python": "3.12.3",
+    "torch": "2.13.0+cu130",
+    "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU"
+  },
+  "time_unix": 1791087612.6276906,
+  "scope": "Static files, actual GPU/YOLO and OCR inference; live sensors remain controller safety gates"
+}

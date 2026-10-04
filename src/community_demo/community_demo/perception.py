@@ -10,13 +10,14 @@ from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 import cv2,numpy as np,rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data,QoSProfile,ReliabilityPolicy,DurabilityPolicy
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image,JointState
 from std_msgs.msg import String
 from std_srvs.srv import Trigger
 from ultralytics import YOLO
 from rapidocr import RapidOCR
 from community_demo.plate_geometry import blue_plates
 from community_demo.visual_overlay import draw_detection_labels
+from community_demo.person_evidence import PersonEvidence
 from PIL import Image as PILImage,ImageDraw,ImageFont
 
 class Perception(Node):
@@ -37,6 +38,9 @@ class Perception(Node):
         self.frame=None;self.last_stamp=None;self.processed=None;self.jpeg=b'';self.people={};self.plates={};self.events=[];self.votes={};self.light_history=deque(maxlen=3);self.last_ocr=0.;self.status='WAIT';self.view='transit';self.completed=False;self.last_light_event='unknown';self.frame_id=0;self.latest={}
         self.run_id='pending';self.lap_id=0;self.lap_active=False
         self.view_people={};self.view_plates={};self.view_votes={};self.last_observation_outcomes=[]
+        self.person_evidence=PersonEvidence();self.pan_samples=deque(maxlen=256)
+        self.view_sample=0;self.view_pan=0.;self.sample_frames={};self.sample_angles={}
+        self.create_subscription(JointState,'/world/community/model/patrol_bot/joint_state',self.on_joint,qos_profile_sensor_data)
         self.create_subscription(String,'/inspection/outcome',self.on_outcome,qos_profile_sensor_data)
         fonts=['src/community_demo/models/fonts/wqy-zenhei.ttc','/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc','/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc']
         self.font=next((ImageFont.truetype(f,22) for f in fonts if Path(f).exists()),ImageFont.load_default())
@@ -68,6 +72,10 @@ class Perception(Node):
         if m.encoding not in ('rgb8','bgr8'):return
         a=np.frombuffer(m.data,np.uint8).reshape(m.height,m.step)[:,:m.width*3].reshape(m.height,m.width,3)
         self.frame=cv2.cvtColor(a,cv2.COLOR_RGB2BGR) if m.encoding=='rgb8' else a.copy();self.last_stamp=m.header
+    def on_joint(self,m):
+        if 'camera_pan_joint' not in m.name:return
+        i=m.name.index('camera_pan_joint')
+        if i<len(m.position):self.pan_samples.append((m.header.stamp.sec+m.header.stamp.nanosec/1e9,float(m.position[i]),float(m.velocity[i]) if i<len(m.velocity) else float('inf')))
     def on_status(self,m):
         # Lifecycle messages delimit laps even if old status messages are queued.
         if self.lap_active and m.data.startswith('COMPLETE'):return
@@ -81,6 +89,7 @@ class Perception(Node):
             self.people={};self.plates={};self.events=[];self.votes={};self.light_history.clear()
             self.last_light_event='unknown';self.last_ocr=0.;self.view='transit';self.completed=False
             self.view_people={};self.view_plates={};self.view_votes={};self.last_observation_outcomes=[]
+            self.person_evidence=PersonEvidence();self.sample_frames={};self.sample_angles={}
             self.status=f'START lap={self.lap_id}'
             if data['phase']=='completed':
                 try:
@@ -101,8 +110,10 @@ class Perception(Node):
             if key!=self.view_key:
                 self.view_people={};self.view_plates={};self.view_votes={}
                 self.view_key=key;self.view_frames=0;self.evidence_signature=None
+                self.person_evidence=PersonEvidence();self.sample_frames={};self.sample_angles={}
                 self.view_started=self.get_clock().now().nanoseconds/1e9;self.evidence_changed=self.view_started
             self.view=view
+            self.view_sample=int(data.get('sample',0));self.view_pan=float(data.get('pan_rad',0.))
         except ValueError:pass
     def on_outcome(self,m):
         try:data=json.loads(m.data)
@@ -116,6 +127,18 @@ class Perception(Node):
         if self.frame is None or self.last_stamp==self.processed:return
         header=self.last_stamp;frame=self.frame.copy();self.processed=header;self.frame_id+=1
         begin=time.perf_counter();result=self.model.predict(frame,imgsz=960,conf=.35,iou=.45,device=0,verbose=False)[0];detections=[];light_candidates=[];ocr_due=time.monotonic()-self.last_ocr>1.0;new_events=[]
+        image_time=header.stamp.sec+header.stamp.nanosec/1e9
+        encoder=min(self.pan_samples,key=lambda x:abs(x[0]-image_time)) if self.pan_samples else None
+        pan=encoder[1] if encoder else self.view_pan
+        stable_pan=encoder is not None and abs(encoder[0]-image_time)<=.10 and abs(encoder[2])<.15 and abs(pan-self.view_pan)<.035
+        person_boxes=[]
+        for box in result.boxes:
+            name=result.names[int(box.cls.item())]
+            if name.startswith(('resident_','visitor_')):
+                coords=list(map(int,box.xyxy[0].cpu().numpy()));coords=[max(0,coords[0]),max(0,coords[1]),min(frame.shape[1],coords[2]),min(frame.shape[0],coords[3])]
+                person_boxes.append({'name':name,'confidence':float(box.conf.item()),'bbox':coords})
+        person_tracks=self.person_evidence.update(person_boxes,self.frame_id,pan,frame.shape[1])
+        tracked={(e['name'],tuple(e['bbox'])):e for e in person_tracks}
         pixel_plates=blue_plates(frame,min_width=42)
         plate_boxes=[b for b in result.boxes if result.names[int(b.cls.item())]=='plate']
         chosen_plate=min(plate_boxes,key=lambda b:abs(float((b.xyxy[0,0]+b.xyxy[0,2])/2)-frame.shape[1]/2),default=None)
@@ -126,14 +149,11 @@ class Perception(Node):
             if name.startswith(('resident_','visitor_')):
                 kind='resident' if name.startswith('resident') else 'visitor';color=(60,220,80) if kind=='resident' else (60,110,255)
                 # Require repeated visual identity evidence, not one-frame classes.
-                history=self.votes.setdefault(name,deque(maxlen=8));history.append((self.frame_id,conf))
-                recent=[c for f,c in history if self.frame_id-f<15]
-                if self.view!='transit':
-                    evidence=self.view_votes.setdefault(name,deque(maxlen=8));evidence.append((self.frame_id,conf))
-                    evidence=[c for f,c in evidence if self.frame_id-f<15]
-                    if len(evidence)>=3 and np.mean(evidence)>.60:self.view_people[name]=self.frame_id
-                if self.lap_active and len(recent)>=3 and np.mean(recent)>.60 and name not in self.people:
-                    event=self.event(kind,name,np.mean(recent),[x1,y1,x2,y2]);self.people[name]=event;new_events.append(event)
+                track=tracked.get((name,(x1,y1,x2,y2)))
+                confirmed=track is not None and track['confirmed']
+                if self.view!='transit' and stable_pan and confirmed:self.view_people[name]=self.frame_id
+                if self.lap_active and confirmed and name not in self.people:
+                    event=self.event(kind,name,track['mean_confidence'],[x1,y1,x2,y2]);self.people[name]=event;new_events.append(event)
                     conf=float(event['confidence'])
             elif name=='plate':
                 kind='plate';color=(255,160,60)
@@ -167,18 +187,20 @@ class Perception(Node):
             new_events.append(self.event('traffic_light',stable,selected[2],selected[3]))
             self.last_light_event=stable
         counts={'residents':sum(k.startswith('resident') for k in self.people),'visitors':sum(k.startswith('visitor') for k in self.people),'total':len(self.people)}
-        pending=[]
-        for name,history in self.view_votes.items():
-            recent=[c for f,c in history if self.frame_id-f<8]
-            if not name.startswith('plate:') and name not in self.view_people and len(recent)>=2 and np.mean(recent)>.45:pending.append(name)
+        pending=[e['winner'] for e in person_tracks if not e['identity_resolved'] and e['votes']>=2 and e['mean_confidence']>.45]
         view_confirmed=bool(self.view_plates) if self.view.startswith('plate_') else bool(self.view_people) and not pending
         now_sim=self.get_clock().now().nanoseconds/1e9
         self.view_frames+=1
-        signature=(tuple(sorted(self.view_people)),tuple(sorted(self.view_plates)),tuple(sorted(pending)))
+        if stable_pan and age<=.5 and self.view!='transit':
+            self.sample_frames[self.view_sample]=self.sample_frames.get(self.view_sample,0)+1
+            self.sample_angles[self.view_sample]=pan
+        two_angles=(self.sample_frames.get(0,0)>=5 and self.sample_frames.get(1,0)>=3 and
+                    abs(self.sample_angles.get(1,0.)-self.sample_angles.get(0,0.))>=.05)
+        signature=(tuple(sorted(self.view_people)),tuple(sorted(self.view_plates)),tuple(sorted(pending)),self.view_sample)
         if signature!=self.evidence_signature:
             self.evidence_signature=signature;self.evidence_changed=now_sim
         stable_evidence=self.view_frames>=6 and now_sim-self.view_started>=1.8 and now_sim-self.evidence_changed>=.8
-        feedback={'view':self.view,'ready':bool(self.view!='transit' and age<=.5 and view_confirmed and stable_evidence),'stable_frames':self.view_frames,'quiet_s':round(now_sim-self.evidence_changed,2),'person_ids':list(self.view_people),'plate_texts':list(self.view_plates),'pending_person_ids':pending,'criterion':'Repeated visual evidence in this view; does not prove every unseen/occluded person was counted'}
+        feedback={'view':self.view,'attempt':self.view_key[1] if self.view_key else 0,'sample':self.view_sample,'ready':bool(self.view!='transit' and age<=.5 and view_confirmed and stable_evidence and (self.view.startswith('plate_') or (stable_pan and two_angles))),'stable_frames':self.view_frames,'quiet_s':round(now_sim-self.evidence_changed,2),'person_ids':list(self.view_people),'plate_texts':list(self.view_plates),'pending_person_ids':pending,'sample_frames':self.sample_frames,'sample_angles':self.sample_angles,'two_angles_verified':two_angles,'criterion':'Track-consistent identities and two measured camera angles; unseen/occluded people are not guaranteed'}
         canvas=PILImage.fromarray(cv2.cvtColor(frame,cv2.COLOR_BGR2RGB));draw=ImageDraw.Draw(canvas)
         overlay_labels=draw_detection_labels(canvas,detections,self.font)
         draw.rectangle((0,0,canvas.width,64),fill=(15,23,42));draw.text((12,4),f"Frame {self.frame_id} | 居民 {counts['residents']} / 访客 {counts['visitors']} / 总计 {counts['total']} | 灯 {stable}",font=self.font,fill=(255,255,255));draw.text((12,32),self.status[:95],font=self.font,fill=(180,210,255));frame=cv2.cvtColor(np.asarray(canvas),cv2.COLOR_RGB2BGR)

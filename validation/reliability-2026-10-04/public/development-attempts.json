@@ -1,0 +1,90 @@
+[
+  {
+    "name": "attempt-01-early-angle",
+    "included_in_final_passes": false,
+    "reason": "Interrupted after actual A_north observation remained unconfirmed. Timed first-angle switch advanced before stable camera frames; resolved tracks could also be marked pending again. ROS background launch inherited ignored SIGINT, preventing clean shutdown. Final acceptance must use repaired source and independent run.",
+    "completed_laps": [],
+    "partial_failure": {
+      "error": "",
+      "run_id": "04ffdbe048ad",
+      "lap_id": 1,
+      "max_fresh_position_error_m": 0.030743378202129183,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      }
+    }
+  },
+  {
+    "name": "attempt-02-ocr-variable",
+    "included_in_final_passes": false,
+    "reason": "Actual perception callback crashed at first plate OCR: local evidence variable used both for tracks and OCR deque. Wrapper shut down all simulation children correctly. Fixed by separating person_tracks from OCR evidence, verified on real saved raw plate pixels before independent final laps.",
+    "completed_laps": [],
+    "partial_failure": {
+      "error": "",
+      "run_id": "60a0200dbf78",
+      "lap_id": 1,
+      "max_fresh_position_error_m": 0.03281140779477378,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      }
+    }
+  },
+  {
+    "name": "attempt-03-stale-odometry",
+    "included_in_final_passes": false,
+    "reason": "First full lap passed all functional checks, but peak startup position error 5.94cm exceeded prior 3.01cm. Wheel sample was republished with current timestamp, masking stale source age. Second lap real node pauses had passed stop probes. Stopped before final claim; preserving completed and partial records. Final localization keeps source timestamp and withholds odometry older than 0.15s.",
+    "completed_laps": [
+      {
+        "lap_id": 1,
+        "passed": true,
+        "failed_checks": [],
+        "max_position_error_m": 0.05935545752791965
+      },
+      {
+        "lap_id": 2,
+        "passed": true,
+        "failed_checks": [],
+        "max_position_error_m": 0.14098574580411105
+      }
+    ],
+    "partial_failure": {
+      "error": "Unable to convert call argument '0' to Python object (#define PYBIND11_DETAILED_ERROR_MESSAGES or compile in debug mode for details)",
+      "run_id": "a1a3fb1ea587",
+      "lap_id": 2,
+      "max_fresh_position_error_m": 0.14098574580411105,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      }
+    }
+  },
+  {
+    "name": "attempt-04-shm-resume",
+    "included_in_final_passes": false,
+    "reason": "First complete lap passed. On second lap SIGSTOP/SIGCONT of perception, existing perception/localization streams stopped updating while Gazebo clock, Gazebo odometry and a new ROS odometry subscriber continued. GPU healthy. Inference: Fast DDS shared-memory participant pause/resume path stalled. Switching to officially supported UDPv4-only transport and best-effort low queues for all streaming bridge topics, then independently retesting. Not claiming a proven internal DDS root cause.",
+    "completed_laps": [
+      {
+        "lap_id": 1,
+        "passed": true,
+        "failed_checks": [],
+        "max_position_error_m": 0.03262439367243065
+      }
+    ],
+    "partial_failure": {
+      "error": "",
+      "run_id": "73b26c0a2400",
+      "lap_id": 2,
+      "max_fresh_position_error_m": 0.019081883671268625,
+      "counts": {
+        "residents": 3,
+        "visitors": 0,
+        "total": 3
+      }
+    }
+  }
+]

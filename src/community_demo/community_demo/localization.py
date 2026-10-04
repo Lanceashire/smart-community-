@@ -117,11 +117,13 @@ class Localization(Node):
         scan.range_min=.17;scan.range_max=6.;scan.scan_time=.1;scan.ranges=ranges.tolist();self.scans.publish(scan)
     def publish(self):
         now=self.get_clock().now().nanoseconds/1e9
-        if self.odom_time is None or now-self.odom_received>.5 or now-self.camera_received>.7:
+        odom_age=None if self.odom_time is None else now-(self.odom_time.sec+self.odom_time.nanosec/1e9)
+        if odom_age is None or odom_age>.15 or odom_age<-.05 or now-self.odom_received>.5 or now-self.camera_received>.7:
             self.status.publish(String(data='LOST odometry or camera; navigation pose withheld'));return
         state='lost' if self.unmatched_distance>.75 else 'degraded' if self.unmatched_distance>.30 else 'tracking'
-        self.quality.publish(String(data=json.dumps({'state':state,'encoder_image_delta_s':self.encoder_age,'score_m':self.score,'paint_pixels':self.registration_points,'distance_without_match_m':round(self.unmatched_distance,4),'last_match_age_s':None if self.last_match is None else round(now-self.last_match,3),'criterion':'Local registration and propagated travel; not a calibrated probability or global relocalization'})))
-        stamp=self.get_clock().now().to_msg();transforms=[]
+        self.quality.publish(String(data=json.dumps({'state':state,'odometry_source_age_s':round(odom_age,4),'encoder_image_delta_s':self.encoder_age,'score_m':self.score,'paint_pixels':self.registration_points,'distance_without_match_m':round(self.unmatched_distance,4),'last_match_age_s':None if self.last_match is None else round(now-self.last_match,3),'criterion':'Local registration and propagated travel; not a calibrated probability or global relocalization'})))
+        # Pose belongs to the last integrated wheel sample, not the publication time.
+        stamp=self.odom_time;transforms=[]
         # Separate mapping base avoids assigning two parents to navigation base.
         for parent,child,x,y,yaw in [('field','base_link',*self.xy,self.yaw),('odom','slam_base',1.1-self.xy[0],1.7-self.xy[1],wrap(self.yaw-math.pi))]:
             t=TransformStamped();t.header.stamp=stamp;t.header.frame_id=parent;t.child_frame_id=child;t.transform.translation.x=float(x);t.transform.translation.y=float(y);t.transform.rotation.z=math.sin(yaw/2);t.transform.rotation.w=math.cos(yaw/2);transforms.append(t)

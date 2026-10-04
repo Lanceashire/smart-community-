@@ -23,6 +23,7 @@ from community_demo.bounded_pid import BoundedPID
 from community_demo.road_rules import safe_pose,predict,footprint,clear_of_posts
 from ament_index_python.packages import get_package_share_directory
 from community_demo.signal_gate import FreshGreenGate
+from community_demo.motion_profile import bend_limit
 
 
 def wrap(angle):
@@ -74,8 +75,11 @@ class Patrol(Node):
         self.observation_align=False
         self.observation_index=0
         self.observation_attempt=0
+        self.observation_sample=0
+        self.sample_start=None
         self.observation_feedback={}
         self.feedback_update=None
+        self.perception_update=None;self.perception_stamp=None
         self.observation_outcomes=[]
         self.create_subscription(String,'/perception/results',self.on_perception,qos_profile_sensor_data)
         self.inspection_pub=self.create_publisher(String,'/inspection/outcome',10)
@@ -105,6 +109,7 @@ class Patrol(Node):
         self.create_subscription(String, '/perception/traffic_light', self.on_light, qos_profile_sensor_data)
         self.pose = None
         self.pose_update = None
+        self.pose_source_time=None
         self.tilt = 0.0
         self.distance_travelled = 0.0
         self.motion_probe = None
@@ -121,7 +126,7 @@ class Patrol(Node):
         self.completed = False
         self.last_log = ''
         self.speed_pid = BoundedPID(kp=.55, lower=0.0, upper=.22)
-        self.heading_pid = BoundedPID(kp=1.8, lower=-.65, upper=.65)
+        self.heading_pid = BoundedPID(kp=1.8, lower=-.55, upper=.55)
         self.create_timer(.1, self.tick)
         self.get_logger().info('Single-lap route ready; uses camera / wheel localization with separate laser SLAM mapping and camera-confirmed green.')
         self.publish_lap('started')
@@ -161,21 +166,33 @@ class Patrol(Node):
         elapsed=(now-self.observation_start).nanoseconds/1e9 if self.observation_start else 0.
         feedback=self.observation_feedback
         fresh=self.feedback_update is not None and (now-self.feedback_update).nanoseconds<700_000_000
-        ready=fresh and feedback.get('view')==view and feedback.get('ready',False)
+        person_view=not view.startswith('plate_')
+        matching=(fresh and feedback.get('view')==view and
+                  feedback.get('attempt')==self.observation_attempt)
+        ready=bool(matching and feedback.get('ready',False) and
+                   (not person_view or (self.observation_sample==1 and feedback.get('sample')==1)))
         if not ready:
-            if elapsed>=9.5:self.observation_attempt=2
-            elif elapsed>=5.5:self.observation_attempt=1
+            attempt=2 if elapsed>=10.5 else (1 if elapsed>=6.5 else 0)
+            if attempt!=self.observation_attempt:
+                self.observation_attempt=attempt;self.observation_sample=0;self.sample_start=now
+                matching=False
+        if self.sample_start is None:self.sample_start=now
+        # Advance only after the encoder-aligned first angle has real stable frames.
+        if (person_view and self.observation_sample==0 and matching and
+            feedback.get('sample_frames',{}).get('0',0)>=5):
+            self.observation_sample=1;self.sample_start=now
         angle += (0., .08, -.08)[self.observation_attempt]
+        if person_view and self.observation_sample:angle+=.08
         self.pan_pub.publish(Float64(data=angle))
         if self.observation_start is None:self.observation_start=now
-        event={'run_id':self.run_id,'lap_id':self.lap_id,'view':view,'route_point':name,'pan_rad':angle,'pose':self.pose,'attempt':self.observation_attempt}
+        event={'run_id':self.run_id,'lap_id':self.lap_id,'view':view,'route_point':name,'pan_rad':angle,'pose':self.pose,'attempt':self.observation_attempt,'sample':self.observation_sample}
         self.observation_pub.publish(String(data=json.dumps(event)))
         self.log_status(('OBSERVE ' if self.observation_attempt==0 else 'RETRY_OBSERVE ')+view)
         # Stable per-view evidence permits an early finish; uncertain views retain retries.
-        minimum_s=2.5 if view.startswith('plate_') else 3.0
+        minimum_s=2.5 if view.startswith('plate_') else 3.8
         if (now-self.observation_start).nanoseconds<minimum_s*1e9:return False
         if self.camera_frame is None:return False
-        if not ready and elapsed<13.5:return False
+        if not ready and elapsed<15.0:return False
         outcome={**event,'confirmed':bool(ready),'elapsed_s':round(elapsed,2),'feedback':feedback if fresh else {'reason':'stale or missing perception feedback'}}
         self.observation_outcomes.append(outcome)
         if not ready:self.get_logger().warning('UNCONFIRMED_VIEW '+view+' after bounded retries')
@@ -191,6 +208,7 @@ class Patrol(Node):
         (archive/'outcomes.json').write_text(json.dumps(self.observation_outcomes,indent=2)+'\n')
         self.observation_index+=1;self.observation_start=None
         self.observation_attempt=0
+        self.observation_sample=0;self.sample_start=None
         if self.observation_index<len(OBSERVATIONS[name]):return False
         self.observation_index=0;self.observation_align=False;self.pan_pub.publish(Float64(data=0.0))
         self.observation_pub.publish(String(data=json.dumps({'view':'transit'})))
@@ -202,6 +220,8 @@ class Patrol(Node):
         if (data.get('run_id'),data.get('lap_id'))!=(self.run_id,self.lap_id):return
         self.observation_feedback=data.get('observation_feedback',{})
         self.feedback_update=self.get_clock().now()
+        self.perception_update=self.feedback_update
+        self.perception_stamp=data.get('stamp')
 
     def on_odom(self, msg):
         p = msg.pose.pose.position
@@ -215,6 +235,7 @@ class Patrol(Node):
                 self.distance_travelled += step
         self.pose = (p.x, p.y, yaw_from_quaternion(q))
         self.pose_update = self.get_clock().now()
+        self.pose_source_time=msg.header.stamp.sec+msg.header.stamp.nanosec/1e9
 
     def restart(self, request, response):
         fresh = self.pose_update is not None and (self.get_clock().now()-self.pose_update).nanoseconds < 700_000_000
@@ -242,6 +263,7 @@ class Patrol(Node):
         self.observation_feedback={}
         self.feedback_update=None
         self.observation_attempt=0
+        self.observation_sample=0;self.sample_start=None
         self.last_log = ''
         for controller in (self.speed_pid, self.heading_pid):
             controller.integral = controller.previous = 0.0
@@ -327,6 +349,7 @@ class Patrol(Node):
         x,y,yaw=self.pose
         points=[(p.pose.position.x,p.pose.position.y) for p in self.path.poses]
         nearest=min(range(len(points)),key=lambda i:math.hypot(points[i][0]-x,points[i][1]-y))
+        self.path_points=points;self.path_nearest=nearest
         lookahead=nearest
         while lookahead<len(points)-1 and math.hypot(points[lookahead][0]-x,points[lookahead][1]-y)<.14:lookahead+=1
         gx,gy=points[lookahead]
@@ -345,7 +368,8 @@ class Patrol(Node):
     def tick(self):
         now = self.get_clock().now()
         self.update_signal_context()
-        if self.pose is None or (now - self.pose_update).nanoseconds > 700_000_000:
+        if (self.pose is None or (now - self.pose_update).nanoseconds > 700_000_000 or
+                self.pose_source_time is None or now.nanoseconds/1e9-self.pose_source_time>.15):
             self.publish_command()
             self.motion_probe = None
             self.log_status('WAIT_FRESH_LOCALIZATION')
@@ -360,6 +384,11 @@ class Patrol(Node):
             self.publish_command()
             self.log_status(f'COMPLETE single lap; travelled={self.distance_travelled:.2f} m')
             return
+        if self.require_vision and (self.perception_update is None or
+                (now-self.perception_update).nanoseconds>800_000_000 or
+                self.perception_stamp is None or now.nanoseconds/1e9-self.perception_stamp>.5):
+            self.publish_command();self.motion_probe=None
+            self.log_status('WAIT_FRESH_PERCEPTION');return
         if self.scan_update is None or (now - self.scan_update).nanoseconds > 700_000_000:
             self.publish_command()
             self.motion_probe = None
@@ -441,6 +470,7 @@ class Patrol(Node):
             # Extra speed only on straight, well-localized travel, away from stop approaches.
             if abs(error)>.12 or 'approach' in name or stop or self.localization_quality.get('state')!='tracking':
                 linear=min(linear,.14 if self.localization_quality.get('state')=='degraded' else .18)
+            linear=bend_limit(self.path_points,self.path_nearest,error,dist,linear)
         if self.motion_probe is None:
             self.motion_probe = (now, x, y, yaw)
         elif (now - self.motion_probe[0]).nanoseconds > 4_000_000_000:

@@ -1,0 +1,17 @@
+{
+  "weights": "log/training/reliability-2026-10-04/weights/best.pt",
+  "sha256": "368cbc1cd463dee5bd93eb24991ee6a0b5bfbc9e59f3ca111728bb2eb7653f4d",
+  "train_sampling": {
+    "original": 736,
+    "extra": 608
+  },
+  "weak_class_ids": [
+    13,
+    16,
+    18
+  ],
+  "epochs_requested": 12,
+  "validation_test_unchanged": true,
+  "new_unique_training_images": 0,
+  "scope": "Training images are repeated only to adjust weak-class sampling; no validation/test training."
+}

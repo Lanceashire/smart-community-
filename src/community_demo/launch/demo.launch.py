@@ -29,7 +29,8 @@ def generate_launch_description():
     bridge = Node(
         package='ros_gz_bridge', executable='parameter_bridge', name='gz_bridge',
         parameters=[{f'qos_overrides.{topic}.publisher.{key}': value
-                     for topic in ['/camera/image','/lidar/raw/points','/model/patrol_bot/odometry']
+                     for topic in ['/camera/image','/lidar/raw/points','/model/patrol_bot/odometry',
+                                   '/world/community/model/patrol_bot/joint_state','/model/patrol_bot/ground_truth']
                      for key,value in [('reliability','best_effort'),('depth',2)]}],
         arguments=[
             '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',

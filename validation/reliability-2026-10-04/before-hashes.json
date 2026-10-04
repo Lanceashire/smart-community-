@@ -1,0 +1,9 @@
+{
+  "src/community_demo/community_demo/patrol.py": "ff896612aa2515a1f83b71454c61b9831aa8ba20a0971fad746ff72ccaf27191",
+  "src/community_demo/community_demo/perception.py": "00d29727f41c5d329cdea976a8fa0f3335ed216d07062e69b4a8919bae1b12c0",
+  "src/community_demo/community_demo/localization.py": "bac1273dfa8ac5be308e1668ec0b82dfbbb3733f6dd09dd6c327c48834a99207",
+  "src/community_demo/community_demo/signal_gate.py": "d711dbafe050755c9f44fd8b43b8f1a50b15f5785a321f3e2af8de81e4130072",
+  "src/community_demo/worlds/community.sdf": "bb1dc2cfff3bc47efc48736f041e4e8981cc00550e8fda351d4ea15e1fc093f6",
+  "src/community_demo/models/perception/yolo11s-comparison.pt": "f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa",
+  "src/community_demo/maps/roads.pgm": "1dec85713b10a3042965d9e39d3f86816f9b728a845a817fbe17083b3b7f74b9"
+}

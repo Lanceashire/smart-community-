@@ -22,7 +22,8 @@
     "NVIDIA_DRIVER_CAPABILITIES": "compute,utility,graphics,display,video",
     "NVIDIA_VISIBLE_DEVICES": "all",
     "__NV_PRIME_RENDER_OFFLOAD": "1",
-    "__GLX_VENDOR_LIBRARY_NAME": "nvidia"
+    "__GLX_VENDOR_LIBRARY_NAME": "nvidia",
+    "FASTDDS_BUILTIN_TRANSPORTS": "UDPv4"
   },
   "remoteEnv": {
     "ROS_DISTRO": "jazzy",
@@ -31,11 +32,11 @@
   "mounts": [
     "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,readonly",
     "source=${localEnv:XAUTHORITY},target=/home/ubuntu/.Xauthority,type=bind,readonly",
-    "source=/home/jiezichuan/.cache/aic-smart-community,target=/home/ubuntu/.cache,type=bind",
-    "source=/home/jiezichuan/.config/aic-smart-community,target=/home/ubuntu/.config,type=bind",
-    "source=/home/jiezichuan/.local/share/aic-smart-community,target=/home/ubuntu/.local/share,type=bind",
-    "source=/home/jiezichuan/.local/state/aic-smart-community,target=/home/ubuntu/.local/state,type=bind",
-    "source=/home/jiezichuan/.local/share/aic-smart-community/vscode-server,target=/home/ubuntu/.vscode-server,type=bind"
+    "source=${localEnv:HOME}/.cache/aic-smart-community,target=/home/ubuntu/.cache,type=bind",
+    "source=${localEnv:HOME}/.config/aic-smart-community,target=/home/ubuntu/.config,type=bind",
+    "source=${localEnv:HOME}/.local/share/aic-smart-community,target=/home/ubuntu/.local/share,type=bind",
+    "source=${localEnv:HOME}/.local/state/aic-smart-community,target=/home/ubuntu/.local/state,type=bind",
+    "source=${localEnv:HOME}/.local/share/aic-smart-community/vscode-server,target=/home/ubuntu/.vscode-server,type=bind"
   ],
   "customizations": {
     "vscode": {

@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "identity_flip_does_not_double_count": true,
+  "pan_compensated_track": true,
+  "overlapping_identity_boxes_suppressed": true,
+  "bend_slowdown_before_turn": true,
+  "scope": "Actual evidence association and motion profile functions, no ROS answers"
+}

@@ -10,6 +10,7 @@ datasets/
 
 data/
 .deps/
+.venv-vision/
 *.pt
 !src/community_demo/models/perception/*.pt
 

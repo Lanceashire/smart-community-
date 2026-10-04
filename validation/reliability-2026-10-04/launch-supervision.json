@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "observed_failure": "Actual perception callback TypeError during first plate OCR in attempt-02",
+  "wrapper_exit_code": 1,
+  "effect": "Owned ROS launch and its simulation nodes shut down; process inventory confirmed no live Gazebo/ROS children before restart",
+  "scope": "Observed development failure, not a synthetic happy-path check. The underlying OCR variable conflict was then fixed and smoke checked."
+}

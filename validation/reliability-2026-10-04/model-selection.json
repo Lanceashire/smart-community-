@@ -1,0 +1,44 @@
+{
+  "accepted_on_validation": false,
+  "checks": {
+    "map95": true,
+    "precision": true,
+    "recall": true,
+    "visitor_recall": false,
+    "plate_recall": false
+  },
+  "candidate_metrics": {
+    "metrics/precision(B)": 0.9280925812042551,
+    "metrics/recall(B)": 0.8611236355086859,
+    "metrics/mAP50(B)": 0.9229106253073716,
+    "metrics/mAP50-95(B)": 0.8249864714939228,
+    "fitness": 0.8249864714939228
+  },
+  "baseline_metrics": {
+    "metrics/precision(B)": 0.9322823906751185,
+    "metrics/recall(B)": 0.8628301399156787,
+    "metrics/mAP50(B)": 0.920730141126125,
+    "metrics/mAP50-95(B)": 0.8147705729550776,
+    "fitness": 0.8147705729550776
+  },
+  "candidate_weak_classes": {
+    "visitor_01": {
+      "precision": 0.84106097301669,
+      "recall": 0.5573770491803278,
+      "mAP50": 0.6171139234748994,
+      "mAP50-95": 0.5436794963652274
+    },
+    "resident_14": {
+      "precision": 0.6227236395535031,
+      "recall": 0.875,
+      "mAP50": 0.8696169772256729,
+      "mAP50-95": 0.8228840579710145
+    },
+    "plate": {
+      "precision": 0.9237655369581194,
+      "recall": 0.7485714285714286,
+      "mAP50": 0.8995366295204831,
+      "mAP50-95": 0.7617794934790458
+    }
+  }
+}

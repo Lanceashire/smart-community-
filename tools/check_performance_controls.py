@@ -25,24 +25,24 @@ for _ in range(5):gate.observe('green')
 assert gate.ready
 
 published=[];warnings=[]
-node=SimpleNamespace(observation_align=True,observation_start=Time(seconds=1),observation_index=0,
+node=SimpleNamespace(observation_align=True,observation_start=Time(seconds=1),observation_index=0,observation_sample=0,sample_start=None,
     observation_attempt=0,pose=(1.1,-1.7,OBSERVATION_HEADING['observe_plate_1']),
     pan_pub=SimpleNamespace(publish=lambda m:published.append(m.data)),
     observation_pub=SimpleNamespace(publish=lambda m:None),inspection_pub=SimpleNamespace(publish=lambda m:None),
     run_id='offline-regression',lap_id=1,saved_views=[],observation_outcomes=[],
-    observation_feedback={'view':'plate_1','ready':False},feedback_update=Time(seconds=7),
+    observation_feedback={'view':'plate_1','ready':False},feedback_update=Time(seconds=8),
     camera_frame=np.zeros((100,100,3),np.uint8),publish_command=lambda *a:None,
     log_status=lambda *a:None,get_logger=lambda:SimpleNamespace(warning=lambda s:warnings.append(s)))
 with tempfile.TemporaryDirectory() as folder,patch('community_demo.patrol.Path',lambda p:Path(folder)/p):
-    assert not Patrol.observe(node,'observe_plate_1',Time(seconds=7))
+    assert not Patrol.observe(node,'observe_plate_1',Time(seconds=8))
     assert node.observation_attempt==1 and abs(published[-1]+1.49079632679)<.001
     node.feedback_update=Time(seconds=12)
     assert not Patrol.observe(node,'observe_plate_1',Time(seconds=12))
     assert node.observation_attempt==2
-    node.feedback_update=Time(seconds=15)
-    assert Patrol.observe(node,'observe_plate_1',Time(seconds=15))
+    node.feedback_update=Time(seconds=16)
+    assert Patrol.observe(node,'observe_plate_1',Time(seconds=16))
     assert node.observation_outcomes[-1]['confirmed'] is False and warnings
-    node.observation_start=Time(seconds=20);node.observation_feedback={'view':'plate_1','ready':True};node.feedback_update=Time(seconds=26)
+    node.observation_attempt=0;node.observation_start=Time(seconds=20);node.observation_feedback={'view':'plate_1','attempt':0,'ready':True};node.feedback_update=Time(seconds=26)
     assert Patrol.observe(node,'observe_plate_1',Time(seconds=26))
     assert node.observation_outcomes[-1]['confirmed'] is True
     node.observation_start=Time(seconds=30);node.feedback_update=Time(seconds=31)
@@ -78,6 +78,12 @@ local=SimpleNamespace(get_clock=lambda:clock,odom_time=blank.header.stamp,odom_r
     tf=SimpleNamespace(sendTransform=lambda m:None),poses=SimpleNamespace(publish=lambda m:poses.append(m)),status=SimpleNamespace(publish=lambda m:None))
 for distance,state in [(.1,'tracking'),(.4,'degraded'),(.8,'lost')]:
     local.unmatched_distance=distance;Localization.publish(local);assert quality[-1]['state']==state
+# Republishing an old wheel sample must neither renew its stamp nor emit a usable pose.
+local.odom_time=Time(seconds=9.95).to_msg();Localization.publish(local)
+assert poses[-1].header.stamp==local.odom_time
+count=len(poses);local.odom_time=Time(seconds=9.7).to_msg();Localization.publish(local)
+assert len(poses)==count
+report['odometry_stamp_preserved_and_stale_pose_withheld']=True
 scan_node=SimpleNamespace(get_clock=lambda:clock,clear_scans=0,scan=None)
 scan_node.front_blocked=lambda:Patrol.front_blocked(scan_node)
 scan=LaserScan();scan.angle_min=-.2;scan.angle_increment=.2;scan.ranges=[6.,.2,6.]
@@ -99,5 +105,7 @@ assert clear_of_posts(.2075,-1.82,0.,posts)
 assert clear_of_posts(.2075,-1.82,.785398,posts)
 
 report.update(static_post_collision_guard=True,registration_view_guard=True,blank_image_does_not_refresh_registration=True,localization_quality_states=True,clear_scan_debounce=True,early_finish_and_stale_feedback_guard=True)
-(root/'validation/performance-2026-10-02/controller-regression.json').write_text(json.dumps(report,indent=2)+'\n')
+import argparse
+parser=argparse.ArgumentParser();parser.add_argument('--output',default='validation/performance-2026-10-02/controller-regression.json');args=parser.parse_args()
+(root/args.output).write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report))

@@ -11,6 +11,8 @@ import signal
 import subprocess
 import time
 
+os.environ.setdefault("FASTDDS_BUILTIN_TRANSPORTS","UDPv4")
+
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, DurabilityPolicy, qos_profile_sensor_data

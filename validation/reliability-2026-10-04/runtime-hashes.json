@@ -1,0 +1,16 @@
+{
+  "src/community_demo/community_demo/patrol.py": "98ed65532ea9d5097a7ee95dddcd75c75afd01ebea391461ff232bfe7ef6ef19",
+  "src/community_demo/community_demo/perception.py": "170c5c6e1967df8be128d3533e0544f3996ca7e97c7be5e14284d647bc2cc392",
+  "src/community_demo/community_demo/person_evidence.py": "d96d6a5d200590bd099371d9b1a44aa91822f41a0ec0a7800581d1350d3e6d73",
+  "src/community_demo/community_demo/motion_profile.py": "312387555897aa93cc19646b4566fa989fdff371ab499836b16659020c441bfb",
+  "src/community_demo/community_demo/signal_gate.py": "d711dbafe050755c9f44fd8b43b8f1a50b15f5785a321f3e2af8de81e4130072",
+  "tools/launch_full.sh": "bb06709063d0697dc82c2df43e38ae3e7c96b8d4fb8f1070d994258cdaa91f77",
+  "tools/start_perception.sh": "3558fd204d8b245e2146cae659b7db273c34072b6a7a8b46a51219862cd2c989",
+  "tools/vision_env.sh": "62230fe50fa624183422114f086769516ac72fa964b4b36183cb0ed25f2f858a",
+  "src/community_demo/worlds/community.sdf": "bb1dc2cfff3bc47efc48736f041e4e8981cc00550e8fda351d4ea15e1fc093f6",
+  "src/community_demo/models/perception/yolo11s-comparison.pt": "f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa",
+  "src/community_demo/community_demo/localization.py": "5dd653397df6cc3ea912482aae9409c737341b86eb12884c59306a11de7df178",
+  "tools/ros_transport.sh": "f0706aa894671446dd07fcd56a22b27f7f3fc79003c7c836fcd29edbd2430f93",
+  "src/community_demo/launch/demo.launch.py": "b24035b57e4f0ecefcb1a3676f5d914393981650e69648d999b006aa35dacc82",
+  "tools/audit_patrol_cycles.py": "a79a0018280264fb075426e16e140f9152eddae5be659f6faba5aec9dc7886ed"
+}

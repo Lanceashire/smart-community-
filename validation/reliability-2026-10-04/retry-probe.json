@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "perception_pause_seconds": 7,
+  "saw_retry_status": true,
+  "outcome": {
+    "run_id": "b716a55f776a",
+    "lap_id": 3,
+    "view": "plate_1",
+    "route_point": "observe_plate_1",
+    "pan_rad": -1.6507963267948966,
+    "pose": [
+      1.0970336534146614,
+      -1.7273928875180584,
+      1.5547050030640304
+    ],
+    "attempt": 2,
+    "sample": 0,
+    "confirmed": true,
+    "elapsed_s": 13.3,
+    "feedback": {
+      "view": "plate_1",
+      "attempt": 2,
+      "sample": 0,
+      "ready": true,
+      "stable_frames": 13,
+      "quiet_s": 0.8,
+      "person_ids": [],
+      "plate_texts": [
+        "苏AB8Q62"
+      ],
+      "pending_person_ids": [],
+      "sample_frames": {
+        "0": 11
+      },
+      "sample_angles": {
+        "0": -1.6542661603062883
+      },
+      "two_angles_verified": false,
+      "criterion": "Track-consistent identities and two measured camera angles; unseen/occluded people are not guaranteed"
+    }
+  },
+  "method": "SIGSTOP/SIGCONT of actual perception at stationary observation; no substituted labels or robot poses"
+}

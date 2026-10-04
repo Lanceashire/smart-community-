@@ -1,0 +1,40 @@
+FROM osrf/ros:jazzy-desktop-noble
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV FASTDDS_BUILTIN_TRANSPORTS=UDPv4
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential cmake ffmpeg git mesa-utils tesseract-ocr tesseract-ocr-chi-sim \
+    python3-colcon-common-extensions \
+    python3-opencv python3-pip python3-rosdep python3-venv python3-vcstool \
+    ros-jazzy-cv-bridge ros-jazzy-image-transport \
+    ros-jazzy-navigation2 ros-jazzy-nav2-bringup \
+    ros-jazzy-robot-localization ros-jazzy-ros-gz \
+    ros-jazzy-ros2-control ros-jazzy-ros2-controllers \
+    ros-jazzy-slam-toolbox && \
+    rm -rf /var/lib/apt/lists/*
+
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN if ! getent group "${GROUP_ID}" >/dev/null; then \
+      groupadd --gid "${GROUP_ID}" rosdev; \
+    fi && \
+    if ! getent passwd "${USER_ID}" >/dev/null; then \
+      useradd --uid "${USER_ID}" --gid "${GROUP_ID}" --create-home \
+        --home-dir /home/ubuntu --shell /bin/bash rosdev; \
+    fi && \
+    mkdir -p /home/ubuntu/projects/smart-community \
+      /home/ubuntu/.cache /home/ubuntu/.config /home/ubuntu/.local/share \
+      /home/ubuntu/.local/state && \
+    chown -R "${USER_ID}:${GROUP_ID}" /home/ubuntu
+
+ENV HOME=/home/ubuntu \
+    XDG_CACHE_HOME=/home/ubuntu/.cache \
+    XDG_CONFIG_HOME=/home/ubuntu/.config \
+    XDG_DATA_HOME=/home/ubuntu/.local/share \
+    XDG_STATE_HOME=/home/ubuntu/.local/state \
+    ROS_HOME=/home/ubuntu/.local/state/ros
+
+USER ${USER_ID}:${GROUP_ID}
+WORKDIR /home/ubuntu/projects/smart-community
+CMD ["bash"]

@@ -1,0 +1,1557 @@
+{
+  "passed": true,
+  "checks": {
+    "three_laps_physical_and_outputs": true,
+    "all_fifteen_person_views_two_actual_angles": true,
+    "probes": true,
+    "frozen_runtime_sources": true,
+    "missing_model_rejected": true,
+    "normal_laps_no_extra_green_cycles": true,
+    "additional_normal_demo_passed": true
+  },
+  "baseline_normal_lap": {
+    "source": "/home/jiezichuan/Documents/Codex/2026-09-28/x/outputs/smart-community-docker/workspace/validation/signal-optimization-2026-10-03/final/lap-001.json",
+    "passed": true,
+    "mode": "normal autonomous lap",
+    "run_id": "6b4a870117aa",
+    "lap_id": 1,
+    "completion_sim_s": 151.8,
+    "completion_wall_s": 153.452,
+    "real_time_factor": 0.989,
+    "state_sim_s": {
+      "": 0.1,
+      "WAIT_FRESH_LOCALIZATION": 0.1,
+      "PLAN": 1.5,
+      "GO": 96.8,
+      "GUARD": 0.1,
+      "REACHED": 1.7,
+      "STOP": 21.9,
+      "OBSERVE": 25.0,
+      "ALIGN_CAMERA": 4.6,
+      "COMPLETE": 4.15
+    },
+    "position_error_max_m": 0.03009927603295747,
+    "position_error_p95_m": 0.024727757511546586,
+    "position_error_rmse_m": 0.013253279655252961,
+    "processing_ms_p50": 15.3,
+    "processing_ms_p95": 20.8,
+    "image_age_sim_s_p95": 0.20000000000000284,
+    "perception_hz_wall": 4.809,
+    "observations": [
+      {
+        "view": "A_north",
+        "elapsed_s": 3.0,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "A_west",
+        "elapsed_s": 3.1,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "A_south",
+        "elapsed_s": 3.0,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "B_north",
+        "elapsed_s": 3.0,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "B_east",
+        "elapsed_s": 3.0,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "plate_1",
+        "elapsed_s": 3.2,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "plate_2",
+        "elapsed_s": 3.1,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "plate_3",
+        "elapsed_s": 3.5,
+        "confirmed": true,
+        "attempt": 0
+      }
+    ],
+    "minimum_post_clearance_m": 0.04955655614073096,
+    "counts": {
+      "residents": 8,
+      "visitors": 2,
+      "total": 10
+    },
+    "plates": [
+      "苏AB8Q62",
+      "鄂D7B5Q2",
+      "苏APL12A"
+    ],
+    "checks": {
+      "completed": true,
+      "route_order": true,
+      "actual_distance": true,
+      "returned_to_start": true,
+      "road_boundary": true,
+      "two_green_crossings": true,
+      "red_wait_body_before_line": true,
+      "eight_observations": true,
+      "observation_log_reset": true,
+      "recognition_reset": true,
+      "people": true,
+      "plates": true,
+      "event_sequence": true,
+      "event_frame_correspondence": true,
+      "completion_frozen": true,
+      "stationary_after_completion": true,
+      "camera_and_scan_live": true,
+      "restart_while_running_rejected": true,
+      "front_and_rear_green": true,
+      "red_straddle_samples_zero": true,
+      "observation_confirmation": true,
+      "physical_post_clearance": true,
+      "rendered_image_frame_ids": true,
+      "terminal_events_exact": true
+    },
+    "road_violation_samples": 0,
+    "yaw_error_max_deg": 6.821037148621697
+  },
+  "laps": [
+    {
+      "source": "/home/jiezichuan/Documents/Codex/2026-09-28/x/outputs/smart-community-docker/workspace/validation/reliability-2026-10-04/main/lap-001.json",
+      "passed": true,
+      "mode": "normal autonomous lap",
+      "run_id": "b716a55f776a",
+      "lap_id": 1,
+      "completion_sim_s": 181.2,
+      "completion_wall_s": 183.102,
+      "real_time_factor": 0.99,
+      "state_sim_s": {
+        "": 0.1,
+        "WAIT_FRESH_LOCALIZATION": 0.2,
+        "WAIT_FRESH_PERCEPTION": 1.5,
+        "PLAN": 1.5,
+        "GO": 99.3,
+        "GUARD": 0.1,
+        "REACHED": 1.75,
+        "STOP": 30.1,
+        "OBSERVE": 38.65,
+        "WAIT_FRESH_SCAN": 0.1,
+        "ALIGN_CAMERA": 4.9,
+        "RETRY_OBSERVE": 3.0,
+        "COMPLETE": 4.15
+      },
+      "position_error_max_m": 0.02860601540738855,
+      "position_error_p95_m": 0.021891805375977732,
+      "position_error_rmse_m": 0.010979559719082942,
+      "processing_ms_p50": 15.1,
+      "processing_ms_p95": 19.9,
+      "image_age_sim_s_p95": 0.20000000000000284,
+      "perception_hz_wall": 4.856,
+      "observations": [
+        {
+          "view": "A_north",
+          "elapsed_s": 5.4,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_west",
+          "elapsed_s": 5.7,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_south",
+          "elapsed_s": 5.8,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_north",
+          "elapsed_s": 9.5,
+          "confirmed": true,
+          "attempt": 1
+        },
+        {
+          "view": "B_east",
+          "elapsed_s": 5.6,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_1",
+          "elapsed_s": 2.9,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_2",
+          "elapsed_s": 3.5,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_3",
+          "elapsed_s": 3.1,
+          "confirmed": true,
+          "attempt": 0
+        }
+      ],
+      "minimum_post_clearance_m": 0.05545294022767607,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "road_violation_samples": 0,
+      "gate_audit": [
+        {
+          "gate": "top_stop",
+          "approach_sim_s": 1.65,
+          "new_green_transitions_sim_s": [
+            10.2
+          ],
+          "release_sim_s": 11.75,
+          "stop_state_wait_s": 5.4,
+          "release_delay_from_first_new_green_s": 1.55,
+          "extra_green_cycles": 0,
+          "first_new_green_release": true,
+          "release_within_four_seconds": true
+        },
+        {
+          "gate": "lower_stop",
+          "approach_sim_s": 96.25,
+          "new_green_transitions_sim_s": [
+            122.2
+          ],
+          "release_sim_s": 123.75,
+          "stop_state_wait_s": 24.8,
+          "release_delay_from_first_new_green_s": 1.55,
+          "extra_green_cycles": 0,
+          "first_new_green_release": true,
+          "release_within_four_seconds": true
+        }
+      ],
+      "yaw_error_max_deg": 6.05828448082392,
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 12.85,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 13.85,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 124.8,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 125.8,
+          "phase": "green"
+        }
+      ],
+      "test_context": "normal autonomous lap"
+    },
+    {
+      "source": "/home/jiezichuan/Documents/Codex/2026-09-28/x/outputs/smart-community-docker/workspace/validation/reliability-2026-10-04/main/lap-002.json",
+      "passed": true,
+      "mode": "fault injection",
+      "run_id": "b716a55f776a",
+      "lap_id": 2,
+      "completion_sim_s": 214.15,
+      "completion_wall_s": 221.413,
+      "real_time_factor": 0.967,
+      "state_sim_s": {
+        "START": 0.05,
+        "PLAN": 1.5,
+        "GO": 103.7,
+        "GUARD": 0.2,
+        "REACHED": 1.7,
+        "STOP": 52.0,
+        "WAIT_FRESH_PERCEPTION": 5.45,
+        "OBSERVE": 38.3,
+        "ALIGN_CAMERA": 4.9,
+        "WAIT_FRESH_LOCALIZATION": 6.35,
+        "COMPLETE": 4.05
+      },
+      "position_error_max_m": 0.1088040040473043,
+      "position_error_p95_m": 0.025838920773293042,
+      "position_error_rmse_m": 0.013002089607200748,
+      "processing_ms_p50": 15.4,
+      "processing_ms_p95": 19.8,
+      "image_age_sim_s_p95": 0.19999999999998863,
+      "perception_hz_wall": 4.551,
+      "observations": [
+        {
+          "view": "A_north",
+          "elapsed_s": 5.4,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_west",
+          "elapsed_s": 5.6,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_south",
+          "elapsed_s": 5.4,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_north",
+          "elapsed_s": 6.5,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_east",
+          "elapsed_s": 5.8,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_1",
+          "elapsed_s": 2.5,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_2",
+          "elapsed_s": 3.5,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_3",
+          "elapsed_s": 3.5,
+          "confirmed": true,
+          "attempt": 0
+        }
+      ],
+      "minimum_post_clearance_m": 0.05599315117769189,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "fault_stop_and_recovery": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "road_violation_samples": 0,
+      "gate_audit": [
+        {
+          "gate": "top_stop",
+          "approach_sim_s": 224.25,
+          "new_green_transitions_sim_s": [
+            234.2,
+            262.2
+          ],
+          "release_sim_s": 263.75,
+          "stop_state_wait_s": 32.2,
+          "release_delay_from_first_new_green_s": 29.55,
+          "extra_green_cycles": 1,
+          "first_new_green_release": false,
+          "release_within_four_seconds": false
+        },
+        {
+          "gate": "lower_stop",
+          "approach_sim_s": 346.85,
+          "new_green_transitions_sim_s": [
+            374.2
+          ],
+          "release_sim_s": 375.75,
+          "stop_state_wait_s": 26.2,
+          "release_delay_from_first_new_green_s": 1.55,
+          "extra_green_cycles": 0,
+          "first_new_green_release": true,
+          "release_within_four_seconds": true
+        }
+      ],
+      "yaw_error_max_deg": 6.876055565423551,
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 264.8,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 265.85,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 376.8,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 377.8,
+          "phase": "green"
+        }
+      ],
+      "test_context": "four real node pauses"
+    },
+    {
+      "source": "/home/jiezichuan/Documents/Codex/2026-09-28/x/outputs/smart-community-docker/workspace/validation/reliability-2026-10-04/main/lap-003.json",
+      "passed": true,
+      "mode": "normal autonomous lap",
+      "run_id": "b716a55f776a",
+      "lap_id": 3,
+      "completion_sim_s": 202.65,
+      "completion_wall_s": 205.1,
+      "real_time_factor": 0.988,
+      "state_sim_s": {
+        "START": 0.05,
+        "PLAN": 1.55,
+        "GO": 102.4,
+        "GUARD": 0.15,
+        "REACHED": 1.8,
+        "STOP": 36.6,
+        "WAIT_FRESH_PERCEPTION": 7.0,
+        "ALIGN_CAMERA": 6.0,
+        "OBSERVE": 34.45,
+        "RETRY_OBSERVE": 8.65,
+        "BLOCKED": 3.4,
+        "RECOVER_OBSTACLE": 0.6,
+        "COMPLETE": 4.05
+      },
+      "position_error_max_m": 0.02389700857091351,
+      "position_error_p95_m": 0.023601921530162013,
+      "position_error_rmse_m": 0.01159377522254624,
+      "processing_ms_p50": 15.5,
+      "processing_ms_p95": 20.6,
+      "image_age_sim_s_p95": 0.20000000000004547,
+      "perception_hz_wall": 4.671,
+      "observations": [
+        {
+          "view": "A_north",
+          "elapsed_s": 5.7,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_west",
+          "elapsed_s": 4.9,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_south",
+          "elapsed_s": 4.9,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_north",
+          "elapsed_s": 9.3,
+          "confirmed": true,
+          "attempt": 1
+        },
+        {
+          "view": "B_east",
+          "elapsed_s": 5.9,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_1",
+          "elapsed_s": 13.3,
+          "confirmed": true,
+          "attempt": 2
+        },
+        {
+          "view": "plate_2",
+          "elapsed_s": 2.5,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_3",
+          "elapsed_s": 3.3,
+          "confirmed": true,
+          "attempt": 0
+        }
+      ],
+      "minimum_post_clearance_m": 0.04766045746132983,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "checks": {
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "road_violation_samples": 0,
+      "gate_audit": [
+        {
+          "gate": "top_stop",
+          "approach_sim_s": 496.25,
+          "new_green_transitions_sim_s": [
+            514.2
+          ],
+          "release_sim_s": 515.75,
+          "stop_state_wait_s": 12.0,
+          "release_delay_from_first_new_green_s": 1.55,
+          "extra_green_cycles": 0,
+          "first_new_green_release": true,
+          "release_within_four_seconds": true
+        },
+        {
+          "gate": "lower_stop",
+          "approach_sim_s": 600.25,
+          "new_green_transitions_sim_s": [
+            626.2
+          ],
+          "release_sim_s": 627.75,
+          "stop_state_wait_s": 24.8,
+          "release_delay_from_first_new_green_s": 1.55,
+          "extra_green_cycles": 0,
+          "first_new_green_release": true,
+          "release_within_four_seconds": true
+        }
+      ],
+      "yaw_error_max_deg": 8.002884994480535,
+      "whole_body_crossings": [
+        {
+          "gate": 1,
+          "edge": "front_entered",
+          "time": 516.95,
+          "phase": "green"
+        },
+        {
+          "gate": 1,
+          "edge": "rear_cleared",
+          "time": 518.0,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "front_entered",
+          "time": 628.85,
+          "phase": "green"
+        },
+        {
+          "gate": 2,
+          "edge": "rear_cleared",
+          "time": 629.85,
+          "phase": "green"
+        }
+      ],
+      "test_context": "late-green start plus stationary OCR pause and removable obstacle"
+    }
+  ],
+  "two_angle_evidence": [
+    {
+      "lap_id": 1,
+      "view": "A_north",
+      "attempt": 0,
+      "elapsed_s": 5.4,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 7
+      },
+      "sample_angles_rad": {
+        "0": 1.5937516156028844,
+        "1": 1.6633115720741274
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 1,
+      "view": "A_west",
+      "attempt": 0,
+      "elapsed_s": 5.7,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 7
+      },
+      "sample_angles_rad": {
+        "0": 1.5913671400807399,
+        "1": 1.6615954322445148
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 1,
+      "view": "A_south",
+      "attempt": 0,
+      "elapsed_s": 5.8,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 8
+      },
+      "sample_angles_rad": {
+        "0": 1.5925139102328656,
+        "1": 1.6608703352634815
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 1,
+      "view": "B_north",
+      "attempt": 1,
+      "elapsed_s": 9.5,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 8
+      },
+      "sample_angles_rad": {
+        "0": -1.494249638262001,
+        "1": -1.409014720781626
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 1,
+      "view": "B_east",
+      "attempt": 0,
+      "elapsed_s": 5.6,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 7
+      },
+      "sample_angles_rad": {
+        "0": -1.592514540083298,
+        "1": -1.4958734606259165
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 2,
+      "view": "A_north",
+      "attempt": 0,
+      "elapsed_s": 5.4,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 7
+      },
+      "sample_angles_rad": {
+        "0": 1.5937640740636037,
+        "1": 1.6633165081916346
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 2,
+      "view": "A_west",
+      "attempt": 0,
+      "elapsed_s": 5.6,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 8
+      },
+      "sample_angles_rad": {
+        "0": 1.5925208353863114,
+        "1": 1.662028555132431
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 2,
+      "view": "A_south",
+      "attempt": 0,
+      "elapsed_s": 5.4,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 7
+      },
+      "sample_angles_rad": {
+        "0": 1.5925250738688828,
+        "1": 1.6633121091908374
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 2,
+      "view": "B_north",
+      "attempt": 0,
+      "elapsed_s": 6.5,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 3
+      },
+      "sample_angles_rad": {
+        "0": -1.5928126058019612,
+        "1": -1.4975440728686833
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 2,
+      "view": "B_east",
+      "attempt": 0,
+      "elapsed_s": 5.8,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 7
+      },
+      "sample_angles_rad": {
+        "0": -1.590272610559893,
+        "1": -1.4950317904261565
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 3,
+      "view": "A_north",
+      "attempt": 0,
+      "elapsed_s": 5.7,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 8
+      },
+      "sample_angles_rad": {
+        "0": 1.5925347041772508,
+        "1": 1.66159724510499
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 3,
+      "view": "A_west",
+      "attempt": 0,
+      "elapsed_s": 4.9,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 3
+      },
+      "sample_angles_rad": {
+        "0": 1.5913785357939225,
+        "1": 1.6669044954235737
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 3,
+      "view": "A_south",
+      "attempt": 0,
+      "elapsed_s": 4.9,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 3
+      },
+      "sample_angles_rad": {
+        "0": 1.5925359643588026,
+        "1": 1.6669013770825163
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 3,
+      "view": "B_north",
+      "attempt": 1,
+      "elapsed_s": 9.3,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 8
+      },
+      "sample_angles_rad": {
+        "0": -1.494541563349025,
+        "1": -1.4091258703206113
+      },
+      "passed": true
+    },
+    {
+      "lap_id": 3,
+      "view": "B_east",
+      "attempt": 0,
+      "elapsed_s": 5.9,
+      "confirmed": true,
+      "sample_frames": {
+        "0": 5,
+        "1": 8
+      },
+      "sample_angles_rad": {
+        "0": -1.5913640315937148,
+        "1": -1.4949583476388475
+      },
+      "passed": true
+    }
+  ],
+  "probes": {
+    "regression": {
+      "passed": true,
+      "identity_flip_does_not_double_count": true,
+      "pan_compensated_track": true,
+      "overlapping_identity_boxes_suppressed": true,
+      "bend_slowdown_before_turn": true,
+      "scope": "Actual evidence association and motion profile functions, no ROS answers"
+    },
+    "control-regression": {
+      "passed": true,
+      "late_green_does_not_release": true,
+      "fresh_transition_requires_five_green_samples": true,
+      "sensor_outage_requires_new_transition": true,
+      "two_pan_retries_before_timeout": true,
+      "timeout_is_explicitly_unconfirmed": true,
+      "successful_view_completes": true,
+      "scope": "Offline actual controller methods; complements live physical laps; no injected ROS answers",
+      "odometry_stamp_preserved_and_stale_pose_withheld": true,
+      "static_post_collision_guard": true,
+      "registration_view_guard": true,
+      "blank_image_does_not_refresh_registration": true,
+      "localization_quality_states": true,
+      "clear_scan_debounce": true,
+      "early_finish_and_stale_feedback_guard": true
+    },
+    "perception-smoke": {
+      "passed": true,
+      "source": "log/inspection/plate_1.png",
+      "scope": "Real GPU detector, real OCR and actual perception callback on saved raw pixels; not a lap accuracy test",
+      "plate_texts": [
+        "苏AB8Q62"
+      ],
+      "frames": 5,
+      "ocr_votes_recorded": true
+    },
+    "preflight-pass": {
+      "passed": true,
+      "checks": {
+        "file:src/community_demo/models/perception/yolo11s-comparison.pt": true,
+        "file:src/community_demo/maps/roads.pgm": true,
+        "file:src/community_demo/maps/roads.yaml": true,
+        "file:src/community_demo/maps/planning-obstacles.json": true,
+        "file:install/setup.bash": true,
+        "cuda_available": true,
+        "gpu_inference": true,
+        "identity_classes": true,
+        "ocr_inference": true
+      },
+      "errors": [],
+      "details": {
+        "python": "3.12.3",
+        "torch": "2.13.0+cu130",
+        "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU"
+      },
+      "time_unix": 1791087610.6449041,
+      "scope": "Static files, actual GPU/YOLO and OCR inference; live sensors remain controller safety gates"
+    },
+    "launch-supervision": {
+      "passed": true,
+      "observed_failure": "Actual perception callback TypeError during first plate OCR in attempt-02",
+      "wrapper_exit_code": 1,
+      "effect": "Owned ROS launch and its simulation nodes shut down; process inventory confirmed no live Gazebo/ROS children before restart",
+      "scope": "Observed development failure, not a synthetic happy-path check. The underlying OCR variable conflict was then fixed and smoke checked."
+    },
+    "perception-motion": {
+      "passed": true,
+      "lap_id": 2,
+      "method": "Actual SIGSTOP/SIGCONT of perception on straight moving segment. Physical truth and commands are read only.",
+      "saw_wait_fresh_perception": true,
+      "settled_zero_command": true,
+      "settled_max_speed_m_s": 0.0,
+      "pause_wall_s": 2.505424422000033,
+      "recovery_wall_s": 0.344039488999897
+    },
+    "retry-probe": {
+      "passed": true,
+      "perception_pause_seconds": 7,
+      "saw_retry_status": true,
+      "outcome": {
+        "run_id": "b716a55f776a",
+        "lap_id": 3,
+        "view": "plate_1",
+        "route_point": "observe_plate_1",
+        "pan_rad": -1.6507963267948966,
+        "pose": [
+          1.0970336534146614,
+          -1.7273928875180584,
+          1.5547050030640304
+        ],
+        "attempt": 2,
+        "sample": 0,
+        "confirmed": true,
+        "elapsed_s": 13.3,
+        "feedback": {
+          "view": "plate_1",
+          "attempt": 2,
+          "sample": 0,
+          "ready": true,
+          "stable_frames": 13,
+          "quiet_s": 0.8,
+          "person_ids": [],
+          "plate_texts": [
+            "苏AB8Q62"
+          ],
+          "pending_person_ids": [],
+          "sample_frames": {
+            "0": 11
+          },
+          "sample_angles": {
+            "0": -1.6542661603062883
+          },
+          "two_angles_verified": false,
+          "criterion": "Track-consistent identities and two measured camera angles; unseen/occluded people are not guaranteed"
+        }
+      },
+      "method": "SIGSTOP/SIGCONT of actual perception at stationary observation; no substituted labels or robot poses"
+    },
+    "obstacle-probe": {
+      "passed": true,
+      "method": "Physical Gazebo box added then removed; evaluator reads truth; no robot teleport, velocity command or perception answer injection",
+      "spawn_pose": [
+        1.1,
+        0.75,
+        0.12
+      ],
+      "stopped_robot_pose": [
+        1.0957258418993097,
+        0.43409150099860755
+      ],
+      "settled_max_speed_m_s": 0.0,
+      "clearance_to_box_at_stop_m": 0.1359084990013925,
+      "replanned": true,
+      "resumed_y": 1.0063613471412804,
+      "recovery_wall_s": 3.7513370590004342
+    }
+  },
+  "model_selection": {
+    "accepted_on_validation": false,
+    "checks": {
+      "map95": true,
+      "precision": true,
+      "recall": true,
+      "visitor_recall": false,
+      "plate_recall": false
+    },
+    "candidate_metrics": {
+      "metrics/precision(B)": 0.9280925812042551,
+      "metrics/recall(B)": 0.8611236355086859,
+      "metrics/mAP50(B)": 0.9229106253073716,
+      "metrics/mAP50-95(B)": 0.8249864714939228,
+      "fitness": 0.8249864714939228
+    },
+    "baseline_metrics": {
+      "metrics/precision(B)": 0.9322823906751185,
+      "metrics/recall(B)": 0.8628301399156787,
+      "metrics/mAP50(B)": 0.920730141126125,
+      "metrics/mAP50-95(B)": 0.8147705729550776,
+      "fitness": 0.8147705729550776
+    },
+    "candidate_weak_classes": {
+      "visitor_01": {
+        "precision": 0.84106097301669,
+        "recall": 0.5573770491803278,
+        "mAP50": 0.6171139234748994,
+        "mAP50-95": 0.5436794963652274
+      },
+      "resident_14": {
+        "precision": 0.6227236395535031,
+        "recall": 0.875,
+        "mAP50": 0.8696169772256729,
+        "mAP50-95": 0.8228840579710145
+      },
+      "plate": {
+        "precision": 0.9237655369581194,
+        "recall": 0.7485714285714286,
+        "mAP50": 0.8995366295204831,
+        "mAP50-95": 0.7617794934790458
+      }
+    }
+  },
+  "runtime_source_sha256": {
+    "src/community_demo/community_demo/patrol.py": "98ed65532ea9d5097a7ee95dddcd75c75afd01ebea391461ff232bfe7ef6ef19",
+    "src/community_demo/community_demo/perception.py": "170c5c6e1967df8be128d3533e0544f3996ca7e97c7be5e14284d647bc2cc392",
+    "src/community_demo/community_demo/person_evidence.py": "d96d6a5d200590bd099371d9b1a44aa91822f41a0ec0a7800581d1350d3e6d73",
+    "src/community_demo/community_demo/motion_profile.py": "312387555897aa93cc19646b4566fa989fdff371ab499836b16659020c441bfb",
+    "src/community_demo/community_demo/signal_gate.py": "d711dbafe050755c9f44fd8b43b8f1a50b15f5785a321f3e2af8de81e4130072",
+    "tools/launch_full.sh": "bb06709063d0697dc82c2df43e38ae3e7c96b8d4fb8f1070d994258cdaa91f77",
+    "tools/start_perception.sh": "3558fd204d8b245e2146cae659b7db273c34072b6a7a8b46a51219862cd2c989",
+    "tools/vision_env.sh": "62230fe50fa624183422114f086769516ac72fa964b4b36183cb0ed25f2f858a",
+    "src/community_demo/worlds/community.sdf": "bb1dc2cfff3bc47efc48736f041e4e8981cc00550e8fda351d4ea15e1fc093f6",
+    "src/community_demo/models/perception/yolo11s-comparison.pt": "f46341d9116fa227995f04c14dcb390508e244f26c109be90a6e9a4ff0ffbefa",
+    "src/community_demo/community_demo/localization.py": "5dd653397df6cc3ea912482aae9409c737341b86eb12884c59306a11de7df178",
+    "tools/ros_transport.sh": "f0706aa894671446dd07fcd56a22b27f7f3fc79003c7c836fcd29edbd2430f93",
+    "src/community_demo/launch/demo.launch.py": "b24035b57e4f0ecefcb1a3676f5d914393981650e69648d999b006aa35dacc82",
+    "tools/audit_patrol_cycles.py": "a79a0018280264fb075426e16e140f9152eddae5be659f6faba5aec9dc7886ed"
+  },
+  "limits": [
+    "Fixed supplied 4.2 m field; no arbitrary scene or real robot claim",
+    "Detector and held-out metrics unchanged; retraining candidate rejected because plate recall fell",
+    "Dual-angle observation and slower corners can increase lap time; reliability changes do not imply faster overall completion",
+    "Identity gallery has 16 resident templates and 2 visitor templates; unknown real people are unverified",
+    "Green already active with unknown onset waits for a new witnessed transition; real vision outage may intentionally require a later green",
+    "Container startup/preflight tested here; clean-machine rebuild recipe is supplied but not independently rebuilt",
+    "Two incomplete source assets and team information deferred by user; formal documents remain drafts"
+  ],
+  "demonstration_lap": {
+    "source": "/home/jiezichuan/Documents/Codex/2026-09-28/x/outputs/smart-community-docker/workspace/validation/reliability-2026-10-04/demonstration/lap-004.json",
+    "passed": true,
+    "mode": "normal autonomous lap",
+    "run_id": "b716a55f776a",
+    "lap_id": 4,
+    "completion_sim_s": 183.55,
+    "completion_wall_s": 185.575,
+    "real_time_factor": 0.989,
+    "state_sim_s": {
+      "START": 0.05,
+      "PLAN": 1.5,
+      "GO": 103.2,
+      "GUARD": 0.2,
+      "REACHED": 1.7,
+      "STOP": 30.9,
+      "WAIT_FRESH_PERCEPTION": 0.2,
+      "OBSERVE": 38.2,
+      "ALIGN_CAMERA": 4.7,
+      "RETRY_OBSERVE": 2.8,
+      "WAIT_FRESH_SCAN": 0.1,
+      "COMPLETE": 4.15
+    },
+    "position_error_max_m": 0.03212603321519236,
+    "position_error_p95_m": 0.02282400715285771,
+    "position_error_rmse_m": 0.012124835772213453,
+    "processing_ms_p50": 15.8,
+    "processing_ms_p95": 20.3,
+    "image_age_sim_s_p95": 0.20000000000004547,
+    "perception_hz_wall": 4.863,
+    "observations": [
+      {
+        "view": "A_north",
+        "elapsed_s": 5.6,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "A_west",
+        "elapsed_s": 5.4,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "A_south",
+        "elapsed_s": 5.6,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "B_north",
+        "elapsed_s": 9.3,
+        "confirmed": true,
+        "attempt": 1
+      },
+      {
+        "view": "B_east",
+        "elapsed_s": 5.4,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "plate_1",
+        "elapsed_s": 3.4,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "plate_2",
+        "elapsed_s": 3.1,
+        "confirmed": true,
+        "attempt": 0
+      },
+      {
+        "view": "plate_3",
+        "elapsed_s": 3.1,
+        "confirmed": true,
+        "attempt": 0
+      }
+    ],
+    "minimum_post_clearance_m": 0.04879508417587174,
+    "counts": {
+      "residents": 8,
+      "visitors": 2,
+      "total": 10
+    },
+    "plates": [
+      "苏AB8Q62",
+      "鄂D7B5Q2",
+      "苏APL12A"
+    ],
+    "checks": {
+      "completed": true,
+      "route_order": true,
+      "actual_distance": true,
+      "returned_to_start": true,
+      "road_boundary": true,
+      "two_green_crossings": true,
+      "red_wait_body_before_line": true,
+      "eight_observations": true,
+      "observation_log_reset": true,
+      "recognition_reset": true,
+      "people": true,
+      "plates": true,
+      "event_sequence": true,
+      "event_frame_correspondence": true,
+      "completion_frozen": true,
+      "stationary_after_completion": true,
+      "camera_and_scan_live": true,
+      "restart_while_running_rejected": true,
+      "front_and_rear_green": true,
+      "red_straddle_samples_zero": true,
+      "observation_confirmation": true,
+      "physical_post_clearance": true,
+      "rendered_image_frame_ids": true,
+      "terminal_events_exact": true
+    },
+    "road_violation_samples": 0,
+    "gate_audit": [
+      {
+        "gate": "top_stop",
+        "approach_sim_s": 810.55,
+        "new_green_transitions_sim_s": [
+          822.2
+        ],
+        "release_sim_s": 823.75,
+        "stop_state_wait_s": 5.8,
+        "release_delay_from_first_new_green_s": 1.55,
+        "extra_green_cycles": 0,
+        "first_new_green_release": true,
+        "release_within_four_seconds": true
+      },
+      {
+        "gate": "lower_stop",
+        "approach_sim_s": 907.85,
+        "new_green_transitions_sim_s": [
+          934.2
+        ],
+        "release_sim_s": 935.75,
+        "stop_state_wait_s": 25.2,
+        "release_delay_from_first_new_green_s": 1.55,
+        "extra_green_cycles": 0,
+        "first_new_green_release": true,
+        "release_within_four_seconds": true
+      }
+    ],
+    "video": {
+      "passed": true,
+      "run_id": "b716a55f776a",
+      "lap_id": 4,
+      "frames": 939,
+      "fps": 5,
+      "duration_s": 187.8,
+      "source": "Actual immutable /frame.jpg HTTP camera buffer; wall-time recording, resized to 960x720",
+      "events": [
+        {
+          "video_wall_s": 0.0,
+          "sim_s": 810.5,
+          "status": "PLAN top_approach"
+        },
+        {
+          "video_wall_s": 0.20964457599984598,
+          "sim_s": 810.7,
+          "status": "GO top_approach (1/17)"
+        },
+        {
+          "video_wall_s": 7.3139473719993475,
+          "sim_s": 817.7,
+          "status": "GUARD signal changed or became stale before stop line"
+        },
+        {
+          "video_wall_s": 7.501065643999937,
+          "sim_s": 817.9,
+          "status": "STOP top_stop: light=red"
+        },
+        {
+          "video_wall_s": 12.200304629999664,
+          "sim_s": 822.5,
+          "status": "STOP top_stop: light=unknown"
+        },
+        {
+          "video_wall_s": 12.615838936999353,
+          "sim_s": 822.9,
+          "status": "STOP top_stop: light=green"
+        },
+        {
+          "video_wall_s": 13.406924661999255,
+          "sim_s": 823.6,
+          "status": "REACHED top_stop (2/17) estimated=(0.566,1.690)"
+        },
+        {
+          "video_wall_s": 13.61423709399969,
+          "sim_s": 823.9,
+          "status": "GO observe_A_north (3/17)"
+        },
+        {
+          "video_wall_s": 21.805770116999156,
+          "sim_s": 832.1,
+          "status": "OBSERVE A_north"
+        },
+        {
+          "video_wall_s": 27.5178305849995,
+          "sim_s": 837.7,
+          "status": "REACHED observe_A_north (3/17) estimated=(-0.714,1.700)"
+        },
+        {
+          "video_wall_s": 27.7066605229993,
+          "sim_s": 837.9,
+          "status": "GO top_west (4/17)"
+        },
+        {
+          "video_wall_s": 34.21638568599974,
+          "sim_s": 844.2,
+          "status": "REACHED top_west (4/17) estimated=(-1.667,1.700)"
+        },
+        {
+          "video_wall_s": 34.404368552999586,
+          "sim_s": 844.5,
+          "status": "GO observe_A_west (5/17)"
+        },
+        {
+          "video_wall_s": 42.32046681899919,
+          "sim_s": 852.3,
+          "status": "ALIGN_CAMERA observe_A_west"
+        },
+        {
+          "video_wall_s": 43.30142084199997,
+          "sim_s": 853.3,
+          "status": "OBSERVE A_west"
+        },
+        {
+          "video_wall_s": 48.70448907199989,
+          "sim_s": 858.7,
+          "status": "REACHED observe_A_west (5/17) estimated=(-1.695,1.068)"
+        },
+        {
+          "video_wall_s": 48.91342832199916,
+          "sim_s": 858.8,
+          "status": "GO left_south (6/17)"
+        },
+        {
+          "video_wall_s": 53.31684140899961,
+          "sim_s": 863.3,
+          "status": "REACHED left_south (6/17) estimated=(-1.700,0.536)"
+        },
+        {
+          "video_wall_s": 53.52568578999944,
+          "sim_s": 863.5,
+          "status": "GO observe_middle (7/17)"
+        },
+        {
+          "video_wall_s": 62.1080432789995,
+          "sim_s": 871.9,
+          "status": "ALIGN_CAMERA observe_middle"
+        },
+        {
+          "video_wall_s": 63.32065342599981,
+          "sim_s": 873.1,
+          "status": "OBSERVE A_south"
+        },
+        {
+          "video_wall_s": 69.21590999799992,
+          "sim_s": 878.9,
+          "status": "OBSERVE B_north"
+        },
+        {
+          "video_wall_s": 75.6149506089996,
+          "sim_s": 885.3,
+          "status": "RETRY_OBSERVE B_north"
+        },
+        {
+          "video_wall_s": 78.41441361599936,
+          "sim_s": 888.1,
+          "status": "REACHED observe_middle (7/17) estimated=(-0.927,0.507)"
+        },
+        {
+          "video_wall_s": 78.60233493799933,
+          "sim_s": 888.3,
+          "status": "GO middle_east (8/17)"
+        },
+        {
+          "video_wall_s": 84.32209015599983,
+          "sim_s": 893.9,
+          "status": "REACHED middle_east (8/17) estimated=(-0.138,0.500)"
+        },
+        {
+          "video_wall_s": 84.51090634299999,
+          "sim_s": 894.1,
+          "status": "GO observe_B_east (9/17)"
+        },
+        {
+          "video_wall_s": 91.80722754099952,
+          "sim_s": 901.3,
+          "status": "ALIGN_CAMERA observe_B_east"
+        },
+        {
+          "video_wall_s": 92.81204473999969,
+          "sim_s": 902.3,
+          "status": "OBSERVE B_east"
+        },
+        {
+          "video_wall_s": 98.30473292699935,
+          "sim_s": 907.7,
+          "status": "REACHED observe_B_east (9/17) estimated=(-0.105,-0.062)"
+        },
+        {
+          "video_wall_s": 98.51318655499927,
+          "sim_s": 907.8,
+          "status": "GO lower_approach (10/17)"
+        },
+        {
+          "video_wall_s": 101.12401218999912,
+          "sim_s": 910.5,
+          "status": "STOP lower_stop: light=green"
+        },
+        {
+          "video_wall_s": 112.21132161699916,
+          "sim_s": 921.5,
+          "status": "STOP lower_stop: light=unknown"
+        },
+        {
+          "video_wall_s": 112.61013336499946,
+          "sim_s": 921.9,
+          "status": "STOP lower_stop: light=yellow"
+        },
+        {
+          "video_wall_s": 115.32482908499969,
+          "sim_s": 924.5,
+          "status": "STOP lower_stop: light=unknown"
+        },
+        {
+          "video_wall_s": 115.72257295799955,
+          "sim_s": 924.9,
+          "status": "STOP lower_stop: light=red"
+        },
+        {
+          "video_wall_s": 125.41542248699989,
+          "sim_s": 934.5,
+          "status": "STOP lower_stop: light=unknown"
+        },
+        {
+          "video_wall_s": 125.81337864799934,
+          "sim_s": 934.9,
+          "status": "STOP lower_stop: light=green"
+        },
+        {
+          "video_wall_s": 126.6067647939999,
+          "sim_s": 935.6,
+          "status": "REACHED lower_stop (11/17) estimated=(-0.101,-0.259)"
+        },
+        {
+          "video_wall_s": 126.81485062799948,
+          "sim_s": 935.9,
+          "status": "GO lower_south (12/17)"
+        },
+        {
+          "video_wall_s": 135.80982350899922,
+          "sim_s": 944.9,
+          "status": "REACHED lower_south (12/17) estimated=(-0.100,-1.788)"
+        },
+        {
+          "video_wall_s": 136.01885386599952,
+          "sim_s": 945.1,
+          "status": "GO bottom_east (13/17)"
+        },
+        {
+          "video_wall_s": 148.82587908199912,
+          "sim_s": 957.7,
+          "status": "PLAN observe_plate_1"
+        },
+        {
+          "video_wall_s": 149.03380168899912,
+          "sim_s": 957.9,
+          "status": "GO observe_plate_1 (14/17)"
+        },
+        {
+          "video_wall_s": 152.23359147799965,
+          "sim_s": 961.1,
+          "status": "ALIGN_CAMERA observe_plate_1"
+        },
+        {
+          "video_wall_s": 153.5265145709991,
+          "sim_s": 962.3,
+          "status": "OBSERVE plate_1"
+        },
+        {
+          "video_wall_s": 156.92854492699917,
+          "sim_s": 965.7,
+          "status": "REACHED observe_plate_1 (14/17) estimated=(1.097,-1.728)"
+        },
+        {
+          "video_wall_s": 157.1180154979993,
+          "sim_s": 965.9,
+          "status": "GO observe_plate_2 (15/17)"
+        },
+        {
+          "video_wall_s": 161.92738540799928,
+          "sim_s": 970.7,
+          "status": "OBSERVE plate_2"
+        },
+        {
+          "video_wall_s": 164.9218887319994,
+          "sim_s": 973.7,
+          "status": "REACHED observe_plate_2 (15/17) estimated=(1.100,-1.128)"
+        },
+        {
+          "video_wall_s": 165.11009364799975,
+          "sim_s": 973.9,
+          "status": "GO observe_plate_3 (16/17)"
+        },
+        {
+          "video_wall_s": 170.02599891299997,
+          "sim_s": 978.7,
+          "status": "OBSERVE plate_3"
+        },
+        {
+          "video_wall_s": 173.12157573899913,
+          "sim_s": 981.7,
+          "status": "REACHED observe_plate_3 (16/17) estimated=(1.100,-0.529)"
+        },
+        {
+          "video_wall_s": 173.31010198699914,
+          "sim_s": 981.9,
+          "status": "GO right_north (17/17)"
+        },
+        {
+          "video_wall_s": 179.13129318699976,
+          "sim_s": 987.7,
+          "status": "WAIT_FRESH_SCAN"
+        },
+        {
+          "video_wall_s": 179.32009897899934,
+          "sim_s": 987.9,
+          "status": "GO right_north (17/17)"
+        },
+        {
+          "video_wall_s": 185.43388973399942,
+          "sim_s": 993.9,
+          "status": "REACHED right_north (17/17) estimated=(1.100,1.662)"
+        },
+        {
+          "video_wall_s": 185.6437275119997,
+          "sim_s": 994.1,
+          "status": "COMPLETE single lap; travelled=12.50 m"
+        }
+      ],
+      "file": "log/reliability/patrol-camera-lap4.mp4"
+    }
+  }
+}

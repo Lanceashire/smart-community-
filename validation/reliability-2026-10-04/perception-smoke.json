@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "source": "log/inspection/plate_1.png",
+  "scope": "Real GPU detector, real OCR and actual perception callback on saved raw pixels; not a lap accuracy test",
+  "plate_texts": [
+    "苏AB8Q62"
+  ],
+  "frames": 5,
+  "ocr_votes_recorded": true
+}
