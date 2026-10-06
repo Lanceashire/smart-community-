@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Live repeated-lap audit. Ground truth is read only; faults only pause named nodes."""
+import bisect
 import argparse
 import copy
 import hashlib
@@ -18,7 +19,7 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile, DurabilityPolicy, qos_profile_sensor_data
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import Image, LaserScan
+from sensor_msgs.msg import Image, LaserScan,CompressedImage
 from std_msgs.msg import String
 from std_srvs.srv import Trigger
 from community_demo.road_rules import footprint, in_road
@@ -43,39 +44,74 @@ def process_for(node):
     if len(matches)!=1:raise RuntimeError(f'Expected one {node} process, got {matches}')
     return matches[0]
 
+def pose_at_source(samples,times,ns):
+    if ns in samples:return samples[ns]
+    i=bisect.bisect_left(times,ns)
+    if i==0 or i==len(times):return None
+    ta,tb=times[i-1:i+1]
+    if tb-ta>150_000_000:return None
+    a,b=samples[ta],samples[tb];k=(ns-ta)/(tb-ta)
+    return a[0]+k*(b[0]-a[0]),a[1]+k*(b[1]-a[1]),wrap(a[2]+k*wrap(b[2]-a[2]))
+
+def align_signal_evidence(records,samples):
+    phase_times=sorted(samples);ages=[]
+    for r in records:
+        ns=round(r['t']*1e9);i=bisect.bisect_left(phase_times,ns)
+        candidates=phase_times[max(0,i-1):i+1]
+        nearest=min(candidates,key=lambda t:abs(t-ns)) if candidates else None
+        delta=None if nearest is None else abs(nearest-ns)/1e9
+        r.setdefault('phase_at_receipt',r['phase']);r['phase_pose_time_delta_s']=delta
+        r['phase']=samples[nearest] if delta is not None and delta<=.075 else 'unknown'
+        ages.append(delta)
+    return ages
+
 class Audit(Node):
     def __init__(self,args):
         super().__init__('patrol_cycle_audit')
-        self.args=args;self.current=None;self.key=None;self.status='';self.phase='unknown';self.vision=None
+        self.args=args;self.current=None;self.key=None;self.status='';self.phase='unknown';self.phase_samples={};self.estimate_samples={};self.snapshot_freeze=False;self.vision=None
         self.pose=None;self.estimate=None;self.command=(0.,0.);self.camera_stamps=[];self.image_stamps=set();self.scans=0
         self.event_checks=[];self.paused={};self.active_fault=None;self.faults=[];self.record_start=time.monotonic()
         self.first_counts=None;self.complete_at=None;self.complete_events=None;self.restart_rejected=None
         self.signal_diagnostics=[];self.signal_decisions=[];self.stress_statistics=[]
+        self.localization_quality=[];self.approach_decisions=[]
         self.restart_client=self.create_client(Trigger,'/patrol/restart')
         self.create_subscription(String,'/patrol/lap',self.lap,QoSProfile(depth=1,durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.create_subscription(String,'/patrol/status',self.on_status,50)
+        self.create_subscription(String,'/simulation/traffic_light_stamped',self.stamped_phase,20)
         self.create_subscription(String,'/simulation/traffic_light_state',lambda m:setattr(self,'phase',m.data),20)
         self.create_subscription(String,'/perception/results',self.perception,20)
         self.create_subscription(String,'/inspection/observation',self.observation,20)
         self.create_subscription(String,'/simulation/traffic_light_diagnostics',lambda m:self.signal_diagnostics.append(json.loads(m.data)),20)
         self.create_subscription(String,'/patrol/signal_decision',lambda m:self.signal_decisions.append(json.loads(m.data)),20)
         self.create_subscription(String,'/stress/statistics',lambda m:self.stress_statistics.append(json.loads(m.data)),20)
+        self.create_subscription(String,'/localization/quality',lambda m:self.localization_quality.append(json.loads(m.data)),qos_profile_sensor_data)
+        self.create_subscription(String,'/patrol/approach_decision',lambda m:self.approach_decisions.append(json.loads(m.data)),20)
         self.create_subscription(Odometry,'/model/patrol_bot/ground_truth',self.truth,qos_profile_sensor_data)
         self.create_subscription(Odometry,'/localization/pose',self.localization,qos_profile_sensor_data)
         self.create_subscription(Twist,'/model/patrol_bot/cmd_vel',lambda m:setattr(self,'command',(m.linear.x,m.angular.z)),20)
         self.create_subscription(Image,'/camera/image',lambda m:self.camera_stamps.append(stamp(m.header)),qos_profile_sensor_data)
+        self.create_subscription(CompressedImage,'/perception/image/compressed',lambda m:self.image_stamps.add(round(stamp(m.header),6)),qos_profile_sensor_data)
         self.create_subscription(Image,'/perception/image',lambda m:self.image_stamps.add(round(stamp(m.header),6)),qos_profile_sensor_data)
         self.create_subscription(LaserScan,'/scan',self.scan,qos_profile_sensor_data)
+    def stamped_phase(self,m):
+        data=json.loads(m.data)
+        for t,phase in data['samples']:self.phase_samples[int(t)]=phase
+        # Keep the entire current lap plus 100 s for the next start.
+        if self.phase_samples and self.current is None:
+            newest=max(self.phase_samples);self.phase_samples={t:p for t,p in self.phase_samples.items() if newest-t<100_000_000_000}
     def scan(self,m):self.scans+=1
     def localization(self,m):
         p=m.pose.pose.position;self.estimate=(p.x,p.y,yaw(m.pose.pose.orientation),time.monotonic())
+        source=m.header.stamp.sec*1_000_000_000+m.header.stamp.nanosec
+        self.estimate_samples[source]=(p.x,p.y,yaw(m.pose.pose.orientation))
     def lap(self,m):
         d=json.loads(m.data);key=(d['run_id'],d['lap_id'])
         if key==self.key:return
-        self.key=key;self.current={'run_id':key[0],'lap_id':key[1],'records':[],'reached':[],'observations':[],'crossings':[],'statuses':[],'started_wall':time.monotonic(),'initial_phase':self.phase,'performance_frames':[]}
+        self.key=key;self.snapshot_freeze=False;self.current={'run_id':key[0],'lap_id':key[1],'records':[],'reached':[],'observations':[],'crossings':[],'statuses':[],'started_wall':time.monotonic(),'initial_phase':self.phase,'performance_frames':[]}
         self.vision=None;self.first_counts=None;self.complete_at=None;self.complete_events=None;self.event_checks=[]
         self.camera_stamps=[];self.image_stamps=set();self.scans=0;self.faults=[];self.active_fault=None;self.restart_rejected=None
         self.signal_diagnostics=[];self.signal_decisions=[];self.stress_statistics=[]
+        self.localization_quality=[];self.approach_decisions=[]
         print('AUDIT_LAP_START',json.dumps(d),flush=True)
     def on_status(self,m):
         self.status=m.data
@@ -107,6 +143,7 @@ class Audit(Node):
         if d['status'].startswith('COMPLETE') and self.complete_at is None:
             self.complete_at=time.monotonic();self.complete_events=copy.deepcopy(d['events'])
     def truth(self,m):
+        if self.snapshot_freeze:return
         p=m.pose.pose.position;q=m.pose.pose.orientation;a=yaw(q);t=stamp(m.header);now=time.monotonic()
         speed=math.hypot(m.twist.twist.linear.x,m.twist.twist.linear.y)
         self.pose=(p.x,p.y,a,t,speed)
@@ -148,7 +185,27 @@ class Audit(Node):
             pid=process_for(target);self.active_fault={'node':target,'pid':pid,'start_wall':now,'start_sim':t,'samples':[]};self.paused[pid]=target
             os.kill(pid,signal.SIGSTOP);print('FAULT_PAUSED',target,pid,flush=True)
     def snapshot(self):
-        c=self.current;records=c['records'];v=self.vision or {};events=v.get('events',[])
+        c=self.current;records=c['records']
+        # Freeze the physical record boundary and let delayed source-stamped
+        # evidence arrive; do not extend records or change the age tolerance.
+        self.snapshot_freeze=True;latest=round(records[-1]['t']*1e9);deadline=time.monotonic()+.5
+        while time.monotonic()<deadline and (not self.phase_samples or max(self.phase_samples)<latest):
+            rclpy.spin_once(self,timeout_sec=.03)
+        pose_times=sorted(self.estimate_samples);aligned=0
+        for record in records:
+            ns=round(record['t']*1e9);estimate=pose_at_source(self.estimate_samples,pose_times,ns)
+            record['receipt_pose_error']=record['fresh_pose_error']
+            record['fresh_pose_error']=None if estimate is None else [math.hypot(record['pose'][0]-estimate[0],record['pose'][1]-estimate[1]),abs(wrap(record['pose'][2]-estimate[2]))]
+            aligned+=estimate is not None
+        phase_ages=align_signal_evidence(records,self.phase_samples)
+        # Recompute physical line crossings from source-time-aligned lens evidence.
+        c['crossings']=[]
+        for previous,r in zip(records,records[1:]):
+            x,y,_=r['pose']
+            for i,near in enumerate((abs(y-1.7)<.30,abs(x+.1)<.30)):
+                if near and previous['front'][i]>=0 and r['front'][i]<0:
+                    c['crossings'].append({'gate':i+1,'time':r['t'],'phase':r['phase'],'legal':r['phase']=='green'})
+        v=self.vision or {};events=v.get('events',[])
         layout=json.loads((ROOT/'src/community_demo/worlds/layout.json').read_text());expected={p['asset'] for p in layout['people']}
         distance=sum(math.hypot(b['pose'][0]-a['pose'][0],b['pose'][1]-a['pose'][1]) for a,b in zip(records,records[1:]))
         errors=[r['fresh_pose_error'] for r in records if r['fresh_pose_error']]
@@ -174,12 +231,12 @@ class Audit(Node):
                         if previous_edges[gate][edge]>=0 and edges[gate][edge]<0:whole_body.append({'gate':gate+1,'edge':label,'time':r['t'],'phase':r['phase']})
                 previous_edges[gate]=edges[gate]
         tail=[r for r in records if self.complete_at and c['started_wall']+r['wall_s']>=self.complete_at+1]
-        checks={'completed':v.get('status','').startswith('COMPLETE'),'route_order':c['reached']==EXPECTED_ROUTE,'actual_distance':distance>12 and distance<14,'returned_to_start':bool(records) and math.hypot(records[-1]['pose'][0]-1.1,records[-1]['pose'][1]-1.7)<.10,'road_boundary':not any(r['outside'] for r in records),'two_green_crossings':len(c['crossings'])==2 and all(x['legal'] for x in c['crossings']),'red_wait_body_before_line':all(x['min_front_clearance_m'] is None or x['min_front_clearance_m']>=0 for x in waits),'eight_observations':c['observations']==EXPECTED_VIEWS,'observation_log_reset':len(views)==8 and all(x.get('lap_id')==self.key[1] and x.get('run_id')==self.key[0] for x in views),'recognition_reset':self.first_counts=={'residents':0,'visitors':0,'total':0},'people':set(v.get('people',{}))==expected,'plates':set(v.get('plates',{}))==EXPECTED_PLATES,'event_sequence':[e['sequence'] for e in events]==list(range(1,len(events)+1)),'event_frame_correspondence':bool(self.event_checks) and all(e['same_frame'] and e['matching_box_name_confidence'] and e['annotated_topic_frame_seen'] and e['image_exists'] for e in self.event_checks),'completion_frozen':events==self.complete_events,'stationary_after_completion':bool(tail) and max(r['speed'] for r in tail)<.015 and all(abs(r['command'][0])<.001 and abs(r['command'][1])<.001 for r in tail),'camera_and_scan_live':len(self.camera_stamps)>100 and self.scans>100,'restart_while_running_rejected':self.restart_rejected is True}
+        checks={'pose_source_time_coverage':aligned/len(records)>=(.90 if self.stress_statistics else .98),'signal_source_time_alignment':bool(phase_ages) and all(x is not None and x<=.075 for x in phase_ages) and all(r['phase']!='unknown' for r in records),'completed':v.get('status','').startswith('COMPLETE'),'route_order':c['reached']==EXPECTED_ROUTE,'actual_distance':distance>12 and distance<14,'returned_to_start':bool(records) and math.hypot(records[-1]['pose'][0]-1.1,records[-1]['pose'][1]-1.7)<.10,'road_boundary':not any(r['outside'] for r in records),'two_green_crossings':len(c['crossings'])==2 and all(x['legal'] for x in c['crossings']),'red_wait_body_before_line':all(x['min_front_clearance_m'] is None or x['min_front_clearance_m']>=0 for x in waits),'eight_observations':c['observations']==EXPECTED_VIEWS,'observation_log_reset':len(views)==8 and all(x.get('lap_id')==self.key[1] and x.get('run_id')==self.key[0] for x in views),'recognition_reset':self.first_counts=={'residents':0,'visitors':0,'total':0},'people':set(v.get('people',{}))==expected,'plates':set(v.get('plates',{}))==EXPECTED_PLATES,'event_sequence':[e['sequence'] for e in events]==list(range(1,len(events)+1)),'event_frame_correspondence':bool(self.event_checks) and all(e['same_frame'] and e['matching_box_name_confidence'] and e['annotated_topic_frame_seen'] and e['image_exists'] for e in self.event_checks),'completion_frozen':events==self.complete_events,'stationary_after_completion':bool(tail) and max(r['speed'] for r in tail)<.015 and all(abs(r['command'][0])<.001 and abs(r['command'][1])<.001 for r in tail),'camera_and_scan_live':len(self.camera_stamps)>100 and self.scans>100,'restart_while_running_rejected':self.restart_rejected is True}
         if self.args.fault_lap==self.key[1]:checks['fault_stop_and_recovery']=len(self.faults)==3 and all(f['passed'] for f in self.faults)
         checks.update(front_and_rear_green=len(whole_body)==4 and all(x['phase']=='green' for x in whole_body),red_straddle_samples_zero=red_straddles==0,observation_confirmation=len(outcomes)==8 and all(x['confirmed'] for x in outcomes))
-        extra={'whole_body_crossings':whole_body,'red_straddle_samples':red_straddles,'observation_outcomes':outcomes,
+        extra={'pose_metric':'Wheel-source-time-aligned estimate; exact samples or bracketed interpolation <=150 ms, no extrapolation; receipt metric preserved separately','pose_source_time_coverage':aligned/len(records),'estimate_source_samples':[[t,*pose] for t,pose in sorted(self.estimate_samples.items()) if records[0]['t']-.2<=t/1e9<=records[-1]['t']+.2],'signal_pose_samples':[[t,p] for t,p in sorted(self.phase_samples.items()) if records[0]['t']-.1<=t/1e9<=records[-1]['t']+.1],'whole_body_crossings':whole_body,'red_straddle_samples':red_straddles,'observation_outcomes':outcomes,
                'signal_diagnostics':self.signal_diagnostics,'signal_decisions':self.signal_decisions,
-               'stress_statistics':self.stress_statistics}
+               'stress_statistics':self.stress_statistics,'localization_quality':self.localization_quality,'approach_decisions':self.approach_decisions}
         posts=json.loads((ROOT/'src/community_demo/maps/planning-obstacles.json').read_text())['posts']
         clearance=[]
         for r in records:
@@ -189,7 +246,7 @@ class Audit(Node):
                 clearance.append(math.hypot(max(abs(co*dx+si*dy)-.11,0),max(abs(-si*dx+co*dy)-.1125,0))-math.hypot(p['width']/2,p['depth']/2))
         checks['physical_post_clearance']=bool(clearance) and min(clearance)>=-.002
         extra['minimum_post_clearance_m']=min(clearance) if clearance else None
-        return {**extra,'performance_frames':c['performance_frames'],'passed':all(checks.values()),'run_id':self.key[0],'lap_id':self.key[1],'mode':'fault injection' if self.args.fault_lap==self.key[1] else 'normal autonomous lap','checks':checks,'sim_elapsed_s':records[-1]['t']-records[0]['t'] if records else 0,'physical_distance_m':distance,'waypoints':c['reached'],'observations':c['observations'],'counts':v.get('counts'),'plates':list(v.get('plates',{})),'initial_phase':c['initial_phase'],'crossings':c['crossings'],'red_waits':waits,'max_fresh_position_error_m':max((x[0] for x in errors),default=None),'max_fresh_yaw_error_deg':math.degrees(max((x[1] for x in errors),default=0)),'road_violation_samples':sum(r['outside'] for r in records),'samples':len(records),'camera_frames':len(self.camera_stamps),'scan_frames':self.scans,'event_checks':self.event_checks,'faults':self.faults,'status_changes':c['statuses'],'records':records,'perception':v}
+        return {**extra,'performance_frames':c['performance_frames'],'passed':all(checks.values()),'run_id':self.key[0],'lap_id':self.key[1],'mode':'fault injection' if self.args.fault_lap==self.key[1] else 'normal autonomous lap','checks':checks,'sim_elapsed_s':records[-1]['t']-records[0]['t'] if records else 0,'physical_distance_m':distance,'waypoints':c['reached'],'observations':c['observations'],'counts':v.get('counts'),'plates':list(v.get('plates',{})),'initial_phase':records[0]['phase'] if records else 'unknown','initial_phase_at_receipt':c['initial_phase'],'initial_phase_source_ns':round(records[0]['t']*1e9) if records else None,'crossings':c['crossings'],'red_waits':waits,'max_fresh_position_error_m':max((x[0] for x in errors),default=None),'max_fresh_yaw_error_deg':math.degrees(max((x[1] for x in errors),default=0)),'road_violation_samples':sum(r['outside'] for r in records),'samples':len(records),'camera_frames':len(self.camera_stamps),'scan_frames':self.scans,'event_checks':self.event_checks,'faults':self.faults,'status_changes':c['statuses'],'records':records,'perception':v}
     def cleanup(self):
         for pid in list(self.paused):
             try:os.kill(pid,signal.SIGCONT)
@@ -265,7 +322,7 @@ def main():
             archive=ROOT/'log/patrol-cycle-review'/n.key[0]/f'lap-{n.key[1]:03d}';archive.mkdir(parents=True,exist_ok=True)
             import shutil
             for e in report['perception']['events']:shutil.copy2(ROOT/'log/perception'/e['image'],archive/e['image'])
-            compact={k:v for k,v in report.items() if k not in ['records','perception','event_checks','status_changes','faults','performance_frames']};compact['report']=filename;reports.append(compact)
+            compact={k:v for k,v in report.items() if k not in ['records','perception','event_checks','status_changes','faults','performance_frames','signal_pose_samples','estimate_source_samples']};compact['report']=filename;reports.append(compact)
             print('LAP_RESULT',json.dumps(compact,ensure_ascii=False),flush=True)
             if not report['passed']:break
             if number<a.laps-1:

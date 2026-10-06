@@ -36,3 +36,19 @@ def clear_of_posts(x, y, yaw, posts, margin=.012):
                 separated=True;break
         if not separated:return False
     return True
+
+
+def corridor_recovery(pose,goal,posts,speed=.06):
+    """A short forward move toward the next route goal while holding heading.
+
+    Only use when current body is in-road and every checked forward footprint
+    is in-road and clear of posts. No reverse, tolerance relaxation or teleport.
+    """
+    x,y,yaw=pose
+    if not safe_pose(x,y,yaw):return None
+    if (goal[0]-x)*math.cos(yaw)+(goal[1]-y)*math.sin(yaw)<=.08:return None
+    if all(safe_pose(*predict(x,y,yaw,speed,0.,t)) and
+           clear_of_posts(*predict(x,y,yaw,speed,0.,t),posts,margin=.025)
+           for t in (.1,.3,.5)):
+        return speed,0.
+    return None

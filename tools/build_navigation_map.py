@@ -23,14 +23,14 @@ def build(destination=None):
             free=in_road(x,y,.012)
             for p in posts:
                 c,s=math.cos(p['yaw']),math.sin(p['yaw']);dx=x-p['x'];dy=y-p['y']
-                if abs(c*dx+s*dy)<=p['width']/2+resolution/math.sqrt(2) and abs(-s*dx+c*dy)<=p['depth']/2+resolution/math.sqrt(2):
+                if abs(c*dx+s*dy)<=p['width']/2+resolution/math.sqrt(2)+.02 and abs(-s*dx+c*dy)<=p['depth']/2+resolution/math.sqrt(2)+.02:
                     if free:occupied+=1
                     free=False;break
             pixels[row*size+col]=254 if free else 0
     destination.mkdir(parents=True,exist_ok=True)
     (destination/'roads.pgm').write_bytes(b'P5\n210 210\n255\n'+pixels)
     (destination/'roads.yaml').write_text('image: roads.pgm\nmode: trinary\nresolution: 0.02\norigin: [-2.1, -2.1, 0.0]\nnegate: 0\noccupied_thresh: 0.65\nfree_thresh: 0.196\n')
-    evidence={'source':'Known supplied field geometry: drivable corridors plus physical gantry collision legs','posts':posts,'added_occupied_road_cells':occupied,'resolution':resolution,'physical_world_modified':False,'overhead_panels':'Not occupied at robot clearance height'}
+    evidence={'source':'Known supplied field geometry: drivable corridors plus physical gantry collision legs','posts':posts,'added_occupied_road_cells':occupied,'resolution':resolution,'planning_post_margin_m':.02,'physical_world_modified':False,'overhead_panels':'Not occupied at robot clearance height'}
     (destination/'planning-obstacles.json').write_text(json.dumps(evidence,indent=2)+'\n')
     print(json.dumps(evidence));return evidence
 if __name__=='__main__':build()

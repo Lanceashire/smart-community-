@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Strict acceptance: no skipped conditions, no failed development runs counted."""
-import hashlib,json,math
+import argparse,hashlib,json,math
 from pathlib import Path
 from summarize_performance import summarize
 
@@ -9,9 +9,9 @@ ROOT=Path(__file__).resolve().parents[1];F=ROOT/'validation/four-fixes-2026-10-0
 def blackout_error_bound(raw,stress):
     """Stale auditor estimate is held: ||p-e|| <= last error + displacement.
 
-    Audit.localization updates both estimate and receipt time together. Thus
-    a stale interval cannot contain an unrecorded new estimate. Do not count
-    missing error samples as zero or claim an exact error during that interval.
+    Estimate headers are paired to physical source times, with no extrapolation
+    through the blackout. The final exact pre-gap estimate is held until new
+    wheel data arrives. Missing samples are never counted as zero error.
     """
     last=None;previous=None;bounds=[];stale=0;gaps=[]
     start=stress['blackout_start_sim_s'];end=stress['blackout_end_sim_s']
@@ -25,8 +25,8 @@ def blackout_error_bound(raw,stress):
             stale+=r['fresh_pose_error'] is None
             bounds.append(bound)
         previous=r
-    # A newly received estimate would be fresh for .7 seconds. These truth
-    # samples are closer together, so none can disappear unobserved in a gap.
+    # Physical records are dense; the source gap cannot hide an estimate
+    # inside a missing recorded interval. The held estimate is bounded below.
     return {'passed':len(bounds)>=20 and bool(gaps) and max(gaps)<.7 and max(bounds)<=.12,'samples':len(bounds),'stale_samples':stale,
             'maximum_truth_sample_gap_wall_s':max(gaps),
             'maximum_position_error_upper_bound_cm':max(bounds)*100,
@@ -52,8 +52,10 @@ def gate_review(raw,decision):
         'camera_edge_count':decision['camera_edge_count']}
 
 def main():
+    global F
+    parser=argparse.ArgumentParser();parser.add_argument('--output',default='validation/four-fixes-2026-10-04');parser.add_argument('--main-laps',type=int,default=3);a=parser.parse_args();F=ROOT/a.output
     rows=[];native=[];angles=[];direct=[];checks={};stress=None
-    for case,count in [('main',3),('start-plus',1),('start-minus',1),('sensor-stress',1)]:
+    for case,count in [('main',a.main_laps),('start-plus',1),('start-minus',1),('sensor-stress',1)]:
         group=json.loads((F/case/'summary.json').read_text())
         paths=[p for p in sorted((F/case).glob('lap-*.json')) if not p.name.endswith('-images.json')]
         checks[case+'_complete']=group['passed'] and len(paths)==count
@@ -69,8 +71,8 @@ def main():
             native.extend(diagnostics)
             for view in raw['observation_outcomes']:
                 if view['view'].startswith('plate_'):continue
-                f=view['feedback'];a=f.get('sample_angles',{});n=f.get('sample_frames',{})
-                angles.append({'case':case,'lap':raw['lap_id'],'view':view['view'],'passed':view['confirmed'] and f.get('two_angles_verified') and n.get('0',0)>=5 and n.get('1',0)>=3 and abs(a.get('0',0)-a.get('1',0))>=.05})
+                f=view['feedback'];sample_angles=f.get('sample_angles',{});n=f.get('sample_frames',{})
+                angles.append({'case':case,'lap':raw['lap_id'],'view':view['view'],'passed':view['confirmed'] and f.get('two_angles_verified') and n.get('0',0)>=5 and n.get('1',0)>=3 and abs(sample_angles.get('0',0)-sample_angles.get('1',0))>=.05})
             b=next(v for v in raw['observation_outcomes'] if v['view']=='B_north')
             if case=='main':checks['B_north_no_retry_lap_'+str(raw['lap_id'])]=b['attempt']==0 and b['elapsed_s']<=6.5
             max_error=.12 if case=='sensor-stress' else .10 if case.startswith('start-') else .06
@@ -85,7 +87,7 @@ def main():
             if case=='sensor-stress':
                 stress=raw['stress_statistics'][-1] if raw['stress_statistics'] else None
                 stress_error=blackout_error_bound(raw,stress) if stress else {'passed':False}
-    checks['thirty_person_views_two_actual_angles']=len(angles)==30 and all(v['passed'] for v in angles)
+    checks['all_person_views_two_actual_angles']=len(angles)==5*(a.main_laps+3) and all(v['passed'] for v in angles)
     checks['already_active_green_passes_without_new_red']=len(direct)>=2 and all(g['stop_wait_sim_s']<=2 for g in direct)
     checks['normal_signal_service_timeouts_zero']=bool(native) and all(d['timeouts']==d['failures']==d['requests']==0 for d in native)
     engines=[d['native_engine'] for d in native if d.get('native_engine')]

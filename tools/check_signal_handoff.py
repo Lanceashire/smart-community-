@@ -1,3 +1,4 @@
+import argparse
 #!/usr/bin/env python3
 """Exercise actual patrol callbacks with camera-derived phase reuse."""
 import json
@@ -54,5 +55,7 @@ report={'passed':True,'actual_callback_approach_to_stop_retains_evidence':True,
         'completed_lap_stays_stopped_and_latched_with_all_sensors_missing':True,
         'completion_does_not_mask_a_latched_fault':True,
         'scope':'Actual patrol callbacks; camera colours only, no simulator topic'}
-out=Path(__file__).resolve().parents[1]/'validation/four-fixes-2026-10-04/callback-regression.json'
+parser=argparse.ArgumentParser();parser.add_argument('--output',default='validation/four-fixes-2026-10-04/callback-regression.json');a=parser.parse_args()
+out=Path(__file__).resolve().parents[1]/a.output
+out.parent.mkdir(parents=True,exist_ok=True)
 out.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report))

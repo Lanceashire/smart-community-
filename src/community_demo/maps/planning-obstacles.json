@@ -34,8 +34,9 @@
       "depth": 0.025
     }
   ],
-  "added_occupied_road_cells": 6,
+  "added_occupied_road_cells": 32,
   "resolution": 0.02,
+  "planning_post_margin_m": 0.02,
   "physical_world_modified": false,
   "overhead_panels": "Not occupied at robot clearance height"
 }

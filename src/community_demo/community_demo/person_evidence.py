@@ -7,10 +7,10 @@ def overlap(a,b):
     return area/union if union>0 else 0.
 
 class PersonEvidence:
-    def __init__(self):self.tracks=[];self.next_id=1
+    def __init__(self,frame_window=10):self.tracks=[];self.next_id=1;self.frame_window=frame_window
 
     def update(self,detections,frame_id,pan,width):
-        self.tracks=[t for t in self.tracks if frame_id-t['frame']<=10]
+        self.tracks=[t for t in self.tracks if frame_id-t['frame']<=self.frame_window]
         # Different YOLO identity classes can overlap the same physical standee.
         boxes=[]
         for d in sorted(detections,key=lambda x:x['confidence'],reverse=True):
@@ -31,7 +31,7 @@ class PersonEvidence:
             else:
                 t={'id':self.next_id,'votes':[]};self.next_id+=1;self.tracks.append(t)
             used.add(t['id']);t.update(bbox=box,pan=pan,frame=frame_id)
-            t['votes']=[v for v in t['votes'] if frame_id-v[0]<10]+[(frame_id,d['name'],d['confidence'])]
+            t['votes']=[v for v in t['votes'] if frame_id-v[0]<self.frame_window]+[(frame_id,d['name'],d['confidence'])]
             weights={};counts={}
             for _,name,confidence in t['votes']:
                 weights[name]=weights.get(name,0.)+confidence;counts[name]=counts.get(name,0)+1

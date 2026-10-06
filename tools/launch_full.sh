@@ -6,6 +6,7 @@ source /opt/ros/jazzy/setup.bash
 source install/setup.bash
 set -u
 mkdir -p log
+export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
 source tools/vision_env.sh
 source tools/ros_transport.sh
 "$AIC_VISION_PYTHON" tools/preflight.py --model "${AIC_PERCEPTION_MODEL:-src/community_demo/models/perception/yolo11s-comparison.pt}"

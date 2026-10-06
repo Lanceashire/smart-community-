@@ -1,3 +1,4 @@
+import argparse
 #!/usr/bin/env python3
 """Physical projection and phase safety counterexamples for the four fixes."""
 import json
@@ -40,5 +41,7 @@ for frame in range(13,21):
 checks['resolved_identity_flip_still_cannot_double_count']=not result[0]['confirmed'] and result[0]['identity_resolved']
 report={'passed':all(checks.values()),'checks':checks,
         'scope':'Phase counterexamples and independent physical projection; full Gazebo acceptance separate'}
-out=Path(__file__).resolve().parents[1]/'validation/four-fixes-2026-10-04/control-regression.json'
+parser=argparse.ArgumentParser();parser.add_argument('--output',default='validation/four-fixes-2026-10-04/control-regression.json');a=parser.parse_args()
+out=Path(__file__).resolve().parents[1]/a.output
+out.parent.mkdir(parents=True,exist_ok=True)
 out.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report));raise SystemExit(0 if report['passed'] else 1)

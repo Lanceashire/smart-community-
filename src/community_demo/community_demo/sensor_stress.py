@@ -5,7 +5,7 @@ import math
 import numpy as np
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.qos import qos_profile_sensor_data,QoSProfile,ReliabilityPolicy
 from sensor_msgs.msg import Image, PointCloud2
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
@@ -15,15 +15,19 @@ from geometry_msgs.msg import Twist
 class SensorStress(Node):
     def __init__(self):
         super().__init__('sensor_stress_acceptance')
-        self.rng=np.random.default_rng(20261004)
+        self.declare_parameter('seed',20261004)
+        self.seed=int(self.get_parameter('seed').value)
+        self.rng=np.random.default_rng(self.seed)
         self.outputs={}
+        latest=QoSProfile(depth=1,reliability=ReliabilityPolicy.BEST_EFFORT)
+        self.input_ages={k:[] for k in ['image','odometry','points']}
         self.counts={k:{'received':0,'published':0,'dropped':0,'blackout':0} for k in ['image','odometry','points']}
         self.blackout_start=None;self.blackout_end=None;self.blackout_samples=[]
         self.speed=0.;self.command=(0.,0.)
         for kind,topic,typ in [('image','/camera/image',Image),('odometry','/model/patrol_bot/odometry',Odometry),('points','/lidar/raw/points',PointCloud2)]:
             target={'image':'/stress/camera/image','odometry':'/stress/odometry','points':'/stress/points'}[kind]
-            self.outputs[kind]=self.create_publisher(typ,target,qos_profile_sensor_data)
-            self.create_subscription(typ,topic,lambda m,k=kind:self.receive(k,m),qos_profile_sensor_data)
+            self.outputs[kind]=self.create_publisher(typ,target,latest)
+            self.create_subscription(typ,topic,lambda m,k=kind:self.receive(k,m),latest)
         self.create_subscription(String,'/patrol/status',self.on_status,10)
         self.create_subscription(Odometry,'/model/patrol_bot/ground_truth',self.on_truth,qos_profile_sensor_data)
         self.create_subscription(Twist,'/model/patrol_bot/cmd_vel',lambda m:setattr(self,'command',(m.linear.x,m.angular.z)),10)
@@ -41,6 +45,9 @@ class SensorStress(Node):
     def receive(self,kind,m):
         c=self.counts[kind];c['received']+=1
         now=self.get_clock().now().nanoseconds/1e9
+        stamp=m.header.stamp.sec+m.header.stamp.nanosec/1e9
+        self.input_ages[kind].append(now-stamp)
+        self.input_ages[kind]=self.input_ages[kind][-200:]
         if self.blackout_end is not None and now<self.blackout_end:
             c['blackout']+=1;return
         if self.rng.random()<.1:
@@ -70,7 +77,7 @@ class SensorStress(Node):
             self.blackout_samples.append({'elapsed_s':round(now-self.blackout_start,3),'speed':self.speed,'command':self.command})
         late=[s for s in self.blackout_samples if s['elapsed_s']>=1.5]
         stopped=bool(late) and all(s['speed']<.015 and max(map(abs,s['command']))<.001 for s in late)
-        self.statistics.publish(String(data=json.dumps({'seed':20261004,'counts':self.counts,
+        self.statistics.publish(String(data=json.dumps({'seed':self.seed,'counts':self.counts,'input_age_p95_s':{k:float(np.percentile(v,95)) if v else None for k,v in self.input_ages.items()},
             'image_sigma_levels':3.,'odometry_position_sigma_m':.001,'odometry_yaw_sigma_rad':.001,
             'lidar_xyz_sigma_m':.005,'message_drop_probability':.1,
             'blackout_start_sim_s':self.blackout_start,'blackout_end_sim_s':self.blackout_end,

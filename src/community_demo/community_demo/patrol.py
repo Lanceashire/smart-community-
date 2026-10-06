@@ -14,16 +14,17 @@ from rclpy.action import ActionClient
 from nav_msgs.msg import Odometry
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
-from rclpy.qos import QoSProfile, DurabilityPolicy, qos_profile_sensor_data
+from rclpy.qos import QoSProfile, DurabilityPolicy, qos_profile_sensor_data,ReliabilityPolicy
 from sensor_msgs.msg import LaserScan, Image
 from std_msgs.msg import String, Float64
 from std_srvs.srv import Trigger
 
 from community_demo.bounded_pid import BoundedPID
-from community_demo.road_rules import safe_pose,predict,footprint,clear_of_posts
+from community_demo.road_rules import safe_pose,predict,footprint,clear_of_posts,corridor_recovery
 from ament_index_python.packages import get_package_share_directory
 from community_demo.signal_gate import FreshGreenGate, VisualPhaseClock
 from community_demo.motion_profile import bend_limit
+from community_demo.sensor_validation import valid_rgb_image,valid_odometry,stamp_ns
 
 
 def wrap(angle):
@@ -44,7 +45,7 @@ ROUTE = [
     ('observe_middle', -.90, .5, False), ('middle_east', -.1, .5, False),
     ('observe_B_east', -.1, -.09, False),
     ('lower_approach', -.1, -.29, False), ('lower_stop', -.1, -.29, True),
-    ('lower_south', -.1, -1.82, False), ('bottom_east', 1.1, -1.78, False),
+    ('lower_south', -.1, -1.825, False), ('bottom_east', 1.1, -1.825, False),
     ('observe_plate_1', 1.1, -1.7, False), ('observe_plate_2', 1.1, -1.1, False),
     ('observe_plate_3', 1.1, -.5, False), ('right_north', 1.1, 1.7, False),
 ]
@@ -52,7 +53,7 @@ OBSERVATION_HEADING={'observe_A_north':math.pi,'observe_A_west':-math.pi/2,'obse
 OBSERVATIONS = {
     'observe_A_north':[('A_north', math.pi/2)],
     'observe_A_west':[('A_west', math.pi/2)],
-    'observe_middle':[('A_south', math.pi/2),('B_north', -math.pi/2+.08)],
+    'observe_middle':[('A_south', math.pi/2),('B_north', -math.pi/2+.16)],
     'observe_B_east':[('B_east', -math.pi/2)],
     'observe_plate_1':[('plate_1', -math.pi/2)],
     'observe_plate_2':[('plate_2', -math.pi/2)],
@@ -67,9 +68,10 @@ class Patrol(Node):
         self.declare_parameter('require_vision', True)
         self.declare_parameter('pose_topic','/localization/pose')
         self.require_vision = self.get_parameter('require_vision').value
+        latest=QoSProfile(depth=1,reliability=ReliabilityPolicy.BEST_EFFORT)
         self.pan_pub=self.create_publisher(Float64,'/model/patrol_bot/camera_pan',10)
         self.observation_pub=self.create_publisher(String,'/inspection/observation',10)
-        self.create_subscription(Image,'/camera/image',self.on_camera,qos_profile_sensor_data)
+        self.create_subscription(Image,'/camera/image',self.on_camera,latest)
         self.camera_frame=None
         self.observation_start=None
         self.observation_align=False
@@ -81,16 +83,18 @@ class Patrol(Node):
         self.feedback_update=None
         self.perception_update=None;self.perception_stamp=None
         self.observation_outcomes=[]
-        self.create_subscription(String,'/perception/results',self.on_perception,qos_profile_sensor_data)
+        self.create_subscription(String,'/perception/results',self.on_perception,latest)
         self.inspection_pub=self.create_publisher(String,'/inspection/outcome',10)
         self.static_posts=json.loads((Path(get_package_share_directory('community_demo'))/'maps/planning-obstacles.json').read_text())['posts']
         self.post_replan_time=-1e9
+        self.road_recovery_started=None
+        self.road_recovery_origin=None
         self.localization_quality={}
         self.quality_update=None
         self.blocked_since=None
         self.clear_scans=0
         self.recovery_count=0
-        self.create_subscription(String,'/localization/quality',self.on_quality,qos_profile_sensor_data)
+        self.create_subscription(String,'/localization/quality',self.on_quality,latest)
         self.saved_views=[]
         inspection=Path('log/inspection');inspection.mkdir(parents=True,exist_ok=True)
         (inspection/'views.json').write_text('[]\n')
@@ -100,17 +104,19 @@ class Patrol(Node):
         self.command_pub = self.create_publisher(TwistStamped, '/cmd_vel_nav', 10)
         self.status_pub = self.create_publisher(String, '/patrol/status', 10)
         self.signal_decisions = self.create_publisher(String, '/patrol/signal_decision', 10)
+        self.approach_decisions = self.create_publisher(String, '/patrol/approach_decision', 10)
         self.lap_pub = self.create_publisher(String, '/patrol/lap', QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.run_id = uuid.uuid4().hex[:12]
         self.lap_id = 1
         # Control consumes camera/wheel localization. Simulator truth is evaluation only.
-        self.create_subscription(Odometry, self.get_parameter('pose_topic').value, self.on_odom, qos_profile_sensor_data)
+        self.create_subscription(Odometry, self.get_parameter('pose_topic').value, self.on_odom, latest)
         self.create_service(Trigger, '/patrol/restart', self.restart)
-        self.create_subscription(LaserScan, '/scan', self.on_scan, qos_profile_sensor_data)
-        self.create_subscription(String, '/perception/traffic_light', self.on_light, qos_profile_sensor_data)
+        self.create_subscription(LaserScan, '/scan', self.on_scan, latest)
+        self.create_subscription(String, '/perception/traffic_light_stamped', self.on_stamped_light, latest)
         self.pose = None
         self.pose_update = None
         self.pose_source_time=None
+        self.pose_source_ns=None
         self.tilt = 0.0
         self.distance_travelled = 0.0
         self.motion_probe = None
@@ -119,6 +125,7 @@ class Patrol(Node):
         self.scan_update = None
         self.light_state = 'unknown'
         self.light_update = None
+        self.light_source_ns = None
         self.index = 0
         self.green_streak = 0
         self.waiting_for_green = False
@@ -127,7 +134,7 @@ class Patrol(Node):
         self.signal_context = None
         self.completed = False
         self.last_log = ''
-        self.speed_pid = BoundedPID(kp=.55, lower=0.0, upper=.22)
+        self.speed_pid = BoundedPID(kp=.55, lower=0.0, upper=.24)
         self.heading_pid = BoundedPID(kp=1.8, lower=-.55, upper=.55)
         self.create_timer(.1, self.tick)
         self.get_logger().info('Single-lap route ready; uses camera / wheel localization with separate laser SLAM mapping and camera-confirmed green.')
@@ -152,7 +159,9 @@ class Patrol(Node):
         future.add_done_callback(accepted)
 
     def on_camera(self,msg):
-        if msg.encoding not in ('rgb8','bgr8'):return
+        if not valid_rgb_image(msg):return
+        age_ns=self.get_clock().now().nanoseconds-stamp_ns(msg.header.stamp)
+        if not -50_000_000<=age_ns<=500_000_000:return
         a=np.frombuffer(msg.data,np.uint8).reshape(msg.height,msg.step)[:,:msg.width*3].reshape(msg.height,msg.width,3)
         self.camera_frame=cv2.cvtColor(a,cv2.COLOR_RGB2BGR) if msg.encoding=='rgb8' else a.copy()
 
@@ -191,7 +200,10 @@ class Patrol(Node):
         self.observation_pub.publish(String(data=json.dumps(event)))
         self.log_status(('OBSERVE ' if self.observation_attempt==0 else 'RETRY_OBSERVE ')+view)
         # Stable per-view evidence permits an early finish; uncertain views retain retries.
-        minimum_s=2.5 if view.startswith('plate_') else 3.8
+        # Plate feedback already requires two high-confidence OCR votes,
+        # six frames, 1.8 s of observation and a 0.8 s quiet evidence window.
+        # Do not add a second fixed 2.5 s wait after those checks succeed.
+        minimum_s=1.8 if view.startswith('plate_') else 3.8
         if (now-self.observation_start).nanoseconds<minimum_s*1e9:return False
         if self.camera_frame is None:return False
         if not ready and elapsed<15.0:return False
@@ -226,6 +238,10 @@ class Patrol(Node):
         self.perception_stamp=data.get('stamp')
 
     def on_odom(self, msg):
+        if not valid_odometry(msg):return
+        source_ns=stamp_ns(msg.header.stamp);age_ns=self.get_clock().now().nanoseconds-source_ns
+        if not -50_000_000<=age_ns<=150_000_000:return
+        if self.pose_source_ns is not None and source_ns<self.pose_source_ns:return
         p = msg.pose.pose.position
         q = msg.pose.pose.orientation
         roll = math.atan2(2 * (q.w*q.x + q.y*q.z), 1 - 2 * (q.x*q.x + q.y*q.y))
@@ -238,6 +254,7 @@ class Patrol(Node):
         self.pose = (p.x, p.y, yaw_from_quaternion(q))
         self.pose_update = self.get_clock().now()
         self.pose_source_time=msg.header.stamp.sec+msg.header.stamp.nanosec/1e9
+        self.pose_source_ns=msg.header.stamp.sec*1_000_000_000+msg.header.stamp.nanosec
 
     def restart(self, request, response):
         fresh = self.pose_update is not None and (self.get_clock().now()-self.pose_update).nanoseconds < 700_000_000
@@ -299,6 +316,19 @@ class Patrol(Node):
             self.signal_context = context
         return context
 
+    def on_stamped_light(self,msg):
+        try:
+            data=json.loads(msg.data);source=data['source_stamp_ns'];colour=data['colour']
+            if type(source) is not int or colour not in ('red','green','yellow','unknown'):return
+        except (ValueError,KeyError,TypeError):return
+        now=self.get_clock().now();age_ns=now.nanoseconds-source
+        if not 0<=age_ns<=500_000_000:return
+        if self.light_source_ns is not None and source<=self.light_source_ns:return
+        self.light_source_ns=source;self.light_state=colour;self.light_update=now
+        self.phase_clock.observe(colour,source/1e9)
+        if self.update_signal_context() is not None:
+            self.signal_gate.observe(colour,now.nanoseconds/1e9)
+
     def on_light(self, msg):
         self.light_state = msg.data
         self.light_update = self.get_clock().now()
@@ -321,9 +351,10 @@ class Patrol(Node):
                     linear=angular=0.0
                     self.command_guard='GUARD signal changed or became stale before stop line'
                     self.motion_probe=None
+        road_recovery=False
         if self.pose and (linear or angular):
             for dt in (.1,.3,.5):
-                if not clear_of_posts(*predict(*self.pose,linear,angular,dt),self.static_posts):
+                if not clear_of_posts(*predict(*self.pose,linear,angular,dt),self.static_posts,margin=.025):
                     self.command_guard='GUARD physical signal post would intersect footprint'
                     self.motion_probe=None;linear=angular=0.0
                     now=self.get_clock().now().nanoseconds/1e9
@@ -331,10 +362,25 @@ class Patrol(Node):
                         self.post_replan_time=now;self.path_index=-1;self.path=None
                     break
                 if not safe_pose(*predict(*self.pose,linear,angular,dt)):
-                    self.command_guard="GUARD footprint would cross road paint"
-                    self.motion_probe=None
-                    linear=angular=0.0
+                    step=None
+                    if self.index<len(ROUTE) and not ROUTE[self.index][3]:
+                        step=corridor_recovery(self.pose,ROUTE[self.index][1:3],self.static_posts)
+                    if step is not None:
+                        linear,angular=step;road_recovery=True
+                        self.command_guard='RECOVER_ROAD constrained forward step within corridor'
+                        stamp=self.get_clock().now().nanoseconds/1e9
+                        if self.road_recovery_started is None:
+                            self.road_recovery_started=stamp;self.road_recovery_origin=self.pose[:2]
+                        if stamp-self.road_recovery_started>8.:
+                            linear=angular=0.;self.fault='FAULT road recovery exceeded eight seconds'
+                            self.command_guard=self.fault
+                    else:
+                        self.command_guard="GUARD footprint would cross road paint"
+                        self.motion_probe=None;linear=angular=0.0
                     break
+        if (not road_recovery and self.command_guard is None and (linear or angular) and
+            self.road_recovery_origin is not None and math.hypot(self.pose[0]-self.road_recovery_origin[0],self.pose[1]-self.road_recovery_origin[1])>.04):
+            self.road_recovery_started=None;self.road_recovery_origin=None
         cmd.twist.linear.x = float(linear)
         cmd.twist.angular.z = float(angular)
         self.command_pub.publish(cmd)
@@ -354,7 +400,11 @@ class Patrol(Node):
         nearest=min(range(len(points)),key=lambda i:math.hypot(points[i][0]-x,points[i][1]-y))
         self.path_points=points;self.path_nearest=nearest
         lookahead=nearest
-        while lookahead<len(points)-1 and math.hypot(points[lookahead][0]-x,points[lookahead][1]-y)<.14:lookahead+=1
+        near_post=any(math.hypot(p['x']-x,p['y']-y)<.45 for p in self.static_posts)
+        # Short lookahead around a real bend, not every straight pass of a post.
+        turning=bend_limit(points,nearest,0.,1.,.24)<.24
+        distance=.09 if near_post and turning else .14
+        while lookahead<len(points)-1 and math.hypot(points[lookahead][0]-x,points[lookahead][1]-y)<distance:lookahead+=1
         gx,gy=points[lookahead]
         return wrap(math.atan2(gy-y,gx-x)-yaw)
 
@@ -385,7 +435,7 @@ class Patrol(Node):
             self.log_status(f'COMPLETE single lap; travelled={self.distance_travelled:.2f} m')
             return
         if (self.pose is None or (now - self.pose_update).nanoseconds > 700_000_000 or
-                self.pose_source_time is None or now.nanoseconds/1e9-self.pose_source_time>.15):
+                self.pose_source_ns is None or now.nanoseconds-self.pose_source_ns>150_000_000):
             self.publish_command()
             self.motion_probe = None
             self.log_status('WAIT_FRESH_LOCALIZATION')
@@ -403,6 +453,12 @@ class Patrol(Node):
         quality_fresh=self.quality_update is not None and (now-self.quality_update).nanoseconds<700_000_000
         if not quality_fresh or self.localization_quality.get('state')=='lost':
             self.publish_command();self.motion_probe=None
+            # A stale quality packet can arrive just before a fresh wheel pose.
+            # Stop the chassis, but do not interrupt a settled observation pan.
+            # Recenter only for actual distance-without-registration loss.
+            if not quality_fresh or self.localization_quality.get('reason')=='source or receipt freshness':
+                self.log_status('RECOVER_LOCALIZATION wait for fresh source quality; retain observation pan')
+                return
             self.pan_pub.publish(Float64(data=0.0))
             self.log_status('RECOVER_LOCALIZATION wait for fresh road-paint registration')
             return
@@ -413,6 +469,7 @@ class Patrol(Node):
         # offset: the camera must keep facing the gantry while stopped.
         tolerance = .05 if name in ('top_approach', 'top_stop',
                                      'lower_approach', 'lower_stop') else .04
+        if name=='lower_south':tolerance=.025
         observing=name in OBSERVATIONS and self.observation_align
         if dist < tolerance or observing:
             self.motion_probe = None
@@ -485,6 +542,16 @@ class Patrol(Node):
             # Extra speed only on straight, well-localized travel, away from stop approaches.
             if abs(error)>.12 or 'approach' in name or stop or self.localization_quality.get('state')!='tracking':
                 linear=min(linear,.14 if self.localization_quality.get('state')=='degraded' else .18)
+            # A fresh, camera-anchored green can permit normal straight speed.
+            # The release gate and whole-body budget remain unchanged.
+            if 'approach' in name:
+                fresh=self.light_update is not None and (now-self.light_update).nanoseconds<500_000_000
+                remaining=self.phase_clock.remaining_lower(now.nanoseconds/1e9)
+                enough=(fresh and self.light_state=='green' and remaining is not None and
+                        remaining>=max(0.,dist-.05)/.18+self.signal_gate.crossing_budget)
+                if enough and abs(error)<.06 and self.localization_quality.get('state')=='tracking':
+                    linear=max(linear,min(.24,self.speed_pid.calculate(dist)))
+                self.approach_decisions.publish(String(data=json.dumps({'run_id':self.run_id,'lap_id':self.lap_id,'route_point':name,'stamp':now.nanoseconds/1e9,'remaining_lower_s':remaining,'green_sufficient_for_approach_and_body':enough,'commanded_linear_m_s':linear,'source':'Fresh camera colour and camera-observed phase anchor'})))
             linear=bend_limit(self.path_points,self.path_nearest,error,dist,linear)
         if self.motion_probe is None:
             self.motion_probe = (now, x, y, yaw)
@@ -496,7 +563,12 @@ class Patrol(Node):
                 self.log_status(self.fault)
                 return
             self.motion_probe = (now, x, y, yaw)
-        self.pan_pub.publish(Float64(data=0.0))
+        # Pre-position only in the last 12 cm of an aligned observation approach.
+        # Navigation keeps the real wheel pose; side views do not correct ground paint.
+        prepan=(name in OBSERVATIONS and dist<.12 and
+                abs(wrap(OBSERVATION_HEADING[name]-yaw))<.035 and
+                self.localization_quality.get('state')=='tracking')
+        self.pan_pub.publish(Float64(data=OBSERVATIONS[name][0][1] if prepan else 0.0))
         self.publish_command(linear, angular)
         self.log_status(self.command_guard or f'GO {name} ({self.index + 1}/{len(ROUTE)})')
 

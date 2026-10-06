@@ -69,7 +69,8 @@ def generate_launch_description():
     patrol = Node(package='community_demo', executable='patrol', parameters=[{'use_sim_time':True}], remappings=[camera_remap], output='screen', condition=IfCondition(LaunchConfiguration('patrol')))
     localization = Node(package='community_demo', executable='localization', parameters=[{'use_sim_time':True}],
         remappings=[camera_remap,('/model/patrol_bot/odometry',sensor_topic('/model/patrol_bot/odometry','/stress/odometry')),('/lidar/raw/points',sensor_topic('/lidar/raw/points','/stress/points'))],output='screen')
-    perturbations=Node(package='community_demo',executable='sensor_stress',parameters=[{'use_sim_time':True}],output='screen',condition=IfCondition(stress))
+    from launch_ros.parameter_descriptions import ParameterValue
+    perturbations=Node(package='community_demo',executable='sensor_stress',parameters=[{'use_sim_time':True,'seed':ParameterValue(LaunchConfiguration('stress_seed'),value_type=int)}],output='screen',condition=IfCondition(stress))
     slam = Node(package='slam_toolbox', executable='async_slam_toolbox_node', name='slam_toolbox', parameters=[os.path.join(get_package_share_directory('community_demo'),'config','slam.yaml')], output='screen')
     signals = Node(package='community_demo', executable='traffic_signals', output='screen', parameters=[{'use_sim_time':True}])
     return LaunchDescription([
@@ -79,6 +80,7 @@ def generate_launch_description():
         DeclareLaunchArgument('patrol', default_value='true'),
         DeclareLaunchArgument('vision', default_value='true'),
         DeclareLaunchArgument('stress', default_value='false'),
+        DeclareLaunchArgument('stress_seed', default_value='20261004'),
         OpaqueFunction(function=start_gazebo),
         bridge, perturbations, localization, slam,
         Node(package='nav2_map_server',executable='map_server',name='map_server',parameters=[os.path.join(get_package_share_directory('community_demo'),'config/navigation.yaml'),{'yaml_filename':os.path.join(get_package_share_directory('community_demo'),'maps/roads.yaml')}],output='screen'),

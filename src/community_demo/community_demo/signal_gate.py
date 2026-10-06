@@ -24,7 +24,7 @@ class VisualPhaseClock:
             return
         gap = None if self.last_time is None else now - self.last_time
         if gap is not None and 0 <= gap <= 1.2 and colour != self.last_colour:
-            shift = (0. if self.last_colour in ('red', 'yellow') and colour == 'green'
+            shift = (0. if self.last_colour == 'red' and colour == 'green'
                      else self.green if self.last_colour == 'green' and colour == 'yellow'
                      else self.green + self.yellow if self.last_colour == 'yellow' and colour == 'red'
                      else None)

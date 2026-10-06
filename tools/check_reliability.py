@@ -1,3 +1,4 @@
+import argparse
 #!/usr/bin/env python3
 """Regression: one physical target cannot count alternating identity labels twice."""
 import json,math
@@ -27,5 +28,7 @@ assert bend_limit(straight,0,.3,1.,.22)==.12
 report={'passed':True,'identity_flip_does_not_double_count':True,'pan_compensated_track':True,
         'overlapping_identity_boxes_suppressed':True,'bend_slowdown_before_turn':True,
         'scope':'Actual evidence association and motion profile functions, no ROS answers'}
-out=Path(__file__).resolve().parents[1]/'validation/four-fixes-2026-10-04/association-regression.json'
+parser=argparse.ArgumentParser();parser.add_argument('--output',default='validation/four-fixes-2026-10-04/association-regression.json');a=parser.parse_args()
+out=Path(__file__).resolve().parents[1]/a.output
+out.parent.mkdir(parents=True,exist_ok=True)
 out.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report))
