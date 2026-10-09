@@ -15,7 +15,7 @@ from std_msgs.msg import String
 from std_srvs.srv import Trigger
 from ultralytics import YOLO
 from rapidocr import RapidOCR
-from community_demo.plate_geometry import blue_plates
+from community_demo.plate_geometry import blue_plates,select_plate_target
 from community_demo.visual_overlay import draw_detection_labels,target_display_name
 from community_demo.person_evidence import overlap
 from community_demo.person_evidence import PersonEvidence
@@ -173,7 +173,9 @@ class Perception(Node):
         tracked={(e['name'],tuple(e['bbox'])):e for e in person_tracks}
         pixel_plates=blue_plates(frame,min_width=42)
         plate_boxes=[b for b in result.boxes if result.names[int(b.cls.item())]=='plate']
-        chosen_plate=min(plate_boxes,key=lambda b:abs(float((b.xyxy[0,0]+b.xyxy[0,2])/2)-frame.shape[1]/2),default=None)
+        plate_target=select_plate_target(pixel_plates,
+            [{'bbox':b.xyxy[0].cpu().tolist(),'confidence':float(b.conf.item())} for b in plate_boxes],
+            frame.shape[1],frame.shape[0])
         for box in result.boxes:
             cls=int(box.cls.item());name=result.names[cls];conf=float(box.conf.item());coords=box.xyxy[0].cpu().numpy().astype(int);x1,y1,x2,y2=map(int,coords);H,W=frame.shape[:2];x1=max(0,x1);y1=max(0,y1);x2=min(W,x2);y2=min(H,y2)
             if x2<=x1 or y2<=y1:continue
@@ -194,8 +196,8 @@ class Perception(Node):
                 kind='traffic_light';colour=name[6:];text=colour;light_candidates.append(((x2-x1)*(y2-y1),colour,conf,[x1,y1,x2,y2]))
             detections.append({'category':kind,'name':text,'confidence':round(conf,4),'confidence_type':'YOLO probability',
                                'confirmed':bool(confirmed or name in self.people),'bbox':[x1,y1,x2,y2]});cv2.rectangle(frame,(x1,y1),(x2,y2),color,2)
-        if self.view.startswith('plate_') and pixel_plates:
-            target=min(pixel_plates,key=lambda p:abs((p['bbox'][0]+p['bbox'][2])/2-frame.shape[1]/2))
+        if self.view.startswith('plate_') and plate_target is not None:
+            target=plate_target
             x1,y1,x2,y2=target['bbox'];text='blue plate';ocr_score=None
             if (self.plate_read and image_time-self.plate_read['stamp']<=.7 and
                     overlap(target['bbox'],self.plate_read['bbox'])>.4):
@@ -213,7 +215,7 @@ class Perception(Node):
                         if len([c for f,c in evidence if self.frame_id-f<round(self.processing_hz*4)])>=2:self.view_plates[candidate]=self.frame_id
                         if self.lap_active and len(recent)>=2 and candidate not in self.plates:
                             event=self.event('plate',candidate,score,[x1,y1,x2,y2]);self.plates[candidate]=event;new_events.append(event)
-            detections.append({'category':'plate','name':text,'confidence':target['geometry_score'],'confidence_type':'geometry score, not YOLO probability','ocr_confidence':ocr_score,'confirmed':text in self.plates,'bbox':target['bbox'],'method':'YOLO plus blue-boundary proposals / pixel OCR',
+            detections.append({'category':'plate','name':text,'confidence':target['confidence'],'confidence_type':target['confidence_type'],'ocr_confidence':ocr_score,'confirmed':text in self.plates,'bbox':target['bbox'],'method':target['method'],
                                'ocr_source_stamp':self.plate_read['stamp'] if ocr_score is not None and self.plate_read else None})
             cv2.rectangle(frame,(x1,y1),(x2,y2),(70,240,255),2)
         if ocr_due:self.last_ocr=time.monotonic()

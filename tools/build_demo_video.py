@@ -35,6 +35,7 @@ def main():
     parser.add_argument('--output', required=True)
     parser.add_argument('--date', default='2026-10-10')
     parser.add_argument('--team', default='待填写')
+    parser.add_argument('--focus', choices=['world-generation', 'materials'], default='world-generation')
     args = parser.parse_args()
     run, output = Path(args.run).resolve(), Path(args.output).resolve()
     pipeline = read(run / 'pipeline.json')
@@ -117,12 +118,20 @@ def main():
         '人员与车牌结果来自机器人相机；俯视摄影仅用于观察。',
         '演示片段保持记录时的墙钟速度，章节之间有说明页。',
     ], 25 * scale, '01-introduction')
-    page('场景重新生成：保留已验收配置', [
-        '生成器已补齐 50 Hz IMU 及 Gazebo IMU 系统插件。',
-        '同步已验收的云台参数，防止重建后恢复旧参数。',
-        '重新生成的场景与已验收场景逐字节一致。',
-        '十个人物板均有正面贴图；侧面和背面保持单面立牌形态。',
-    ], 25 * scale, '02-scene')
+    if args.focus == 'materials':
+        page('原始素材恢复：车辆背景与黄灯亮 / 暗态', [
+            '三张补充 JPEG 保留原始字节，直接用于 Gazebo 贴图。',
+            '黄灯亮、暗态均使用实物照片，替换原有暗黄色圆片。',
+            '三块车辆板使用提供的车辆背景，车牌保持独立原图。',
+            '人物、物料位置、碰撞尺寸、相机参数与控制门槛保留。',
+        ], 25 * scale, '02-scene')
+    else:
+        page('场景重新生成：保留已验收配置', [
+            '生成器已补齐 50 Hz IMU 及 Gazebo IMU 系统插件。',
+            '同步已验收的云台参数，防止重建后恢复旧参数。',
+            '重新生成的场景与已验收场景逐字节一致。',
+            '十个人物板均有正面贴图；侧面和背面保持单面立牌形态。',
+        ], 25 * scale, '02-scene')
     for i, (name, source) in enumerate(raw_files.items(), 3):
         destination = output / name
         shutil.copy2(source, destination)
@@ -134,21 +143,44 @@ def main():
     imu_sensor = next(line.strip() for line in generator if 'sensor name="body_imu"' in line)
     imu_plugin = next(line.strip() for line in generator if 'filename="gz-sim-imu-system"' in line)
     gain = next(line.strip() for line in generator if '<p_gain>' in line)
-    page('当前源码 1：场景生成器修复', [
-        'tools/generate_world.py（真实源码片段）',
-        imu_sensor, '', imu_plugin, '', gain, '',
-        'check_world_generation.py：完整重建、确定性、IMU 与录像世界一致性检查。',
-    ], 40 * scale, '06-code-generation', code=True)
+    if args.focus == 'materials':
+        source = (ROOT / 'tools/generate_world.py').read_text()
+        start = source.index("    if 'car_front' in TEXTURES:")
+        end = source.index('    else:', start)
+        page('当前源码 1：原图贴图与独立车牌', [
+            'tools/generate_world.py（真实源码片段）', '',
+            *source[start:end].splitlines(), '',
+            next(line.strip() for line in generator if "mesh_visual('official_plate'" in line), '',
+            'import_scene_assets.py 校验补充文件 SHA256，并按真实格式生成贴图引用。',
+            '原始 JPEG 不重画、不重新压缩；旧下载缓存保留来源与补齐记录。',
+        ], 40 * scale, '06-code-generation', code=True)
+    else:
+        page('当前源码 1：场景生成器修复', [
+            'tools/generate_world.py（真实源码片段）',
+            imu_sensor, '', imu_plugin, '', gain, '',
+            'check_world_generation.py：完整重建、确定性、IMU 与录像世界一致性检查。',
+        ], 40 * scale, '06-code-generation', code=True)
     localization = (ROOT / 'src/community_demo/community_demo/localization.py').read_text()
     start = localization.index("        if getattr(self,'require_imu',False) and (not self.imu_samples")
     end = localization.index('\n', localization.index('navigation pose withheld', start))
     excerpt = localization[start:end].splitlines()
-    page('当前源码 2：IMU 过期时停止输出导航位姿', [
-        'src/community_demo/community_demo/localization.py（真实源码片段）', '',
-        *[line[8:] for line in excerpt], '',
-        '缺失 / 过期 IMU -> 定位质量丢失 -> 巡航保护停车。',
-        '图像、轮速、激光与实际云台关节均保留源时间校验。',
-    ], 40 * scale, '07-code-safety', code=True)
+    if args.focus == 'materials':
+        selection = (ROOT / 'src/community_demo/community_demo/plate_geometry.py').read_text()
+        start = selection.index('    if candidates:')
+        end = selection.index('\ndef blue_plates', start)
+        page('当前源码 2：避免将蓝色车身送入车牌 OCR', [
+            'src/community_demo/community_demo/plate_geometry.py（真实源码片段）', '',
+            *selection[start:end].strip('\n').splitlines(), '',
+            '有效 YOLO 车牌框优先；无有效检测框时保留蓝色几何候选。',
+            '原始像素 OCR、两次高置信确认与终端 / 图像关联保留。',
+        ], 40 * scale, '07-code-safety', code=True)
+    else:
+        page('当前源码 2：IMU 过期时停止输出导航位姿', [
+            'src/community_demo/community_demo/localization.py（真实源码片段）', '',
+            *[line[8:] for line in excerpt], '',
+            '缺失 / 过期 IMU -> 定位质量丢失 -> 巡航保护停车。',
+            '图像、轮速、激光与实际云台关节均保留源时间校验。',
+        ], 40 * scale, '07-code-safety', code=True)
     n = metrics['mapped-navigation']
     page('最新实跑结果', [
         f'正常圈：{n["completion_sim_s"]:.2f} 仿真秒，17 路点、8 次观察完成。',
@@ -178,7 +210,7 @@ def main():
     for file in [composite, *[output / n for n in raw_files]]:
         subprocess.run(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-i', str(file),
                         '-f', 'null', '-'], check=True)
-    result = {'passed': True, 'date': args.date, 'team': args.team,
+    result = {'passed': True, 'date': args.date, 'team': args.team, 'focus': args.focus,
         'pipeline': str(run / 'pipeline.json'), 'source_frozen': True,
         'resolution': '1920x1080', 'fps': 10, 'duration_s': duration,
         'audio': 'Chinese captions, no narration', 'chapters': chapters,

@@ -1,0 +1,36 @@
+{
+  "source": "User-provided JPEG attachments, 2026-10-10",
+  "processing": "Original bytes copied; no generated, repainted or recompressed image.",
+  "assets": [
+    {
+      "id": "yellow_on",
+      "file": "yellow_on.jpg",
+      "original_filename": "8BA52AC8F92B90F36CB10F39A855D897.jpg",
+      "sha256": "2af9c203341c7141ddc42b61432faaec30de9c4d6aee393ecd08986ef5dbfb98",
+      "pixels": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "id": "yellow_off",
+      "file": "yellow_off.jpg",
+      "original_filename": "C9CA9D19A3DB05B611DC964CCA87DE6B.jpg",
+      "sha256": "a0fbb94ffa90ca91e20e3e18735f3140ba99f08535e7a12d2c0b9c922886eb14",
+      "pixels": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "id": "car_front",
+      "file": "car_front.jpg",
+      "original_filename": "D193A3C931C5253BB471810CDF278991.jpg",
+      "sha256": "3b84ef1411136bf21cc1051679f5562c471300f1d40c891218eb749e89076f67",
+      "pixels": [
+        1920,
+        1364
+      ]
+    }
+  ]
+}

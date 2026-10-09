@@ -1,5 +1,13 @@
 # AIC 智慧社区：巡检导航与视觉识别
 
+## 补充原始素材恢复：2026-10-10
+
+用户补齐黄灯亮态、暗态与车辆背景三张 JPEG。原始文件保存在 `src/community_demo/models/community_assets/supplements/`，SHA256、原文件名及尺寸见其 `manifest.json`。导入器默认读取这组补充文件，保留原始字节和 JPEG 格式，生成相应模型与贴图引用。运行 `python3 tools/import_scene_assets.py /path/to/materials.zip` 后，再运行场景生成器与录像世界生成器即可复现。
+
+黄灯暗态使用提供的实物照片，三块车辆板使用提供的车辆背景，三张车牌仍为独立原始 PNG。车辆板 34.5×25 cm、车牌 9.5×3 cm，以及物料位置、碰撞体、机器人与相机参数均保留。附件原 ZIP 的两个不可读下载缓存仍记录在素材清单中，现均标记 `resolved_by`；`unresolved` 为空，实际场景不再使用其替代外观。历史验收记录对应各自当时版本。
+
+首次恢复车辆背景的候选圈暴露了旧车牌定位的缺陷：大片蓝色车身会合并车牌色块，最近蓝色候选还可能来自车顶。已改为优先使用真实 YOLO 车牌框裁取原始相机像素，缺少有效检测框时保留原蓝色几何候选；检测概率、几何评分与 OCR 置信度分别显示。识别仍要求两次高置信 OCR，不读取场景位置或已知车牌答案。反例入口为 `python3 tools/check_plate_target_selection.py --output /tmp/plate-target-check.json`，完整巡航应另启新的验收目录。
+
 ## 源码归档与人物显示检查：2026-10-09
 
 正式场景的人物是有指定朝向的单面立牌：局部 +X 面使用原始人物 PNG，侧面有厚度，背面为灰白纸板。A、B 街区各五个模型全部具有有效人物贴图；从同一巡航视角看到灰白板不代表人物缺失。可按 [docs/person-board-rendering.md](docs/person-board-rendering.md) 在关闭巡航的检查场景中逐个拍摄正反面。位姿重置仅用于这项显示检查，不计入自主巡航证据。

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
 <asset><created>2026-10-01T00:00:00Z</created><modified>2026-10-01T00:00:00Z</modified><unit name="meter" meter="1"/><up_axis>Z_UP</up_axis></asset>
-<library_images><image id="image"><init_from>../materials/textures/yellow_on.png</init_from></image></library_images>
+<library_images><image id="image"><init_from>../materials/textures/yellow_on.jpg</init_from></image></library_images>
 <library_effects><effect id="effect"><profile_COMMON>
 <newparam sid="surface"><surface type="2D"><init_from>image</init_from></surface></newparam>
 <newparam sid="sampler"><sampler2D><source>surface</source><wrap_s>CLAMP</wrap_s><wrap_t>CLAMP</wrap_t></sampler2D></newparam>
-<technique sid="common"><phong><emission><texture texture="sampler" texcoord="UV"/></emission><ambient><color>1 1 1 1</color></ambient>
+<technique sid="common"><phong><emission><color>0 0 0 1</color></emission><ambient><color>1 1 1 1</color></ambient>
 <diffuse><texture texture="sampler" texcoord="UV"/></diffuse><specular><color>0 0 0 1</color></specular>
 <transparent opaque="A_ONE"><texture texture="sampler" texcoord="UV"/></transparent><transparency><float>1</float></transparency>
 </phong></technique></profile_COMMON></effect>

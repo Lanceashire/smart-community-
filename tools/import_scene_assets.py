@@ -1,6 +1,7 @@
 """Import supplied AIC textures unchanged and generate metric Collada cards.
 
 Usage: python3 tools/import_scene_assets.py /path/to/official-materials.zip
+Readable supplementary JPEGs are imported from community_assets/supplements.
 Requires Pillow at import time only. Runtime Gazebo does not need Pillow.
 """
 import argparse
@@ -76,14 +77,33 @@ def mesh(name, texture, width, height, *, silhouette=None, floor=False, disc=Fal
 
 
 def main():
-    parser=argparse.ArgumentParser(); parser.add_argument('zip'); args=parser.parse_args()
+    parser=argparse.ArgumentParser(); parser.add_argument('zip')
+    parser.add_argument('--supplements', type=Path, default=ASSETS/'supplements')
+    args=parser.parse_args()
     for path in ['meshes','materials/textures']:(ASSETS/path).mkdir(parents=True,exist_ok=True)
     manifest={'source_zip_sha256':hashlib.sha256(Path(args.zip).read_bytes()).hexdigest(),
               'assets':[], 'unreadable':[], 'assumptions':[
                   'Person height 0.15 m estimated from supplied ruler photograph; widths preserve source aspect.',
-                  'Person cardboard thickness 0.002 m and lamp diameter 0.12 m are modelling choices.',
-                  'Missing car background is replaced by explicitly generated thin front geometry.',
-                  'Missing yellow-off lens uses a dark amber disc. No incomplete file was renamed to PNG.']}
+                  'Person cardboard thickness 0.002 m and lamp diameter 0.12 m are modelling choices.']}
+    supplements={}
+    supplement_manifest=args.supplements/'manifest.json'
+    if supplement_manifest.is_file():
+        for entry in json.loads(supplement_manifest.read_text())['assets']:
+            if entry['id'] in supplements:raise ValueError('Duplicate supplement: '+entry['id'])
+            data=(args.supplements/entry['file']).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=entry['sha256']:
+                raise ValueError('Supplement hash mismatch: '+entry['id'])
+            with Image.open(io.BytesIO(data)) as im:im.load()
+            supplements[entry['id']]=(entry,data)
+    def add_data(data,source,name,width,height,**kw):
+        im=Image.open(io.BytesIO(data)); im.load()
+        extension={'PNG':'.png','JPEG':'.jpg'}.get(im.format)
+        if extension is None:raise ValueError('Unsupported texture format: '+str(im.format))
+        filename=name+extension; (ASSETS/'materials/textures'/filename).write_bytes(data)
+        if width is None:width=height*im.width/im.height
+        mesh(name,filename,width,height,silhouette=im if kw.pop('silhouette',False) else None,**kw)
+        manifest['assets'].append({'id':name,'source':source,'sha256':hashlib.sha256(data).hexdigest(),
+                                  'texture':filename,'pixels':list(im.size),'width_m':width,'height_m':height})
     def member_path(z, member):
         # Both supplied archive versions contain the same assets; one has a root folder.
         matches=[name for name in (member, '复赛资料/'+member) if name in z.namelist()]
@@ -92,12 +112,7 @@ def main():
     def add(z,member,name,width,height,**kw):
         source=member_path(z,member)
         if source is None:raise FileNotFoundError('Missing official asset: '+member)
-        data=z.read(source); im=Image.open(io.BytesIO(data)); im.load()
-        filename=name+'.png'; (ASSETS/'materials/textures'/filename).write_bytes(data)
-        if width is None:width=height*im.width/im.height
-        mesh(name,filename,width,height,silhouette=im if kw.pop('silhouette',False) else None,**kw)
-        manifest['assets'].append({'id':name,'source':member,'sha256':hashlib.sha256(data).hexdigest(),
-                                  'pixels':list(im.size),'width_m':width,'height_m':height})
+        add_data(z.read(source),member,name,width,height,**kw)
     with zipfile.ZipFile(args.zip) as z:
         add(z,'地图-图.png','floor',4.2,4.2,floor=True)
         for i in range(1,17):add(z,f'人员/社区人员/{i}.png',f'resident_{i:02}',None,.15,silhouette=True)
@@ -106,18 +121,40 @@ def main():
         for name,ch in [('red','红'),('green','绿'),('yellow','黄')]:
             for state,suffix in [('on','亮'),('off','暗')]:
                 member=f'红绿灯/红绿灯图片/{ch}灯{suffix}.png'
-                if member_path(z,member) is not None:
+                asset=f'{name}_{state}'
+                if asset in supplements:
+                    entry,data=supplements[asset]
+                    add_data(data,'supplements/'+entry['file'],asset,.12,.12,disc=True,lit=state=='on')
+                    manifest['assets'][-1]['original_filename']=entry['original_filename']
+                elif member_path(z,member) is not None:
                     add(z,member,f'{name}_{state}',.12,.12,disc=True,lit=state=='on')
+        if 'car_front' in supplements:
+            entry,data=supplements['car_front']
+            add_data(data,'supplements/'+entry['file'],'car_front',.345,.25)
+            manifest['assets'][-1]['original_filename']=entry['original_filename']
         for member in z.namelist():
             if member.startswith('__MACOSX/') or Path(member).name.startswith('._'):
                 continue
             if member.endswith('.downloading'):
                 try:Image.open(io.BytesIO(z.read(member))).load()
                 except Exception as ex:manifest['unreadable'].append({'source':member,'error':type(ex).__name__})
+    resolved={'黄灯暗.png.baiduyun.p.downloading':'yellow_off',
+              '车牌背景.png.baiduyun.p.downloading':'car_front'}
+    for item in manifest['unreadable']:
+        asset=resolved.get(Path(item['source']).name)
+        if asset in supplements:item['resolved_by']=asset
+    manifest['unresolved']=[item for item in manifest['unreadable'] if 'resolved_by' not in item]
+    if 'car_front' not in supplements:
+        manifest['assumptions'].append('Missing car background is replaced by explicitly generated thin front geometry.')
+    if 'yellow_off' not in supplements:
+        manifest['assumptions'].append('Missing yellow-off lens uses a dark amber disc. No incomplete file was renamed to PNG.')
+    if supplements:
+        manifest['supplement_source']='User-provided readable JPEG attachments, 2026-10-10; original bytes preserved.'
     (ASSETS/'manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\n')
     (ASSETS/'model.config').write_text('<model><name>community_assets</name><version>1.0</version><sdf version="1.9">model.sdf</sdf><description>Official AIC cards, unchanged source textures</description></model>')
     (ASSETS/'model.sdf').write_text('<sdf version="1.9"><model name="community_assets"><static>true</static><link name="assets"/></model></sdf>')
-    print(f'Imported {len(manifest["assets"])} assets; {len(manifest["unreadable"])} incomplete files; {ASSETS}')
+    print(f'Imported {len(manifest["assets"])} assets; {len(manifest["unreadable"])} original incomplete files, '
+          f'{len(manifest["unresolved"])} unresolved; {ASSETS}')
 
 
 if __name__=='__main__':main()

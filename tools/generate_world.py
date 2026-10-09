@@ -1,7 +1,7 @@
 """Build the AIC semifinal scene on the existing RM-derived patrol baseline.
 
-Textures are copied unchanged from the user's ZIP. Inferred positions and the
-replacement for two incomplete assets are recorded in layout/asset manifests.
+Textures are copied unchanged from the user's ZIP and readable supplements.
+Inferred positions and asset provenance are recorded in layout/asset manifests.
 """
 
 from pathlib import Path
@@ -10,6 +10,7 @@ import math
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'src/community_demo/worlds/community.sdf'
+TEXTURES = {}
 
 
 def colour(r, g, b, a=1):
@@ -28,7 +29,8 @@ def box(name, x, y, z, sx, sy, sz, rgba, *, collision=False):
 def mesh_visual(name, asset, pose='0 0 0 0 0 0'):
     lit_rgb={'red':'.55 .015 .015 1','green':'.015 .55 .015 1','yellow':'.55 .35 .015 1'}
     emission=f'<emissive>{lit_rgb[asset.split("_")[0]]}</emissive>' if asset.endswith('_on') else ''
-    return f'<visual name="{name}"><pose>{pose}</pose><geometry><mesh><uri>model://community_assets/meshes/{asset}.dae</uri></mesh></geometry><material><ambient>1 1 1 1</ambient><diffuse>1 1 1 1</diffuse>{emission}<pbr><metal><albedo_map>model://community_assets/materials/textures/{asset}.png</albedo_map><metalness>0</metalness><roughness>1</roughness></metal></pbr></material></visual>'
+    texture=TEXTURES.get(asset,asset+'.png')
+    return f'<visual name="{name}"><pose>{pose}</pose><geometry><mesh><uri>model://community_assets/meshes/{asset}.dae</uri></mesh></geometry><material><ambient>1 1 1 1</ambient><diffuse>1 1 1 1</diffuse>{emission}<pbr><metal><albedo_map>model://community_assets/materials/textures/{texture}</albedo_map><metalness>0</metalness><roughness>1</roughness></metal></pbr></material></visual>'
 
 
 def part(name, pose, size, rgba, collision=False):
@@ -57,21 +59,23 @@ def gantry(name, x, y, yaw, reverse=False):
             identifier=f'{name}_{colour_}_{state}'
             active=(state=='on')==(colour_=='red')
             z=.35 if active else -1.0
-            visual=mesh_visual('lens',f'{colour_}_{state}') if not (colour_=='yellow' and state=='off') else '<visual name="lens"><pose>0 0 .06 0 1.5707963 0</pose><geometry><cylinder><radius>.06</radius><length>.001</length></cylinder></geometry><material><ambient>.08 .055 .008 1</ambient><diffuse>.08 .055 .008 1</diffuse></material></visual>'
+            visual=mesh_visual('lens',f'{colour_}_{state}') if (colour_!='yellow' or state!='off' or 'yellow_off' in TEXTURES) else '<visual name="lens"><pose>0 0 .06 0 1.5707963 0</pose><geometry><cylinder><radius>.06</radius><length>.001</length></cylinder></geometry><material><ambient>.08 .055 .008 1</ambient><diffuse>.08 .055 .008 1</diffuse></material></visual>'
             models.append(f'<model name="{identifier}"><static>true</static><pose>{lx} {ly} {z} 0 0 {yaw}</pose><link name="lens">{visual}</link></model>')
             lenses.append({'name':identifier,'colour':colour_,'state':state,'x':lx,'y':ly,'yaw':yaw,'visible_z':.35,'hidden_z':-1.0})
     return models,lenses
 
 
 def car(i,y):
-    # The ZIP's car background is incomplete: this visibly separate thin panel
-    # is a geometric replacement, not an invented official texture.
+    # Physical board dimensions and plate placement are kept unchanged.
     parts=part('board','0 0 .125 0 0 0','.005 .345 .25','.04 .62 .7 1',True)
-    parts+=part('windscreen','.003 0 .197 0 0 0','.001 .27 .067','.04 .07 .10 1')
-    parts+=part('grille','.003 0 .112 0 0 0','.001 .17 .035','.025 .025 .025 1')
-    parts+=part('bumper','.003 0 .018 0 0 0','.001 .30 .025','.15 .16 .18 1')
-    for j in [-1,1]:
-        parts+=part(f'headlight_{j}',f'.003 {j*.132} .115 0 0 0','.001 .048 .038','.95 .94 .75 1')
+    if 'car_front' in TEXTURES:
+        parts+=mesh_visual('car_background','car_front','.0026 0 0 0 0 0')
+    else:
+        parts+=part('windscreen','.003 0 .197 0 0 0','.001 .27 .067','.04 .07 .10 1')
+        parts+=part('grille','.003 0 .112 0 0 0','.001 .17 .035','.025 .025 .025 1')
+        parts+=part('bumper','.003 0 .018 0 0 0','.001 .30 .025','.15 .16 .18 1')
+        for j in [-1,1]:
+            parts+=part(f'headlight_{j}',f'.003 {j*.132} .115 0 0 0','.001 .048 .038','.95 .94 .75 1')
     parts+=mesh_visual('official_plate',f'plate_{i}','.0038 0 .040 0 0 0')
     return f'<model name="car_{i}"><static>true</static><pose>1.75 {y} .004 0 0 {math.pi}</pose><link name="body">{parts}</link></model>'
 
@@ -167,6 +171,7 @@ def robot():
 def main():
     assets=ROOT/'src/community_demo/models/community_assets/manifest.json'
     manifest=json.loads(assets.read_text())
+    TEXTURES.clear();TEXTURES.update({a['id']:a.get('texture',a['id']+'.png') for a in manifest['assets']})
     widths={a['id']:a['width_m'] for a in manifest['assets']}
     models=[box('ground',0,0,-.015,4.2,4.2,.03,colour(.03,.03,.03),collision=True),
             '<model name="official_map"><static>true</static><pose>0 0 .001 0 0 0</pose><link name="floor">'+mesh_visual('map','floor')+'</link></model>']
