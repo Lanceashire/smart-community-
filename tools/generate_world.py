@@ -79,6 +79,7 @@ def car(i,y):
 def robot():
     return '''<model name="patrol_bot"><pose>1.1 1.7 .002 0 0 3.14159265</pose>
       <link name="chassis"><pose>0 0 .13 0 0 0</pose>
+        <sensor name="body_imu" type="imu"><topic>/imu/data</topic><always_on>true</always_on><update_rate>50</update_rate><imu/></sensor>
         <inertial><mass>1.5</mass><inertia><ixx>.012</ixx><iyy>.012</iyy><izz>.020</izz></inertia></inertial>
         <collision name="body_collision"><geometry><box><size>.22 .16 .12</size></box></geometry></collision>
         <visual name="body_visual"><geometry><box><size>.22 .16 .12</size></box></geometry>
@@ -125,7 +126,7 @@ def robot():
         <axis><xyz expressed_in="__model__">0 0 1</xyz><limit><lower>-3.14159265</lower><upper>3.14159265</upper></limit><dynamics><damping>.01</damping></dynamics></axis></joint>
       <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
         <joint_name>camera_pan_joint</joint_name><topic>/model/patrol_bot/camera_pan</topic>
-        <p_gain>.2</p_gain><d_gain>.02</d_gain><cmd_max>.15</cmd_max><cmd_min>-.15</cmd_min>
+        <p_gain>.4</p_gain><d_gain>.04</d_gain><cmd_max>.25</cmd_max><cmd_min>-.25</cmd_min>
       </plugin>
       <link name="left_wheel"><pose>0 .10 .055 1.5707963 0 0</pose>
         <inertial><mass>.15</mass><inertia><ixx>.0003</ixx><iyy>.0003</iyy><izz>.0003</izz></inertia></inertial>
@@ -189,6 +190,7 @@ def main():
   <gravity>0 0 -9.8</gravity><physics name="physics" type="ignored"><max_step_size>.001</max_step_size><real_time_factor>1</real_time_factor></physics>
   <scene><ambient>.7 .7 .7 1</ambient><background>.12 .15 .20 1</background><shadows>true</shadows><grid>false</grid></scene>
   <light name="sun" type="directional"><pose>0 0 5 0 0 0</pose><diffuse>.9 .9 .9 1</diffuse><specular>.1 .1 .1 1</specular><direction>-.3 -.4 -1</direction></light>
+  <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
   <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
   <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
   <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
@@ -196,7 +198,7 @@ def main():
   <plugin filename="libcommunity_signal_system.so" name="community::SignalSystem"><red_seconds>10</red_seconds><green_seconds>15</green_seconds><yellow_seconds>3</yellow_seconds></plugin>
   {body}
 </world></sdf>'''
-    OUT.parent.mkdir(parents=True,exist_ok=True);OUT.write_text(sdf)
+    OUT.parent.mkdir(parents=True,exist_ok=True);OUT.write_text(sdf+'\n')
     layout={'field_m':[4.2,4.2],'road_width_m':.6,'map_texture':'original supplied map; no invented perimeter wall',
             'origin':'map centre; +X right, +Y top, +Z up','spawn':[1.1,1.7,math.pi],
             'people':people,'lamps':lamps,'cars':[{'name':f'car_{i}','x':1.75,'y':y,'yaw':math.pi,'size_m':[.005,.345,.25],'plate_m':[.095,.03]} for i,y in enumerate([-1.7,-1.1,-.5],1)],
