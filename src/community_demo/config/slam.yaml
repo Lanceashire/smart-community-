@@ -10,14 +10,14 @@ slam_toolbox:
     odom_frame: odom
     map_frame: slam_map
     base_frame: slam_base
-    scan_topic: /scan
+    scan_topic: /scan_slam
     mode: mapping
     use_map_saver: true
     throttle_scans: 1
     transform_publish_period: 0.02
     map_update_interval: 1.0
     resolution: 0.02
-    max_laser_range: 6.0
+    max_laser_range: 5.95
     minimum_time_interval: 0.1
     transform_timeout: 0.3
     tf_buffer_duration: 30.0

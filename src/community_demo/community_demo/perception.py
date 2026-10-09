@@ -3,7 +3,7 @@
 This node never reads layout geometry, ground truth, or simulator identities.
 The identity classes describe the supplied gallery, not unknown real people.
 """
-import json,re,time,threading
+import json,re,time,threading,base64
 from collections import Counter,deque
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
@@ -16,7 +16,8 @@ from std_srvs.srv import Trigger
 from ultralytics import YOLO
 from rapidocr import RapidOCR
 from community_demo.plate_geometry import blue_plates
-from community_demo.visual_overlay import draw_detection_labels
+from community_demo.visual_overlay import draw_detection_labels,target_display_name
+from community_demo.person_evidence import overlap
 from community_demo.person_evidence import PersonEvidence
 from community_demo.sensor_validation import valid_rgb_image,pan_sample,stamp_ns
 from PIL import Image as PILImage,ImageDraw,ImageFont
@@ -47,6 +48,8 @@ class Perception(Node):
         self.view_people={};self.view_plates={};self.view_votes={};self.last_observation_outcomes=[]
         self.person_evidence=PersonEvidence(frame_window=round(self.processing_hz*2));self.pan_samples=deque(maxlen=256)
         self.view_sample=0;self.view_pan=0.;self.sample_frames={};self.sample_angles={}
+        self.detail_jpeg=b'';self.plate_read=None;self.preview_snapshot=None
+        self.live_html=Path('src/community_demo/gui/live_view.html').read_bytes()
         self.create_subscription(JointState,'/world/community/model/patrol_bot/joint_state',self.on_joint,qos_profile_sensor_data)
         self.create_subscription(String,'/inspection/outcome',self.on_outcome,qos_profile_sensor_data)
         fonts=['src/community_demo/models/fonts/wqy-zenhei.ttc','/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc','/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc']
@@ -57,12 +60,23 @@ class Perception(Node):
         node=self
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self):
-                if self.path.startswith('/frame.jpg'):
+                if self.path.startswith('/snapshot'):
+                    snapshot=node.preview_snapshot
+                    if snapshot:
+                        report,jpeg,detail=snapshot
+                        # The report is immutable serialized bytes, so future identity
+                        # votes cannot modify the events paired to this captured JPEG.
+                        data=b'{"report":'+report+b',"image":"'+base64.b64encode(jpeg)+b'","detail_image":"'+base64.b64encode(detail)+b'"}'
+                    else:data=b'{}'
+                    typ='application/json; charset=utf-8'
+                elif self.path.startswith('/frame.jpg'):
                     data=node.jpeg;typ='image/jpeg'
+                elif self.path.startswith('/detail.jpg'):
+                    data=node.detail_jpeg;typ='image/jpeg'
                 elif self.path.startswith('/state'):
                     data=json.dumps(node.latest,ensure_ascii=False).encode();typ='application/json; charset=utf-8'
                 else:
-                    data=('''<!doctype html><meta charset="utf-8"><title>AIC 机器人实时验收</title><style>body{background:#111827;color:#eee;font:18px sans-serif;margin:24px}main{display:grid;grid-template-columns:3fr 1fr;gap:24px}img{width:100%;border-radius:12px}pre{white-space:pre-wrap;background:#1f2937;padding:20px;border-radius:12px}h1{font-size:26px}</style><h1>AIC 智慧社区 · 机器人真实相机</h1><button onclick="restart()" style="font-size:18px;padding:10px 18px;margin-bottom:18px">再巡航一圈</button><span id="restart-message"></span><main><img id="camera"><pre id="state"></pre></main><script>async function restart(){let r=await(await fetch('/restart',{method:'POST'})).json();document.getElementById('restart-message').textContent=r.message;}setInterval(async()=>{document.getElementById('camera').src='/frame.jpg?t='+Date.now();let s=await(await fetch('/state')).json();if(!s.counts){document.getElementById('state').textContent='等待机器人相机';return;}document.getElementById('state').textContent=s.status+'\\n\\n社区人员：'+s.counts.residents+'\\n非社区人员：'+s.counts.visitors+'\\n去重总人数：'+s.counts.total+'\\n\\n车牌：\\n'+Object.keys(s.plates).join('\\n')+'\\n\\n未确认观察点：'+((s.unconfirmed_views||[]).join('、')||'无')+'\\n\\n灯色：'+s.traffic_light+'\\n画面编号：'+s.frame_id;},350)</script>''').encode();typ='text/html; charset=utf-8'
+                    data=node.live_html;typ='text/html; charset=utf-8'
                 self.send_response(200);self.send_header('Content-Type',typ);self.send_header('Cache-Control','no-store');self.end_headers();self.wfile.write(data)
             def do_POST(self):
                 if self.path!='/restart':self.send_error(404);return
@@ -123,6 +137,7 @@ class Perception(Node):
                 self.view_people={};self.view_plates={};self.view_votes={}
                 self.view_key=key;self.view_frames=0;self.evidence_signature=None
                 self.person_evidence=PersonEvidence(frame_window=round(self.processing_hz*2));self.sample_frames={};self.sample_angles={}
+                self.plate_read=None
                 self.view_started=self.get_clock().now().nanoseconds/1e9;self.evidence_changed=self.view_started
             self.view=view
             self.view_sample=int(data.get('sample',0));self.view_pan=float(data.get('pan_rad',0.))
@@ -134,6 +149,7 @@ class Perception(Node):
         self.last_observation_outcomes.append(data)
     def event(self,kind,key,confidence,bbox):
         item={'run_id':self.run_id,'lap_id':self.lap_id,'sequence':len(self.events)+1,'frame_id':self.frame_id,'stamp':self.last_stamp.stamp.sec+self.last_stamp.stamp.nanosec*1e-9,'category':kind,'content':key,'confidence':round(float(confidence),4),'bbox':list(map(int,bbox)),'image':f'{self.run_id}-lap-{self.lap_id:03d}-event-{len(self.events)+1:03d}.jpg'}
+        item['display_name']=target_display_name(kind,key)
         self.events.append(item);self.get_logger().info(json.dumps(item,ensure_ascii=False));return item
     def tick(self):
         if self.frame is None or self.last_stamp==self.processed:return
@@ -161,7 +177,7 @@ class Perception(Node):
         for box in result.boxes:
             cls=int(box.cls.item());name=result.names[cls];conf=float(box.conf.item());coords=box.xyxy[0].cpu().numpy().astype(int);x1,y1,x2,y2=map(int,coords);H,W=frame.shape[:2];x1=max(0,x1);y1=max(0,y1);x2=min(W,x2);y2=min(H,y2)
             if x2<=x1 or y2<=y1:continue
-            text=name;kind='object';color=(255,190,30)
+            text=name;kind='object';color=(255,190,30);confirmed=False
             if name.startswith(('resident_','visitor_')):
                 kind='resident' if name.startswith('resident') else 'visitor';color=(60,220,80) if kind=='resident' else (60,110,255)
                 # Require repeated visual identity evidence, not one-frame classes.
@@ -176,15 +192,20 @@ class Perception(Node):
                 # Pixel-boundary refinement and OCR are performed once below.
             elif name.startswith('light_'):
                 kind='traffic_light';colour=name[6:];text=colour;light_candidates.append(((x2-x1)*(y2-y1),colour,conf,[x1,y1,x2,y2]))
-            detections.append({'category':kind,'name':text,'confidence':round(conf,4),'bbox':[x1,y1,x2,y2]});cv2.rectangle(frame,(x1,y1),(x2,y2),color,2)
+            detections.append({'category':kind,'name':text,'confidence':round(conf,4),'confidence_type':'YOLO probability',
+                               'confirmed':bool(confirmed or name in self.people),'bbox':[x1,y1,x2,y2]});cv2.rectangle(frame,(x1,y1),(x2,y2),color,2)
         if self.view.startswith('plate_') and pixel_plates:
             target=min(pixel_plates,key=lambda p:abs((p['bbox'][0]+p['bbox'][2])/2-frame.shape[1]/2))
             x1,y1,x2,y2=target['bbox'];text='blue plate';ocr_score=None
+            if (self.plate_read and image_time-self.plate_read['stamp']<=.7 and
+                    overlap(target['bbox'],self.plate_read['bbox'])>.4):
+                text=self.plate_read['text'];ocr_score=self.plate_read['score']
             if ocr_due:
                 H,W=frame.shape[:2];crop=self.frame[max(0,y1-2):min(H,y2+2),max(0,x1-2):min(W,x2+2)]
                 crop=cv2.resize(crop,None,fx=3,fy=3,interpolation=cv2.INTER_CUBIC);read=self.ocr(crop,use_det=False,use_cls=False)
                 if read and read.txts:
                     candidate=re.sub(r'[\s·•.\-]','',read.txts[0]).upper();score=float(read.scores[0]);text=candidate;ocr_score=score
+                    self.plate_read={'text':candidate,'score':score,'bbox':target['bbox'],'stamp':image_time}
                     if re.fullmatch(r'[\u4e00-\u9fff][A-Z][A-Z0-9]{5}',candidate) and score>.93:
                         history=self.votes.setdefault('plate:'+candidate,deque(maxlen=8));history.append((self.frame_id,score))
                         recent=[c for f,c in history if self.frame_id-f<round(self.processing_hz*4)]
@@ -192,7 +213,8 @@ class Perception(Node):
                         if len([c for f,c in evidence if self.frame_id-f<round(self.processing_hz*4)])>=2:self.view_plates[candidate]=self.frame_id
                         if self.lap_active and len(recent)>=2 and candidate not in self.plates:
                             event=self.event('plate',candidate,score,[x1,y1,x2,y2]);self.plates[candidate]=event;new_events.append(event)
-            detections.append({'category':'plate','name':text,'confidence':target['geometry_score'],'confidence_type':'geometry score, not YOLO probability','ocr_confidence':ocr_score,'bbox':target['bbox'],'method':'YOLO plus blue-boundary proposals / pixel OCR'})
+            detections.append({'category':'plate','name':text,'confidence':target['geometry_score'],'confidence_type':'geometry score, not YOLO probability','ocr_confidence':ocr_score,'confirmed':text in self.plates,'bbox':target['bbox'],'method':'YOLO plus blue-boundary proposals / pixel OCR',
+                               'ocr_source_stamp':self.plate_read['stamp'] if ocr_score is not None and self.plate_read else None})
             cv2.rectangle(frame,(x1,y1),(x2,y2),(70,240,255),2)
         if ocr_due:self.last_ocr=time.monotonic()
         state=max(light_candidates,default=(0,'unknown',0))[1];self.light_history.append(state);stable=state if len(self.light_history)==3 and len(set(self.light_history))==1 else 'unknown';age=self.get_clock().now().nanoseconds/1e9-(header.stamp.sec+header.stamp.nanosec*1e-9)
@@ -218,16 +240,28 @@ class Perception(Node):
             self.evidence_signature=signature;self.evidence_changed=now_sim
         stable_evidence=self.view_frames>=6 and now_sim-self.view_started>=1.8 and now_sim-self.evidence_changed>=.8
         feedback={'view':self.view,'attempt':self.view_key[1] if self.view_key else 0,'sample':self.view_sample,'ready':bool(self.view!='transit' and age<=.5 and view_confirmed and stable_evidence and (self.view.startswith('plate_') or (stable_pan and two_angles))),'stable_frames':self.view_frames,'quiet_s':round(now_sim-self.evidence_changed,2),'person_ids':list(self.view_people),'plate_texts':list(self.view_plates),'pending_person_ids':pending,'sample_frames':self.sample_frames,'sample_angles':self.sample_angles,'two_angles_verified':two_angles,'criterion':'Track-consistent identities and two measured camera angles; unseen/occluded people are not guaranteed'}
+        # A read-only crop comes from original sensor pixels, before annotation.
+        # Enlargement helps inspection; it does not add detail or affect inference.
+        target=next((d for d in reversed(detections) if d['category']=='plate' and 'ocr_confidence' in d),None)
+        detail=None
+        if target:
+            x1,y1,x2,y2=target['bbox'];crop=self.frame[max(0,y1-8):min(frame.shape[0],y2+8),max(0,x1-8):min(frame.shape[1],x2+8)]
+            if crop.size:
+                enlarged=cv2.resize(crop,None,fx=4,fy=4,interpolation=cv2.INTER_NEAREST)
+                self.detail_jpeg=cv2.imencode('.jpg',enlarged,[cv2.IMWRITE_JPEG_QUALITY,96])[1].tobytes()
+                detail={'stamp':image_time,'bbox':target['bbox'],'source_size':[crop.shape[1],crop.shape[0]],'display_scale':4,'text':target['name'],'ocr_confidence':target.get('ocr_confidence')}
+        if detail is None:self.detail_jpeg=b''
         canvas=PILImage.fromarray(cv2.cvtColor(frame,cv2.COLOR_BGR2RGB));draw=ImageDraw.Draw(canvas)
         overlay_labels=draw_detection_labels(canvas,detections,self.font)
         draw.rectangle((0,0,canvas.width,64),fill=(15,23,42));draw.text((12,4),f"Frame {self.frame_id} | 居民 {counts['residents']} / 访客 {counts['visitors']} / 总计 {counts['total']} | 灯 {stable}",font=self.font,fill=(255,255,255));draw.text((12,32),self.status[:95],font=self.font,fill=(180,210,255));frame=cv2.cvtColor(np.asarray(canvas),cv2.COLOR_RGB2BGR)
-        self.latest={'run_id':self.run_id,'lap_id':self.lap_id,'lap_active':self.lap_active,'frame_id':self.frame_id,'stamp':header.stamp.sec+header.stamp.nanosec*1e-9,'status':self.status,'view':self.view,'traffic_light':stable,'counts':counts,'people':self.people,'plates':self.plates,'detections':detections,'overlay_labels':overlay_labels,'events':self.events,'observation_feedback':feedback,'observation_outcomes':self.last_observation_outcomes,'unconfirmed_views':[x['view'] for x in self.last_observation_outcomes if not x['confirmed']],'inference_and_ocr_ms':round((time.perf_counter()-begin)*1000,1),'previous_cycle_total_ms':self.previous_cycle_ms}
+        self.latest={'run_id':self.run_id,'lap_id':self.lap_id,'lap_active':self.lap_active,'frame_id':self.frame_id,'stamp':header.stamp.sec+header.stamp.nanosec*1e-9,'status':self.status,'view':self.view,'traffic_light':stable,'counts':counts,'people':self.people,'plates':self.plates,'detections':detections,'overlay_labels':overlay_labels,'detail':detail,'events':self.events,'observation_feedback':feedback,'observation_outcomes':self.last_observation_outcomes,'unconfirmed_views':[x['view'] for x in self.last_observation_outcomes if not x['confirmed']],'inference_and_ocr_ms':round((time.perf_counter()-begin)*1000,1),'previous_cycle_total_ms':self.previous_cycle_ms}
         self.results.publish(String(data=json.dumps(self.latest,ensure_ascii=False)))
         # Full-rate compressed ROS/HTTP view; raw only for events or 2 Hz preview.
         if new_events or time.monotonic()-self.last_raw_image_time>=.5:
             image=Image();image.header=header;image.height,image.width=frame.shape[:2];image.encoding='bgr8';image.step=image.width*3;image.data=frame.tobytes()
             self.images.publish(image);self.last_raw_image_time=time.monotonic()
-        self.jpeg=cv2.imencode('.jpg',frame,[cv2.IMWRITE_JPEG_QUALITY,88])[1].tobytes();compressed=CompressedImage();compressed.header=header;compressed.format='jpeg';compressed.data=self.jpeg;self.compressed_images.publish(compressed);(self.out/'latest.jpg').write_bytes(self.jpeg);(self.out/'report.tmp').write_text(json.dumps(self.latest,ensure_ascii=False,indent=2));(self.out/'report.tmp').replace(self.out/'report.json')
+        self.jpeg=cv2.imencode('.jpg',frame,[cv2.IMWRITE_JPEG_QUALITY,95])[1].tobytes();compressed=CompressedImage();compressed.header=header;compressed.format='jpeg';compressed.data=self.jpeg;self.compressed_images.publish(compressed);(self.out/'latest.jpg').write_bytes(self.jpeg);(self.out/'report.tmp').write_text(json.dumps(self.latest,ensure_ascii=False,indent=2));(self.out/'report.tmp').replace(self.out/'report.json')
+        self.preview_snapshot=(json.dumps(self.latest,ensure_ascii=False,separators=(',',':')).encode(),self.jpeg,self.detail_jpeg)
         for e in new_events:(self.out/e['image']).write_bytes(self.jpeg)
         if self.view!='transit':(self.out/(self.view+'.jpg')).write_bytes(self.jpeg)
         self.previous_cycle_ms=round((time.perf_counter()-begin)*1000,1)

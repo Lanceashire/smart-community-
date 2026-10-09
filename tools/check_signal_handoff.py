@@ -12,7 +12,7 @@ from community_demo.signal_gate import FreshGreenGate,VisualPhaseClock
 clock=[0.]
 phase=VisualPhaseClock()
 node=SimpleNamespace(index=0,completed=False,signal_context=None,
-                     phase_clock=phase,signal_gate=FreshGreenGate(phase),
+                     phase_clock=phase,signal_gate=FreshGreenGate(phase),crossing_gate=None,
                      get_clock=lambda:SimpleNamespace(now=lambda:Time(seconds=clock[0])))
 node.update_signal_context=MethodType(Patrol.update_signal_context,node)
 def observe(t,colour):

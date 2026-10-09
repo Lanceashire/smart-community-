@@ -16,6 +16,7 @@ os.environ.setdefault("FASTDDS_BUILTIN_TRANSPORTS","UDPv4")
 
 import rclpy
 from rclpy.node import Node
+from rclpy.signals import SignalHandlerOptions
 from rclpy.qos import QoSProfile, DurabilityPolicy, qos_profile_sensor_data
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
@@ -73,7 +74,7 @@ class Audit(Node):
         self.event_checks=[];self.paused={};self.active_fault=None;self.faults=[];self.record_start=time.monotonic()
         self.first_counts=None;self.complete_at=None;self.complete_events=None;self.restart_rejected=None
         self.signal_diagnostics=[];self.signal_decisions=[];self.stress_statistics=[]
-        self.localization_quality=[];self.approach_decisions=[]
+        self.localization_quality=[];self.approach_decisions=[];self.signal_holds=[]
         self.restart_client=self.create_client(Trigger,'/patrol/restart')
         self.create_subscription(String,'/patrol/lap',self.lap,QoSProfile(depth=1,durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.create_subscription(String,'/patrol/status',self.on_status,50)
@@ -82,6 +83,7 @@ class Audit(Node):
         self.create_subscription(String,'/perception/results',self.perception,20)
         self.create_subscription(String,'/inspection/observation',self.observation,20)
         self.create_subscription(String,'/simulation/traffic_light_diagnostics',lambda m:self.signal_diagnostics.append(json.loads(m.data)),20)
+        self.create_subscription(String,'/patrol/signal_hold',lambda m:self.signal_holds.append(json.loads(m.data)),50)
         self.create_subscription(String,'/patrol/signal_decision',lambda m:self.signal_decisions.append(json.loads(m.data)),20)
         self.create_subscription(String,'/stress/statistics',lambda m:self.stress_statistics.append(json.loads(m.data)),20)
         self.create_subscription(String,'/localization/quality',lambda m:self.localization_quality.append(json.loads(m.data)),qos_profile_sensor_data)
@@ -111,7 +113,7 @@ class Audit(Node):
         self.vision=None;self.first_counts=None;self.complete_at=None;self.complete_events=None;self.event_checks=[]
         self.camera_stamps=[];self.image_stamps=set();self.scans=0;self.faults=[];self.active_fault=None;self.restart_rejected=None
         self.signal_diagnostics=[];self.signal_decisions=[];self.stress_statistics=[]
-        self.localization_quality=[];self.approach_decisions=[]
+        self.localization_quality=[];self.approach_decisions=[];self.signal_holds=[]
         print('AUDIT_LAP_START',json.dumps(d),flush=True)
     def on_status(self,m):
         self.status=m.data
@@ -173,16 +175,18 @@ class Audit(Node):
                 f['settled_command_zero']=bool(late) and all(abs(s['command'][0])<.001 and abs(s['command'][1])<.001 for s in late)
                 f['settled_speed_max']=max((s['speed'] for s in late),default=999.)
                 f['passed']=f['settled_command_zero'] and f['settled_speed_max']<.015
+                f['first_zero_command_wall_s']=next((s['elapsed'] for s in f['samples'] if max(map(abs,s['command']))<.001),None)
+                f['first_settled_wall_s']=next((s['elapsed'] for s in f['samples'] if s['speed']<.015 and max(map(abs,s['command']))<.001),None)
                 f['duration_wall_s']=now-f['start_wall'];f.pop('start_wall');self.faults.append(f);self.active_fault=None
                 print('FAULT_RESUMED',f['node'],f['passed'],flush=True)
             return
         done={f['node'] for f in self.faults};x,y,a,t,speed=self.pose or (0,0,0,0,0)
         target=None
-        if 'perception' not in done and self.status.startswith('STOP top_stop'):target='perception'
+        if 'perception' not in done and ((self.args.moving_faults and self.status.startswith('GO top_west') and speed>.07) or (not self.args.moving_faults and self.status.startswith('STOP top_stop'))):target='perception'
         elif 'localization' not in done and self.status.startswith('GO lower_south') and -1.10<y<-.80 and speed>.07:target='localization'
         elif 'patrol' not in done and self.status.startswith('GO right_north') and .1<y<.5 and speed>.07:target='patrol'
         if target:
-            pid=process_for(target);self.active_fault={'node':target,'pid':pid,'start_wall':now,'start_sim':t,'samples':[]};self.paused[pid]=target
+            pid=process_for(target);self.active_fault={'node':target,'pid':pid,'start_wall':now,'start_sim':t,'initial_speed_m_s':speed,'samples':[]};self.paused[pid]=target
             os.kill(pid,signal.SIGSTOP);print('FAULT_PAUSED',target,pid,flush=True)
     def snapshot(self):
         c=self.current;records=c['records']
@@ -235,7 +239,7 @@ class Audit(Node):
         if self.args.fault_lap==self.key[1]:checks['fault_stop_and_recovery']=len(self.faults)==3 and all(f['passed'] for f in self.faults)
         checks.update(front_and_rear_green=len(whole_body)==4 and all(x['phase']=='green' for x in whole_body),red_straddle_samples_zero=red_straddles==0,observation_confirmation=len(outcomes)==8 and all(x['confirmed'] for x in outcomes))
         extra={'pose_metric':'Wheel-source-time-aligned estimate; exact samples or bracketed interpolation <=150 ms, no extrapolation; receipt metric preserved separately','pose_source_time_coverage':aligned/len(records),'estimate_source_samples':[[t,*pose] for t,pose in sorted(self.estimate_samples.items()) if records[0]['t']-.2<=t/1e9<=records[-1]['t']+.2],'signal_pose_samples':[[t,p] for t,p in sorted(self.phase_samples.items()) if records[0]['t']-.1<=t/1e9<=records[-1]['t']+.1],'whole_body_crossings':whole_body,'red_straddle_samples':red_straddles,'observation_outcomes':outcomes,
-               'signal_diagnostics':self.signal_diagnostics,'signal_decisions':self.signal_decisions,
+               'signal_holds':self.signal_holds,'signal_diagnostics':self.signal_diagnostics,'signal_decisions':self.signal_decisions,
                'stress_statistics':self.stress_statistics,'localization_quality':self.localization_quality,'approach_decisions':self.approach_decisions}
         posts=json.loads((ROOT/'src/community_demo/maps/planning-obstacles.json').read_text())['posts']
         clearance=[]
@@ -276,8 +280,8 @@ def wait_restart_phase(n,phase,delay):
     print('RESTART_PHASE',phase,'delay',delay,flush=True)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--laps',type=int,default=3);p.add_argument('--fault-lap',type=int,default=3);p.add_argument('--unpause',action='store_true');p.add_argument('--restart',action='store_true');p.add_argument('--restart-phases',default='');p.add_argument('--green-delay',type=float,default=10.);p.add_argument('--green-delays',default='');p.add_argument('--output',default='validation/patrol-cycle-review');p.add_argument('--timeout',type=float,default=300);a=p.parse_args()
-    out=ROOT/a.output;out.mkdir(parents=True,exist_ok=True);rclpy.init();n=Audit(a);reports=[]
+    p=argparse.ArgumentParser();p.add_argument('--laps',type=int,default=3);p.add_argument('--fault-lap',type=int,default=3);p.add_argument('--unpause',action='store_true');p.add_argument('--moving-faults',action='store_true');p.add_argument('--restart',action='store_true');p.add_argument('--restart-phases',default='');p.add_argument('--green-delay',type=float,default=10.);p.add_argument('--green-delays',default='');p.add_argument('--output',default='validation/patrol-cycle-review');p.add_argument('--timeout',type=float,default=300);a=p.parse_args()
+    out=ROOT/a.output;out.mkdir(parents=True,exist_ok=True);rclpy.init(signal_handler_options=SignalHandlerOptions.NO);n=Audit(a);reports=[]
     try:
         if not spin_until(n,lambda:n.key is not None,50):raise RuntimeError('No explicit patrol lap lifecycle')
         if a.unpause:

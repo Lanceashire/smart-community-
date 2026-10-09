@@ -84,8 +84,15 @@ def main():
                   'Person cardboard thickness 0.002 m and lamp diameter 0.12 m are modelling choices.',
                   'Missing car background is replaced by explicitly generated thin front geometry.',
                   'Missing yellow-off lens uses a dark amber disc. No incomplete file was renamed to PNG.']}
+    def member_path(z, member):
+        # Both supplied archive versions contain the same assets; one has a root folder.
+        matches=[name for name in (member, '复赛资料/'+member) if name in z.namelist()]
+        if len(matches)>1:raise ValueError('Ambiguous duplicate asset: '+member)
+        return matches[0] if matches else None
     def add(z,member,name,width,height,**kw):
-        data=z.read('复赛资料/'+member); im=Image.open(io.BytesIO(data)); im.load()
+        source=member_path(z,member)
+        if source is None:raise FileNotFoundError('Missing official asset: '+member)
+        data=z.read(source); im=Image.open(io.BytesIO(data)); im.load()
         filename=name+'.png'; (ASSETS/'materials/textures'/filename).write_bytes(data)
         if width is None:width=height*im.width/im.height
         mesh(name,filename,width,height,silhouette=im if kw.pop('silhouette',False) else None,**kw)
@@ -99,9 +106,11 @@ def main():
         for name,ch in [('red','红'),('green','绿'),('yellow','黄')]:
             for state,suffix in [('on','亮'),('off','暗')]:
                 member=f'红绿灯/红绿灯图片/{ch}灯{suffix}.png'
-                if '复赛资料/'+member in z.namelist():
+                if member_path(z,member) is not None:
                     add(z,member,f'{name}_{state}',.12,.12,disc=True,lit=state=='on')
         for member in z.namelist():
+            if member.startswith('__MACOSX/') or Path(member).name.startswith('._'):
+                continue
             if member.endswith('.downloading'):
                 try:Image.open(io.BytesIO(z.read(member))).load()
                 except Exception as ex:manifest['unreadable'].append({'source':member,'error':type(ex).__name__})

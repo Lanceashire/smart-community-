@@ -10,6 +10,7 @@ import numpy as np
 import rclpy
 from geometry_msgs.msg import TwistStamped,PoseStamped
 from nav2_msgs.action import ComputePathToPose
+from action_msgs.msg import GoalStatus
 from rclpy.action import ActionClient
 from nav_msgs.msg import Odometry
 from rclpy.executors import ExternalShutdownException
@@ -24,7 +25,8 @@ from community_demo.road_rules import safe_pose,predict,footprint,clear_of_posts
 from ament_index_python.packages import get_package_share_directory
 from community_demo.signal_gate import FreshGreenGate, VisualPhaseClock
 from community_demo.motion_profile import bend_limit
-from community_demo.sensor_validation import valid_rgb_image,valid_odometry,stamp_ns
+from community_demo.sensor_validation import valid_rgb_image,valid_odometry,stamp_ns,valid_laser_scan
+from community_demo.inspection_policy import person_evidence_ready,signal_hold_reason
 
 
 def wrap(angle):
@@ -100,10 +102,13 @@ class Patrol(Node):
         (inspection/'views.json').write_text('[]\n')
         (inspection/'outcomes.json').write_text('[]\n')
         self.planner=ActionClient(self,ComputePathToPose,'/compute_path_to_pose')
+        self.path_request_token=0;self.path_request_deadline=None;self.path_goal_handle=None
+        self.path_retry_index=None;self.path_attempts=0
         self.path=None;self.path_pending=False;self.path_index=-1;self.path_pub=self.create_publisher(__import__('nav_msgs.msg',fromlist=['Path']).Path,'/patrol/path',10)
         self.command_pub = self.create_publisher(TwistStamped, '/cmd_vel_nav', 10)
         self.status_pub = self.create_publisher(String, '/patrol/status', 10)
         self.signal_decisions = self.create_publisher(String, '/patrol/signal_decision', 10)
+        self.signal_hold_pub = self.create_publisher(String, '/patrol/signal_hold', 10)
         self.approach_decisions = self.create_publisher(String, '/patrol/approach_decision', 10)
         self.lap_pub = self.create_publisher(String, '/patrol/lap', QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.run_id = uuid.uuid4().hex[:12]
@@ -123,6 +128,7 @@ class Patrol(Node):
         self.fault = None
         self.scan = None
         self.scan_update = None
+        self.scan_source_ns = None
         self.light_state = 'unknown'
         self.light_update = None
         self.light_source_ns = None
@@ -132,10 +138,11 @@ class Patrol(Node):
         self.phase_clock = VisualPhaseClock()
         self.signal_gate = FreshGreenGate(self.phase_clock)
         self.signal_context = None
+        self.crossing_gate = None
         self.completed = False
         self.last_log = ''
-        self.speed_pid = BoundedPID(kp=.55, lower=0.0, upper=.24)
-        self.heading_pid = BoundedPID(kp=1.8, lower=-.55, upper=.55)
+        self.speed_pid = BoundedPID(kp=.70, lower=0.0, upper=.26)
+        self.heading_pid = BoundedPID(kp=1.8, lower=-.65, upper=.65)
         self.create_timer(.1, self.tick)
         self.get_logger().info('Single-lap route ready; uses camera / wheel localization with separate laser SLAM mapping and camera-confirmed green.')
         self.publish_lap('started')
@@ -143,20 +150,70 @@ class Patrol(Node):
     def publish_lap(self, phase):
         self.lap_pub.publish(String(data=json.dumps({'run_id': self.run_id, 'lap_id': self.lap_id, 'phase': phase})))
 
+    def cancel_path_request(self):
+        self.path_request_token += 1
+        handle=self.path_goal_handle
+        self.path_goal_handle=None;self.path_request_deadline=None
+        self.path_pending=False
+        if handle is not None:
+            try:handle.cancel_goal_async()
+            except Exception as exc:self.get_logger().warning('Nav2 cancel failed: '+str(exc))
+
+    def fail_path_request(self,reason):
+        self.cancel_path_request()
+        self.path=None;self.path_index=-1
+        if self.path_attempts >= 3:
+            self.fault='FAULT Nav2 planning failed after three attempts: '+reason
+        else:
+            self.get_logger().warning('Nav2 bounded retry: '+reason)
+
+    def check_path_deadline(self,now):
+        if (self.path_pending and self.path_request_deadline is not None and
+                now.nanoseconds/1e9 >= self.path_request_deadline):
+            self.fail_path_request('five-second request timeout')
+
     def request_path(self,tx,ty):
-        if not self.planner.server_is_ready():return
-        goal=ComputePathToPose.Goal();goal.goal=PoseStamped();goal.goal.header.frame_id='field';goal.goal.header.stamp=self.get_clock().now().to_msg();goal.goal.pose.position.x=float(tx);goal.goal.pose.position.y=float(ty);goal.goal.pose.orientation.w=1.0;goal.planner_id='GridBased'
+        if self.path_retry_index != self.index:
+            self.path_retry_index=self.index;self.path_attempts=0
+        self.cancel_path_request()
+        self.path_attempts += 1
         self.path_pending=True;self.path_index=self.index
-        future=self.planner.send_goal_async(goal)
+        self.path_request_deadline=self.get_clock().now().nanoseconds/1e9+5.
+        token=self.path_request_token;route_index=self.index
+        if not self.planner.server_is_ready():return
+        goal=ComputePathToPose.Goal();goal.goal=PoseStamped()
+        goal.goal.header.frame_id='field';goal.goal.header.stamp=self.get_clock().now().to_msg()
+        goal.goal.pose.position.x=float(tx);goal.goal.pose.position.y=float(ty)
+        goal.goal.pose.orientation.w=1.0;goal.planner_id='GridBased'
+        def current():
+            return token == self.path_request_token and route_index == self.index and not self.completed
         def accepted(f):
-            handle=f.result()
-            if not handle.accepted:self.path_pending=False;self.fault='FAULT Nav2 rejected planning goal';return
-            def result(g):
-                self.path_pending=False;path=g.result().result.path
-                if not path.poses:self.fault='FAULT Nav2 could not find a drivable path';return
-                self.path=path;self.path_pub.publish(path)
-            handle.get_result_async().add_done_callback(result)
-        future.add_done_callback(accepted)
+            try:
+                handle=f.result()
+                if not current():
+                    if handle is not None and handle.accepted:handle.cancel_goal_async()
+                    return
+                if handle is None or not handle.accepted:
+                    self.fail_path_request('planning goal rejected');return
+                self.path_goal_handle=handle
+                def result(g):
+                    if not current():return
+                    try:
+                        response=g.result();path=response.result.path
+                        if response.status != GoalStatus.STATUS_SUCCEEDED or not path.poses:
+                            self.fail_path_request('no successful drivable path');return
+                        if not all(math.isfinite(p.pose.position.x) and math.isfinite(p.pose.position.y)
+                                   for p in path.poses):
+                            self.fail_path_request('nonfinite path');return
+                        self.path_pending=False;self.path_request_deadline=None;self.path_goal_handle=None
+                        self.path_attempts=0
+                        self.path=path;self.path_pub.publish(path)
+                    except Exception as exc:self.fail_path_request('result exception: '+str(exc))
+                handle.get_result_async().add_done_callback(result)
+            except Exception as exc:
+                if current():self.fail_path_request('goal exception: '+str(exc))
+        try:self.planner.send_goal_async(goal).add_done_callback(accepted)
+        except Exception as exc:self.fail_path_request('send exception: '+str(exc))
 
     def on_camera(self,msg):
         if not valid_rgb_image(msg):return
@@ -170,7 +227,10 @@ class Patrol(Node):
         if self.observation_start is None:
             error=wrap(OBSERVATION_HEADING[name]-self.pose[2])
             if abs(error)>.025:
-                self.pan_pub.publish(Float64(data=0.0));self.publish_command(0.0,self.heading_pid.calculate(error))
+                # Finish the small body turn while the physical pan starts moving.
+                # Evidence is still gated by the encoder and only starts afterwards.
+                pan=OBSERVATIONS[name][0][1] if abs(error)<.20 else 0.0
+                self.pan_pub.publish(Float64(data=pan));self.publish_command(0.0,self.heading_pid.calculate(error))
                 self.log_status('ALIGN_CAMERA '+name);return False
         self.publish_command()
         view,angle=OBSERVATIONS[name][self.observation_index]
@@ -181,7 +241,8 @@ class Patrol(Node):
         matching=(fresh and feedback.get('view')==view and
                   feedback.get('attempt')==self.observation_attempt)
         ready=bool(matching and feedback.get('ready',False) and
-                   (not person_view or (self.observation_sample==1 and feedback.get('sample')==1)))
+                   (not person_view or (self.observation_sample==1 and feedback.get('sample')==1 and
+                                        person_evidence_ready(feedback))))
         if not ready:
             attempt=2 if elapsed>=10.5 else (1 if elapsed>=6.5 else 0)
             if attempt!=self.observation_attempt:
@@ -203,7 +264,9 @@ class Patrol(Node):
         # Plate feedback already requires two high-confidence OCR votes,
         # six frames, 1.8 s of observation and a 0.8 s quiet evidence window.
         # Do not add a second fixed 2.5 s wait after those checks succeed.
-        minimum_s=1.8 if view.startswith('plate_') else 3.8
+        # Both views already enforce dwell, stable identities and quiet evidence;
+        # people additionally require five + three frames at two actual pan angles.
+        minimum_s=1.8
         if (now-self.observation_start).nanoseconds<minimum_s*1e9:return False
         if self.camera_frame is None:return False
         if not ready and elapsed<15.0:return False
@@ -264,12 +327,15 @@ class Patrol(Node):
             return response
         self.index = 0
         self.blocked_since=None;self.clear_scans=0;self.recovery_count=0
+        self.cancel_path_request()
+        self.path_retry_index=None;self.path_attempts=0
         self.path_index=-1;self.path=None;self.path_pending=False
         self.completed = False
         self.distance_travelled = 0.0
         self.green_streak = 0
         self.waiting_for_green = False
         self.signal_gate.reset()
+        self.crossing_gate=None
         self.signal_context = None
         self.motion_probe = None
         self.fault = None
@@ -303,9 +369,20 @@ class Patrol(Node):
         self.quality_update=self.get_clock().now()
 
     def on_scan(self, msg):
-        self.scan = msg
-        self.scan_update = self.get_clock().now()
+        now=self.get_clock().now();source=stamp_ns(msg.header.stamp)
+        if (not valid_laser_scan(msg) or source is None or
+                not 0 <= now.nanoseconds-source <= 500_000_000):
+            self.clear_scans=0;self.scan_update=None
+            return
+        if self.scan_source_ns is not None and source <= self.scan_source_ns:
+            return
+        self.scan_source_ns=source;self.scan=msg;self.scan_update=now
         self.clear_scans=0 if self.front_blocked() else min(5,self.clear_scans+1)
+
+    def fresh_signal(self,now):
+        return (self.light_update is not None and self.light_source_ns is not None and
+                0 <= (now-self.light_update).nanoseconds <= 500_000_000 and
+                0 <= now.nanoseconds-self.light_source_ns <= 500_000_000)
 
     def update_signal_context(self):
         name = ROUTE[self.index][0] if not self.completed and self.index < len(ROUTE) else ''
@@ -327,14 +404,19 @@ class Patrol(Node):
         self.light_source_ns=source;self.light_state=colour;self.light_update=now
         self.phase_clock.observe(colour,source/1e9)
         if self.update_signal_context() is not None:
-            self.signal_gate.observe(colour,now.nanoseconds/1e9)
+            self.signal_gate.observe(colour,source/1e9)
+        if self.crossing_gate is not None:
+            self.crossing_gate.observe(colour,source/1e9)
 
     def on_light(self, msg):
         self.light_state = msg.data
         self.light_update = self.get_clock().now()
+        self.light_source_ns=self.light_update.nanoseconds
         self.phase_clock.observe(msg.data, self.light_update.nanoseconds / 1e9)
         if self.update_signal_context() is not None:
             self.signal_gate.observe(msg.data, self.light_update.nanoseconds / 1e9)
+        if self.crossing_gate is not None:
+            self.crossing_gate.observe(msg.data,self.light_update.nanoseconds/1e9)
 
     def publish_command(self, linear=0.0, angular=0.0):
         self.command_guard=None
@@ -344,13 +426,25 @@ class Patrol(Node):
         if self.pose and linear>0:
             x,y,yaw=self.pose; points=footprint(x,y,yaw)
             before_top=abs(y-1.7)<.22 and .30<=min(p[0] for p in points) and x<.58 and abs(wrap(yaw-math.pi))<.5
-            before_lower=abs(x+.1)<.22 and -.51<=min(p[1] for p in points) and -.35<y<-.20 and abs(wrap(yaw+math.pi/2))<.5
+            before_lower=abs(x+.1)<.22 and -.51<=min(p[1] for p in points) and y<-.20 and abs(wrap(yaw+math.pi/2))<.5
             if before_top or before_lower:
-                fresh=self.light_update is not None and (self.get_clock().now()-self.light_update).nanoseconds<500_000_000
-                if not fresh or self.light_state!='green':
+                now=self.get_clock().now();fresh=self.fresh_signal(now)
+                authorized=(self.crossing_gate is None or self.crossing_gate.ready_at(now.nanoseconds/1e9))
+                if not fresh or self.light_state!='green' or not authorized:
                     linear=angular=0.0
-                    self.command_guard='GUARD signal changed or became stale before stop line'
+                    self.command_guard='GUARD signal stale, changed or crossing budget exhausted before stop line'
                     self.motion_probe=None
+                    gate=self.crossing_gate or self.signal_gate
+                    remaining=gate.remaining_at(now.nanoseconds/1e9)
+                    if hasattr(self,'signal_hold_pub'):
+                        self.signal_hold_pub.publish(String(data=json.dumps({
+                            'run_id':self.run_id,'lap_id':self.lap_id,'stamp':now.nanoseconds/1e9,
+                            'route_point':ROUTE[self.index][0],'location':'approach',
+                            'reason':signal_hold_reason(fresh,self.light_state,authorized,remaining,gate.crossing_budget),
+                            'colour':self.light_state,'remaining_lower_s':remaining,
+                            'source_age_s':None if self.light_source_ns is None else (now.nanoseconds-self.light_source_ns)/1e9})))
+            elif self.crossing_gate is not None:
+                self.crossing_gate=None
         road_recovery=False
         if self.pose and (linear or angular):
             for dt in (.1,.3,.5):
@@ -421,6 +515,7 @@ class Patrol(Node):
     def tick(self):
         now = self.get_clock().now()
         self.update_signal_context()
+        if not self.completed:self.check_path_deadline(now)
         if self.tilt > .35:
             self.fault = 'FAULT chassis tilted beyond 20 degrees'
         if self.fault:
@@ -445,7 +540,8 @@ class Patrol(Node):
                 self.perception_stamp is None or now.nanoseconds/1e9-self.perception_stamp>.5):
             self.publish_command();self.motion_probe=None
             self.log_status('WAIT_FRESH_PERCEPTION');return
-        if self.scan_update is None or (now - self.scan_update).nanoseconds > 700_000_000:
+        if (self.scan_update is None or (now - self.scan_update).nanoseconds > 700_000_000 or
+                self.scan_source_ns is None or not 0 <= now.nanoseconds-self.scan_source_ns <= 500_000_000):
             self.publish_command()
             self.motion_probe = None
             self.log_status('WAIT_FRESH_SCAN')
@@ -479,13 +575,18 @@ class Patrol(Node):
                 if not self.waiting_for_green:
                     self.waiting_for_green = True
                     self.green_streak = 0
-                recent = (self.light_update is not None and
-                          (self.get_clock().now() - self.light_update).nanoseconds < 700_000_000)
+                recent = self.fresh_signal(now)
                 if self.light_state != 'green' or not recent:
                     self.green_streak = 0
                 if not recent:self.signal_gate.invalidate()
-                if not self.signal_gate.ready and self.require_vision:
-                    remaining=self.signal_gate.remaining
+                if not self.signal_gate.ready_at(now.nanoseconds/1e9) and self.require_vision:
+                    remaining=self.signal_gate.remaining_at(now.nanoseconds/1e9)
+                    if hasattr(self,'signal_hold_pub'):self.signal_hold_pub.publish(String(data=json.dumps({
+                        'run_id':self.run_id,'lap_id':self.lap_id,'stamp':now.nanoseconds/1e9,
+                        'route_point':name,'location':'stop','colour':self.light_state,
+                        'reason':signal_hold_reason(recent,self.light_state,False,remaining,self.signal_gate.crossing_budget),
+                        'remaining_lower_s':remaining,
+                        'source_age_s':None if self.light_source_ns is None else (now.nanoseconds-self.light_source_ns)/1e9})))
                     self.log_status(f'STOP {name}: light={self.light_state}; remaining_lower={remaining}; visual_edges={self.phase_clock.edges}')
                     return
                 self.green_streak = 0
@@ -493,12 +594,13 @@ class Patrol(Node):
                 self.signal_decisions.publish(String(data=json.dumps({
                     'run_id':self.run_id,'lap_id':self.lap_id,'gate':name,
                     'stamp':now.nanoseconds/1e9,'colour':self.light_state,
-                    'remaining_lower_s':self.signal_gate.remaining,
+                    'remaining_lower_s':self.signal_gate.remaining_at(now.nanoseconds/1e9),
                     'crossing_budget_s':self.signal_gate.crossing_budget,
                     'camera_edge_count':self.phase_clock.edges,
                     'camera_anchor_interval':self.phase_clock.anchor,
                     'source':'Camera-observed phase edges and fresh green; no simulator state'})))
-                self.signal_gate.reset()
+                self.crossing_gate=self.signal_gate
+                self.signal_gate=FreshGreenGate(self.phase_clock,self.crossing_gate.crossing_budget)
             self.pan_pub.publish(Float64(data=0.0))
             self.log_status(f'REACHED {name} ({self.index + 1}/{len(ROUTE)}) estimated=({x:.3f},{y:.3f})')
             self.index += 1
@@ -545,12 +647,12 @@ class Patrol(Node):
             # A fresh, camera-anchored green can permit normal straight speed.
             # The release gate and whole-body budget remain unchanged.
             if 'approach' in name:
-                fresh=self.light_update is not None and (now-self.light_update).nanoseconds<500_000_000
+                fresh=self.fresh_signal(now)
                 remaining=self.phase_clock.remaining_lower(now.nanoseconds/1e9)
                 enough=(fresh and self.light_state=='green' and remaining is not None and
                         remaining>=max(0.,dist-.05)/.18+self.signal_gate.crossing_budget)
                 if enough and abs(error)<.06 and self.localization_quality.get('state')=='tracking':
-                    linear=max(linear,min(.24,self.speed_pid.calculate(dist)))
+                    linear=max(linear,min(.26,self.speed_pid.calculate(dist)))
                 self.approach_decisions.publish(String(data=json.dumps({'run_id':self.run_id,'lap_id':self.lap_id,'route_point':name,'stamp':now.nanoseconds/1e9,'remaining_lower_s':remaining,'green_sufficient_for_approach_and_body':enough,'commanded_linear_m_s':linear,'source':'Fresh camera colour and camera-observed phase anchor'})))
             linear=bend_limit(self.path_points,self.path_nearest,error,dist,linear)
         if self.motion_probe is None:

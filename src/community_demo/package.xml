@@ -23,6 +23,7 @@
   <exec_depend>sentry_motion_manager</exec_depend>
   <exec_depend>community_signal_system</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>action_msgs</exec_depend>
   <exec_depend>nav2_msgs</exec_depend>
   <exec_depend>nav2_map_server</exec_depend>
   <exec_depend>nav2_planner</exec_depend>

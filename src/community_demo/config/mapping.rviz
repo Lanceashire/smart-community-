@@ -1,0 +1,83 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Global Options:
+    Background Color: 30; 35; 45
+    Fixed Frame: field
+    Frame Rate: 10
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Metric grid
+      Enabled: true
+      Cell Size: 0.5
+      Plane Cell Count: 20
+    - Class: rviz_default_plugins/Map
+      Name: Live laser SLAM map
+      Enabled: true
+      Alpha: 0.8
+      Topic:
+        Value: /map
+        Reliability Policy: Reliable
+        Durability Policy: Transient Local
+    - Class: rviz_default_plugins/Map
+      Name: Permitted navigation grid
+      Enabled: true
+      Alpha: 0.25
+      Topic:
+        Value: /field_map
+        Reliability Policy: Reliable
+        Durability Policy: Transient Local
+    - Class: rviz_default_plugins/Map
+      Name: Live obstacle costmap
+      Enabled: true
+      Alpha: 0.5
+      Color Scheme: costmap
+      Topic:
+        Value: /global_costmap/costmap
+        Reliability Policy: Reliable
+        Durability Policy: Transient Local
+    - Class: rviz_default_plugins/LaserScan
+      Name: Actual laser scan
+      Enabled: true
+      Size (m): 0.025
+      Style: Points
+      Color Transformer: FlatColor
+      Color: 255; 80; 60
+      Topic:
+        Value: /scan
+        Reliability Policy: Best Effort
+        Durability Policy: Volatile
+    - Class: rviz_default_plugins/Odometry
+      Name: Camera wheel IMU localization
+      Enabled: true
+      Shape: Arrow
+      Keep: 10
+      Topic:
+        Value: /localization/pose
+        Reliability Policy: Best Effort
+        Durability Policy: Volatile
+    - Class: rviz_default_plugins/Path
+      Name: Actual Nav2 planned path
+      Enabled: true
+      Color: 0; 210; 255
+      Line Style: Lines
+      Line Width: 0.025
+      Topic:
+        Value: /patrol/path
+        Reliability Policy: Reliable
+        Durability Policy: Volatile
+  Views:
+    Current:
+      Class: rviz_default_plugins/TopDownOrtho
+      Name: Current View
+      Scale: 140
+      Angle: 0
+      X: 0
+      Y: 0
+Window Geometry:
+  Width: 1200
+  Height: 850

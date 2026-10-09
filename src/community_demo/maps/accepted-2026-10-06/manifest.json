@@ -1,0 +1,14 @@
+{
+  "source": "2026-10-06 final-01 autonomous-mapping, supplied fixed field and known start",
+  "method": "Saved live SLAM grid and repeatedly measured laser endpoints; supplied lane prior applied separately to navigation grid",
+  "resolution_m": 0.02,
+  "sha256": {
+    "navigation.pgm": "bb3f0d6f48a288ae9d0da2945b042771eca7e61c0936b9acf850b3549fa31d5f",
+    "navigation.yaml": "2cc6246080042289902457fa0c5a654bc0ef9b2e59bdf436fc83cedd2599c25a",
+    "slam.pgm": "508053e7a195afd83f38a9aa331a17295641fbe1046a1c39ba53f3f905993567",
+    "slam.yaml": "7f273a2893bd885d5eaa67487b8a8d3055998d589efa5df26d520bee014bbb03",
+    "slam-field.pgm": "402a761a4e49a2d8a0087eba9b411367dcb45daec404e02a0b03e51fd6d61f60",
+    "slam-field.yaml": "f5d75cf0df4cd4b82684567eaa40b02aa3356611378746cfa60d111bbf8677b6"
+  },
+  "scope": "Accepted fixed-field example for source-checkout navigation. Not a newly collected map, map accuracy guarantee or arbitrary-field map."
+}

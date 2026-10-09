@@ -73,7 +73,7 @@ checks['nonfinite_encoder_never_counts_as_aligned']=not aligned.pan_samples
 enc.position=[0.];enc.velocity=[];Perception.on_joint(aligned,enc)
 checks['missing_encoder_velocity_is_not_stable']=not aligned.pan_samples
 clock_n=[11_000_000_000]
-phase=VisualPhaseClock();control=SimpleNamespace(get_clock=lambda:SimpleNamespace(now=lambda:Time(nanoseconds=clock_n[0])),light_source_ns=None,light_state='unknown',light_update=None,phase_clock=phase,signal_gate=FreshGreenGate(phase),index=0,completed=False,signal_context=None)
+phase=VisualPhaseClock();control=SimpleNamespace(get_clock=lambda:SimpleNamespace(now=lambda:Time(nanoseconds=clock_n[0])),light_source_ns=None,light_state='unknown',light_update=None,phase_clock=phase,signal_gate=FreshGreenGate(phase),index=0,completed=False,signal_context=None,crossing_gate=None)
 control.update_signal_context=MethodType(Patrol.update_signal_context,control)
 from std_msgs.msg import String
 def lamp(source,colour):Patrol.on_stamped_light(control,String(data=json.dumps({'source_stamp_ns':source,'colour':colour})))
@@ -132,9 +132,9 @@ checks['different_view_plate_feedback_cannot_finish_early']=not plate_observatio
 def quality_hold(reason=None):
     now=Time(seconds=20.);pan=[];commands=[]
     state=SimpleNamespace(get_clock=lambda:SimpleNamespace(now=lambda:now),update_signal_context=lambda:None,
-        tilt=0.,fault=None,completed=False,pose=(1.1,1.7,math.pi),pose_update=Time(seconds=19.95),
+        check_path_deadline=lambda now:None,tilt=0.,fault=None,completed=False,pose=(1.1,1.7,math.pi),pose_update=Time(seconds=19.95),
         pose_source_ns=19_950_000_000,require_vision=True,perception_update=Time(seconds=19.95),
-        perception_stamp=19.95,scan_update=Time(seconds=19.95),quality_update=Time(seconds=19.95),
+        perception_stamp=19.95,scan_update=Time(seconds=19.95),scan_source_ns=19_950_000_000,quality_update=Time(seconds=19.95),
         localization_quality={'state':'lost','reason':reason},motion_probe=None,
         publish_command=lambda *args:commands.append(args),pan_pub=SimpleNamespace(publish=pan.append),
         log_status=lambda s:None)

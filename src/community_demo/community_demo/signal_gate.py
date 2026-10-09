@@ -72,7 +72,7 @@ class FreshGreenGate:
 
     def observe(self, colour, now=None):
         if now is not None:
-            if self.last_observation_at is not None and not 0 <= now - self.last_observation_at <= .7:
+            if self.last_observation_at is not None and not 0 <= now - self.last_observation_at <= .5:
                 self.invalidate()
             self.last_observation_at = now
         self.last_colour = colour
@@ -92,18 +92,25 @@ class FreshGreenGate:
     def invalidate(self):
         self.reset()
 
-    @property
-    def remaining(self):
-        if self.last_observation_at is None:
+    def remaining_at(self, now):
+        if self.last_observation_at is None or not 0 <= now-self.last_observation_at <= .5:
             return None
         if self.phase_clock is not None:
-            return self.phase_clock.remaining_lower(self.last_observation_at)
+            return self.phase_clock.remaining_lower(now)
         if self.green_started_at is not None:
-            return 15. - (self.last_observation_at - self.green_started_at) - .8
+            return 15. - (now - self.green_started_at) - .8
         return None
+
+    def ready_at(self, now):
+        left = self.remaining_at(now)
+        return (self.last_colour == 'green' and self.green_streak >= 5 and
+                left is not None and left >= self.crossing_budget)
+
+    @property
+    def remaining(self):
+        # Compatibility for observation-time diagnostics. Controllers must use *_at(now).
+        return None if self.last_observation_at is None else self.remaining_at(self.last_observation_at)
 
     @property
     def ready(self):
-        left = self.remaining
-        return (self.last_colour == 'green' and self.green_streak >= 5 and
-                left is not None and left >= self.crossing_budget)
+        return self.last_observation_at is not None and self.ready_at(self.last_observation_at)
