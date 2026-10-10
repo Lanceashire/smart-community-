@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Run isolated, frozen-source laps and preserve every candidate attempt."""
-import argparse,hashlib,json,os,signal,subprocess,time
+import argparse,hashlib,json,os,signal,subprocess,time,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def stop(p):
@@ -16,6 +16,8 @@ def main():
     parser.add_argument('--cases',default='normal-performance,recorded-normal,dynamic-obstacle,moving-faults,sensor-stress')
     a=parser.parse_args();out=ROOT/a.output;out.mkdir(parents=True,exist_ok=True)
     assert not (out/'pipeline.json').exists(),'Preserve the previous attempt'
+    if 'dim-light' in a.cases.split(','):
+        subprocess.run([sys.executable,'tools/prepare_dim_world.py'],cwd=ROOT,check=True)
     def runtime_sources():
         return [p for p in (ROOT/'src').rglob('*') if p.is_file() and '__pycache__' not in str(p)]+[p for p in (ROOT/'tools').iterdir() if p.is_file() and p.suffix in ('.py','.sh','.bash')]
     sources=runtime_sources()

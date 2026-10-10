@@ -35,7 +35,7 @@ def main():
     parser.add_argument('--output', required=True)
     parser.add_argument('--date', default='2026-10-10')
     parser.add_argument('--team', default='待填写')
-    parser.add_argument('--focus', choices=['world-generation', 'materials', 'route'], default='world-generation')
+    parser.add_argument('--focus', choices=['world-generation', 'materials', 'route', 'inspection-safety'], default='world-generation')
     args = parser.parse_args()
     run, output = Path(args.run).resolve(), Path(args.output).resolve()
     pipeline = read(run / 'pipeline.json')
@@ -128,7 +128,16 @@ def main():
         '人员与车牌结果来自机器人相机；俯视摄影仅用于观察。',
         '演示片段保持记录时的墙钟速度，章节之间有说明页。',
     ], 25 * scale, '01-introduction')
-    if args.focus == 'route':
+    if args.focus == 'inspection-safety':
+        page('严格审查后的四项修复', [
+            '观察失败超时后停车报错；确认记录不完整时禁止宣告巡检完成。',
+            '按图示核对相机实测的 10 人、3 张车牌，数量不足标记不完整。',
+            '代价地图保留未知区域，规划与整车扫掠检查共同拒绝穿过未知格。',
+            '新激光命中重置旧清空票；重复、倒序源帧不重复参与建图。',
+            '暗光副本由当前正式场景生成，车辆背景和黄灯暗态同步保留。',
+            '连续圆弧控制与原有道路、灯柱和信号灯保护继续执行。',
+        ], 25 * scale, '02-scene')
+    elif args.focus == 'route':
         page('第二个红绿灯后：连续转弯优化', [
             '上一版停稳对齐已避免乱走，但在拐角处仍有明显停顿。',
             '新版本采用相切圆弧与缓弯，整车扫过区域必须通过安全核验。',
@@ -160,7 +169,17 @@ def main():
     imu_sensor = next(line.strip() for line in generator if 'sensor name="body_imu"' in line)
     imu_plugin = next(line.strip() for line in generator if 'filename="gz-sim-imu-system"' in line)
     gain = next(line.strip() for line in generator if '<p_gain>' in line)
-    if args.focus == 'route':
+    if args.focus == 'inspection-safety':
+        source=(ROOT/'src/community_demo/community_demo/inspection_policy.py').read_text()
+        start=source.index('def inspection_complete(')
+        end=source.index('\ndef recognition_complete',start)
+        page('当前源码 1：巡检完成必须有确认依据', [
+            'community_demo/inspection_policy.py（真实源码片段）','',
+            *source[start:end].strip().splitlines(),'',
+            '巡检状态机还按图示核对相机实测的 10 人、3 张车牌。',
+            '每个视角的双角度证据、OCR 多帧确认与源时间门槛保留。',
+        ],40*scale,'06-code-generation',code=True)
+    elif args.focus == 'route':
         source = (ROOT / 'src/community_demo/community_demo/route_path.py').read_text()
         start = source.index('def pose_sweep_clear(')
         end = source.index('\n\ndef continuous_lower_path', start)
@@ -191,7 +210,17 @@ def main():
     start = localization.index("        if getattr(self,'require_imu',False) and (not self.imu_samples")
     end = localization.index('\n', localization.index('navigation pose withheld', start))
     excerpt = localization[start:end].splitlines()
-    if args.focus == 'route':
+    if args.focus == 'inspection-safety':
+        source=(ROOT/'src/community_demo/community_demo/mapping_grid.py').read_text()
+        start=source.index('    hit_indices=np.unique(')
+        end=source.index('\n\ndef fuse_registered_rays',start)
+        page('当前源码 2：后来出现的障碍覆盖旧空闲证据', [
+            'community_demo/mapping_grid.py（真实源码片段）','',
+            *source[start:end].strip().splitlines(),'',
+            'free[hit_indices]=0：清空票从最近一次命中之后重新累计。',
+            '采集器只登记严格递增的源时间；同帧终点优先于自由射线。',
+        ],40*scale,'07-code-safety',code=True)
+    elif args.focus == 'route':
         source = (ROOT / 'src/community_demo/community_demo/patrol.py').read_text()
         start = source.index("            if getattr(self,'path_curved',False):")
         end = source.index('\n            else:', start)

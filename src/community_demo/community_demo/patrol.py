@@ -26,7 +26,7 @@ from ament_index_python.packages import get_package_share_directory
 from community_demo.signal_gate import FreshGreenGate, VisualPhaseClock
 from community_demo.motion_profile import bend_limit
 from community_demo.sensor_validation import valid_rgb_image,valid_odometry,stamp_ns,valid_laser_scan
-from community_demo.inspection_policy import person_evidence_ready,signal_hold_reason
+from community_demo.inspection_policy import person_evidence_ready,signal_hold_reason,inspection_complete,recognition_complete
 from community_demo.route_path import GridClearance,simplify_path,continuous_lower_path,curve_target,pivot_clear
 
 
@@ -72,6 +72,12 @@ class Patrol(Node):
         super().__init__('community_patrol')
         self.declare_parameter('require_vision', True)
         self.declare_parameter('pose_topic','/localization/pose')
+        # The supplied sketch has five standees in each district and three cars.
+        self.declare_parameter('expected_people',10)
+        self.declare_parameter('expected_plates',3)
+        self.expected_people=self.get_parameter('expected_people').value
+        self.expected_plates=self.get_parameter('expected_plates').value
+        self.recognition_counts={};self.recognition_plates=[]
         self.require_vision = self.get_parameter('require_vision').value
         latest=QoSProfile(depth=1,reliability=ReliabilityPolicy.BEST_EFFORT)
         self.pan_pub=self.create_publisher(Float64,'/model/patrol_bot/camera_pan',10)
@@ -340,6 +346,10 @@ class Patrol(Node):
         (archive/'views.json').write_text(json.dumps(self.saved_views,indent=2)+'\n')
         (out/'outcomes.json').write_text(json.dumps(self.observation_outcomes,indent=2)+'\n')
         (archive/'outcomes.json').write_text(json.dumps(self.observation_outcomes,indent=2)+'\n')
+        if not ready:
+            self.fault='FAULT inspection view unconfirmed after bounded retries: '+view
+            self.log_status(self.fault)
+            return False
         self.observation_index+=1;self.observation_start=None
         self.observation_attempt=0
         self.observation_sample=0;self.sample_start=None
@@ -352,6 +362,9 @@ class Patrol(Node):
         try:data=json.loads(msg.data)
         except ValueError:return
         if (data.get('run_id'),data.get('lap_id'))!=(self.run_id,self.lap_id):return
+        counts=data.get('counts');plates=data.get('plates')
+        self.recognition_counts=counts.copy() if isinstance(counts,dict) else {}
+        self.recognition_plates=list(plates) if isinstance(plates,dict) else []
         self.observation_feedback=data.get('observation_feedback',{})
         self.feedback_update=self.get_clock().now()
         self.perception_update=self.feedback_update
@@ -403,6 +416,7 @@ class Patrol(Node):
         self.saved_views = []
         self.observation_outcomes=[]
         self.observation_feedback={}
+        self.recognition_counts={};self.recognition_plates=[]
         self.feedback_update=None
         self.observation_attempt=0
         self.observation_sample=0;self.sample_start=None
@@ -682,7 +696,12 @@ class Patrol(Node):
             self.log_status(f'REACHED {name} ({self.index + 1}/{len(ROUTE)}) estimated=({x:.3f},{y:.3f})')
             self.index += 1
             if self.index == len(ROUTE):
-                if self.distance_travelled < 8.0:
+                required=[view for views in OBSERVATIONS.values() for view,angle in views]
+                if not inspection_complete(self.observation_outcomes,required,self.run_id,self.lap_id):
+                    self.fault='FAULT incomplete inspection; required views are missing or unconfirmed'
+                elif not recognition_complete(self.recognition_counts,self.recognition_plates,self.expected_people,self.expected_plates):
+                    self.fault='FAULT incomplete inspection; measured people or plate totals do not meet the task'
+                elif self.distance_travelled < 8.0:
                     self.fault = 'FAULT insufficient physical travel for a complete lap'
                 else:
                     self.completed = True

@@ -23,7 +23,7 @@ global_costmap:
       publish_frequency: 1.0
       always_send_full_costmap: true
       resolution: 0.02
-      track_unknown_space: false
+      track_unknown_space: true
       footprint: '[[0.11,0.1125],[0.11,-0.1125],[-0.11,-0.1125],[-0.11,0.1125]]'
       footprint_padding: 0.005
       plugins: [static_layer, inflation_layer]

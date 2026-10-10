@@ -1,6 +1,23 @@
 """Finish known-gallery observations from measured evidence, not a redundant timer."""
 import math
 
+def inspection_complete(outcomes,required_views,run_id,lap_id):
+    """A finished route is successful only with every required confirmed view."""
+    return (len(outcomes)==len(required_views) and
+            {o.get('view') for o in outcomes}==set(required_views) and
+            all(o.get('confirmed') is True and
+                (o.get('run_id'),o.get('lap_id'))==(run_id,lap_id) for o in outcomes))
+
+def recognition_complete(counts,plates,expected_people,expected_plates):
+    """Compare camera-derived totals with the supplied scene's target counts.
+
+    Expected counts are a task prior, never object identities or OCR answers.
+    """
+    values=[counts.get(k) for k in ('residents','visitors','total')]
+    return (all(type(v) is int and v>=0 for v in values) and
+            values[0]+values[1]==values[2]==expected_people and
+            len(plates)==len(set(plates))==expected_plates)
+
 def person_evidence_ready(feedback):
     if (not feedback.get('ready') or not feedback.get('two_angles_verified') or
             feedback.get('pending_person_ids') or not feedback.get('person_ids')):

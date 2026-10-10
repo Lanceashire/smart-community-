@@ -28,11 +28,26 @@ def free_ray_indices(origin,angles,ranges,range_min,range_max):
     return np.unique((row*SIZE+col)[valid])
 
 
+def update_registered_votes(hit_counts,free_counts,hit_indices,free_indices):
+    """One source-ordered scan votes once per cell; new hits reset older frees.
+
+    Hit counts retain repeated endpoint evidence. Free counts measure clear
+    observations since the latest hit, so old empty space cannot erase a new
+    obstacle. A same-frame endpoint always wins over a crossing free ray.
+    """
+    hit_indices=np.unique(np.asarray(hit_indices,dtype=np.int64))
+    free_indices=np.setdiff1d(np.unique(np.asarray(free_indices,dtype=np.int64)),hit_indices)
+    hits=hit_counts.ravel();free=free_counts.ravel()
+    hits[hit_indices]=np.minimum(hits[hit_indices].astype(np.uint32)+1,65535)
+    free[hit_indices]=0
+    free[free_indices]=np.minimum(free[free_indices].astype(np.uint32)+1,65535)
+
+
 def fuse_registered_rays(slam_grid,hit_counts,free_counts):
     """Sparse inconsistent hits cannot stay occupied after repeated clear rays.
 
-    Votes are unique per scan frame. Clear at >=3 frames and >=3 clear votes
-    per hit vote; otherwise retain measured SLAM/endpoint occupancy or unknown.
+    Votes are unique per source-ordered scan. Clear at >=3 frames and >=3 clear
+    votes per hit vote AFTER the latest hit; otherwise retain measured occupancy.
     No SDF, known post locations or ground-truth pose enters this fusion.
     """
     result=slam_grid.copy();result[hit_counts>=3]=100

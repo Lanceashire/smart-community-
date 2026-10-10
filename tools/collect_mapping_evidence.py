@@ -15,7 +15,7 @@ from rclpy.parameter import Parameter
 from community_demo.sensor_validation import valid_laser_scan,stamp_ns
 from rclpy.signals import SignalHandlerOptions
 from PIL import Image as PILImage,ImageDraw,ImageFont
-from community_demo.mapping_grid import field_grid,navigation_grid,image,RESOLUTION,ORIGIN,free_ray_indices,fuse_registered_rays
+from community_demo.mapping_grid import field_grid,navigation_grid,image,RESOLUTION,ORIGIN,free_ray_indices,fuse_registered_rays,update_registered_votes
 ROOT=Path(__file__).resolve().parents[1]
 FONT=ROOT/'src/community_demo/models/fonts/wqy-zenhei.ttc'
 def yaw(q):return math.atan2(2*(q.w*q.z+q.x*q.y),1-2*(q.y*q.y+q.z*q.z))
@@ -30,15 +30,16 @@ class Capture(Node):
   self.create_subscription(String,'/patrol/lap',lambda m:setattr(self,'key',json.loads(m.data)),QoSProfile(depth=1,durability=DurabilityPolicy.TRANSIENT_LOCAL))
   self.create_subscription(Image,'/camera/image',self.on_overview,qos_profile_sensor_data)
   self.font=ImageFont.truetype(str(FONT),20);self.small=ImageFont.truetype(str(FONT),16)
-  self.encoder=None;self.frames=0;self.start=None;self.trans=None;self.error=None;self.hit_counts=np.zeros((210,210),np.uint16);self.free_counts=np.zeros((210,210),np.uint16);self.pending_scans=[];self.registered_scans=0
+  self.encoder=None;self.frames=0;self.start=None;self.trans=None;self.error=None;self.hit_counts=np.zeros((210,210),np.uint16);self.free_counts=np.zeros((210,210),np.uint16);self.pending_scans=[];self.registered_scans=0;self.last_registered_ns=None
  def on_scan(self,m):
   source=stamp_ns(m.header.stamp)
   if not valid_laser_scan(m) or source in self.scan_stamps:return
   self.scans+=1;self.scan_stamps.add(source);self.pending_scans.append(m);self.pending_scans=self.pending_scans[-20:]
  def register_hits(self):
   pending=[]
-  for m in self.pending_scans:
+  for m in sorted(self.pending_scans,key=lambda m:stamp_ns(m.header.stamp)):
    source=stamp_ns(m.header.stamp)
+   if self.last_registered_ns is not None and source<=self.last_registered_ns:continue
    if not 0<=self.get_clock().now().nanoseconds-source<=500_000_000:continue
    try:t=self.tf.lookup_transform('field','base_link',Time(nanoseconds=source)).transform
    except Exception:pending.append(m);continue
@@ -47,11 +48,11 @@ class Capture(Node):
    x=t.translation.x+r[i]*np.cos(angles);y=t.translation.y+r[i]*np.sin(angles)
    col=np.floor((x+2.1)/.02).astype(int);row=np.floor((y+2.1)/.02).astype(int)
    valid=(col>=0)&(row>=0)&(col<210)&(row<210)
-   indices=np.unique(row[valid]*210+col[valid]);flat=self.hit_counts.ravel();flat[indices]=np.minimum(flat[indices].astype(np.uint32)+1,65535)
+   indices=np.unique(row[valid]*210+col[valid])
    all_angles=a+m.angle_min+np.arange(len(r))*m.angle_increment
    clear=free_ray_indices((t.translation.x,t.translation.y),all_angles,r,m.range_min,m.range_max)
-   clear=np.setdiff1d(clear,indices,assume_unique=True)
-   free=self.free_counts.ravel();free[clear]=np.minimum(free[clear].astype(np.uint32)+1,65535)
+   update_registered_votes(self.hit_counts,self.free_counts,indices,clear)
+   self.last_registered_ns=source
    self.registered_scans+=1
   self.pending_scans=pending
  def on_status(self,m):

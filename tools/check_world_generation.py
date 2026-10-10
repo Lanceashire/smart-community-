@@ -51,6 +51,15 @@ def main():
             return (element.tag, element.attrib, (element.text or '').strip(),
                     [structure(child) for child in element])
         checks['recording_world_preserves_all_runtime_components'] = structure(recording) == structure(world)
+        dim_module=runpy.run_path(str(ROOT/'tools/prepare_dim_world.py'))
+        dim_path=generated.with_name('community_dim.sdf')
+        dim_module['prepare'](source,dim_path)
+        checks['dim_world_regenerated_from_current_source']=dim_path.read_bytes()==source.with_name('community_dim.sdf').read_bytes()
+        dim=E.parse(dim_path).getroot().find('world')
+        checks['dim_lighting_is_selected_condition']=(dim.findtext('scene/ambient')=='.45 .45 .45 1' and dim.findtext('light/diffuse')=='.65 .65 .65 1')
+        dim.find('scene/ambient').text=world.findtext('scene/ambient')
+        dim.find('light/diffuse').text=world.findtext('light/diffuse')
+        checks['dim_world_preserves_every_nonlighting_component']=structure(dim)==structure(world)
     result = {'passed': all(checks.values()), 'checks': checks,
               'world_sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
               'scope': 'Isolated full generation; includes geometry, physics, sensors and recording-world equivalence. Live navigation is checked separately.'}
