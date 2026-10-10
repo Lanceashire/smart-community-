@@ -129,11 +129,11 @@ def main():
         '演示片段保持记录时的墙钟速度，章节之间有说明页。',
     ], 25 * scale, '01-introduction')
     if args.focus == 'route':
-        page('第二个红绿灯后：路径与转弯修复', [
-            '此前底部路段追随小折线，出现左右摆动和道路恢复。',
-            '新版本只在整车扫过区域通过检查时简化真实 Nav2 路径。',
+        page('第二个红绿灯后：连续转弯优化', [
+            '上一版停稳对齐已避免乱走，但在拐角处仍有明显停顿。',
+            '新版本采用相切圆弧与缓弯，整车扫过区域必须通过安全核验。',
             '检查实时代价地图、未知格、车道轮廓及灯柱净空。',
-            '过灯柱后回到车道中心；转弯先停车对准，再前进。',
+            '提前进入低速圆弧，绕过灯柱后平顺回到车道中心。',
         ], 25 * scale, '02-scene')
     elif args.focus == 'materials':
         page('原始素材恢复：车辆背景与黄灯亮 / 暗态', [
@@ -162,13 +162,13 @@ def main():
     gain = next(line.strip() for line in generator if '<p_gain>' in line)
     if args.focus == 'route':
         source = (ROOT / 'src/community_demo/community_demo/route_path.py').read_text()
-        start = source.index('def segment_clear(')
-        end = source.index('\n\ndef pivot_clear', start)
+        start = source.index('def pose_sweep_clear(')
+        end = source.index('\n\ndef continuous_lower_path', start)
         page('当前源码 1：整车扫过范围核验', [
             'community_demo/route_path.py（真实源码片段）', '',
             *source[start:end].splitlines(), '',
             'clearance_polygon 检查车道联合区域、灯柱与实时地图。',
-            '下方路段核验失败则停车重试；三次失败后保持停车并报错。',
+            '圆弧不可用时仅采用已核验分段；无安全路径则停车重试。',
         ], 40 * scale, '06-code-generation', code=True)
     elif args.focus == 'materials':
         source = (ROOT / 'tools/generate_world.py').read_text()
@@ -178,7 +178,7 @@ def main():
             'tools/generate_world.py（真实源码片段）', '',
             *source[start:end].splitlines(), '',
             next(line.strip() for line in generator if "mesh_visual('official_plate'" in line), '',
-            'import_scene_assets.py 校验补充文件 SHA256，并按真实格式生成贴图引用。',
+            '一次性素材处理移出工程；场景直接加载已生成的贴图与模型。',
             '原始 JPEG 不重画、不重新压缩；旧下载缓存保留来源与补齐记录。',
         ], 40 * scale, '06-code-generation', code=True)
     else:
@@ -193,12 +193,12 @@ def main():
     excerpt = localization[start:end].splitlines()
     if args.focus == 'route':
         source = (ROOT / 'src/community_demo/community_demo/patrol.py').read_text()
-        start = source.index("        if getattr(self,'path_align',False):")
-        end = source.index('\n        if abs(error) > .35:', start)
-        page('当前源码 2：转弯先停稳并对准', [
+        start = source.index("            if getattr(self,'path_curved',False):")
+        end = source.index('\n            else:', start)
+        page('当前源码 2：圆弧曲率与限速', [
             'community_demo/patrol.py（真实源码片段）', '',
             *[line[8:] for line in source[start:end].splitlines()], '',
-            '对准期间线速度为零；原车道、灯柱与信号保护继续执行。',
+            '角速度 = 线速度 × 曲率；紧弯自动限速，原有安全保护继续执行。',
         ], 40 * scale, '07-code-safety', code=True)
     elif args.focus == 'materials':
         selection = (ROOT / 'src/community_demo/community_demo/plate_geometry.py').read_text()

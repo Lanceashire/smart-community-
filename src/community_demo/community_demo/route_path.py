@@ -1,7 +1,7 @@
 """Remove redundant Nav2 bends only with whole-body, live-grid clearance.
 
 Input is Nav2's actual path and current costmap. No simulator pose or image is
-used. A rejected shortcut retains the original path, never an unchecked chord.
+used. Every replacement is checked; an unavailable safe route is rejected.
 """
 import math
 from community_demo.road_rules import (
@@ -104,3 +104,68 @@ def simplify_path(points,start,grid,posts):
                 result.append(points[j]);index=j;break
         else:return None
     return result
+
+
+def pose_sweep_clear(a,b,grid,posts):
+    """Conservative short arc sweep, including rotation/chord interpolation error."""
+    delta=abs(math.atan2(math.sin(b[2]-a[2]),math.cos(b[2]-a[2])))
+    if math.dist(a[:2],b[:2])>.016 or delta>.10:return False
+    # 4mm bounds the sagitta for our <=1.6cm steps and >=8cm turn radii,
+    # plus the maximum footprint-corner rotation bulge between samples.
+    corners=body_corners(*a)+body_corners(*b)
+    swept=convex_hull([(x+dx,y+dy) for x,y in corners
+                       for dx,dy in ((-.004,-.004),(-.004,.004),(.004,-.004),(.004,.004))])
+    return clearance_polygon(swept,grid,posts)
+
+
+def continuous_lower_path(points,pose,grid,posts):
+    """Tangent quarter-circle, straight gantry pass, then a gentle tangent bend.
+
+    Nav2 still supplies the reachable goal. Candidate turns use measured start
+    pose and the live grid, and are never accepted on centre-line checks alone.
+    """
+    if grid is None or len(points)<2 or not all(math.isfinite(v)for v in pose):return None
+    sx,sy,yaw=pose;ex,ey=points[-1]
+    if abs(math.atan2(math.sin(yaw+math.pi/2),math.cos(yaw+math.pi/2)))>.15:return None
+    if not .8<ex<1.3 or not -1.85<ey<-1.55:return None
+    desired=max(.09,min(.15,sy+1.805))
+    for radius in (desired,desired-.01,desired+.01,.10,.12,.14):
+        if not .08<=radius<=.16:continue
+        turn=-yaw;cx=sx-radius*math.sin(yaw);cy=sy+radius*math.cos(yaw)
+        steps=max(2,math.ceil(radius*turn/.006));poses=[]
+        for i in range(steps+1):
+            z=yaw+turn*i/steps;poses.append((cx+radius*math.sin(z),cy-radius*math.cos(z),z))
+        ax,ay,_=poses[-1];stage=max(.46,ax+.15)
+        if stage>ex-.30:continue
+        n=max(1,math.ceil((stage-ax)/.006))
+        poses.extend((ax+(stage-ax)*i/n,ay,0.)for i in range(1,n+1))
+        # Quadratic starts tangent to the straight and gradually rises to the
+        # lane centre. Its heading stays monotonic, avoiding a second S bend.
+        control=((stage+ex)/2,ay);n=max(2,math.ceil((ex-stage+abs(ey-ay))/.005))
+        for i in range(1,n+1):
+            t=i/n;u=1-t;x=u*u*stage+2*u*t*control[0]+t*t*ex
+            y=u*u*ay+2*u*t*control[1]+t*t*ey
+            dx=2*u*(control[0]-stage)+2*t*(ex-control[0]);dy=2*t*(ey-control[1])
+            poses.append((x,y,math.atan2(dy,dx)))
+        if all(pose_sweep_clear(a,b,grid,posts)for a,b in zip(poses,poses[1:])):return poses
+    return None
+
+
+def curve_target(points,pose,progress):
+    """Monotonic nearest segment and arc-length carrot for pure pursuit."""
+    x,y,yaw=pose
+    nearest=min(range(max(0,progress-2),len(points)-1),
+                key=lambda i:math.dist((x,y),points[i][:2]))
+    progress=max(progress,nearest);a,b=points[progress],points[progress+1]
+    dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy)
+    along=max(0.,min(length,((x-a[0])*dx+(y-a[1])*dy)/length))
+    # Tight turn: a short carrot; following straight: longer, smoother tracking.
+    heading=math.atan2(dy,dx);look=.075 if abs(heading)>.35 else .14
+    remaining=look+along;i=progress
+    while i<len(points)-2 and remaining>math.dist(points[i][:2],points[i+1][:2]):
+        remaining-=math.dist(points[i][:2],points[i+1][:2]);i+=1
+    a,b=points[i],points[i+1];length=math.dist(a[:2],b[:2]);f=min(1.,remaining/max(length,1e-9))
+    gx,gy=a[0]+f*(b[0]-a[0]),a[1]+f*(b[1]-a[1])
+    error=math.atan2(math.sin(math.atan2(gy-y,gx-x)-yaw),math.cos(math.atan2(gy-y,gx-x)-yaw))
+    curvature=2*math.sin(error)/max(math.hypot(gx-x,gy-y),.025)
+    return error,curvature,progress

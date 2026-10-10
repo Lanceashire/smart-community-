@@ -27,7 +27,7 @@ from community_demo.signal_gate import FreshGreenGate, VisualPhaseClock
 from community_demo.motion_profile import bend_limit
 from community_demo.sensor_validation import valid_rgb_image,valid_odometry,stamp_ns,valid_laser_scan
 from community_demo.inspection_policy import person_evidence_ready,signal_hold_reason
-from community_demo.route_path import GridClearance,simplify_path
+from community_demo.route_path import GridClearance,simplify_path,continuous_lower_path,curve_target,pivot_clear
 
 
 def wrap(angle):
@@ -48,9 +48,9 @@ ROUTE = [
     ('observe_middle', -.90, .5, False), ('middle_east', -.1, .5, False),
     ('observe_B_east', -.1, -.09, False),
     ('lower_approach', -.1, -.29, False), ('lower_stop', -.1, -.29, True),
-    # Pass below the lower gantry before turning; return to the east-lane centre
-    # at the next junction rather than dipping down again before plate 1.
-    ('lower_south', -.1, -1.805, False), ('bottom_east', 1.1, -1.7, False),
+    # Enter the checked arc earlier, leaving room for the full body to turn
+    # continuously below the gantry and return to the east-lane centre.
+    ('lower_south', -.1, -1.67, False), ('bottom_east', 1.1, -1.7, False),
     ('observe_plate_1', 1.1, -1.7, False), ('observe_plate_2', 1.1, -1.1, False),
     ('observe_plate_3', 1.1, -.5, False), ('right_north', 1.1, 1.7, False),
 ]
@@ -113,6 +113,7 @@ class Patrol(Node):
         self.create_subscription(OccupancyGrid,'/global_costmap/costmap',self.on_costmap,
                                  QoSProfile(depth=1,durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.path_refined=False;self.path_segment=1;self.path_align=False;self.path_settle_until=0.
+        self.path_curved=False;self.curve_progress=0;self.path_curvature=0.
         self.command_pub = self.create_publisher(TwistStamped, '/cmd_vel_nav', 10)
         self.status_pub = self.create_publisher(String, '/patrol/status', 10)
         self.signal_decisions = self.create_publisher(String, '/patrol/signal_decision', 10)
@@ -215,33 +216,39 @@ class Patrol(Node):
                             self.fail_path_request('nonfinite path');return
                         self.path_pending=False;self.path_request_deadline=None;self.path_goal_handle=None
                         self.path_refined=False
+                        self.path_curved=False;self.curve_progress=0
                         if hasattr(self,'raw_path_pub'):self.raw_path_pub.publish(path)
                         now_ns=self.get_clock().now().nanoseconds
                         grid=getattr(self,'costmap',None);grid_stamp=getattr(self,'costmap_stamp_ns',None)
                         points=[(p.pose.position.x,p.pose.position.y) for p in path.poses]
-                        refined=None
+                        refined=None;curve=None
                         if ROUTE[self.index][0]=='bottom_east' and grid is not None and grid_stamp is not None and 0<=now_ns-grid_stamp<=2_000_000_000:
-                            refined=simplify_path(points,self.pose[:2],grid,self.static_posts)
+                            curve=continuous_lower_path(points,self.pose,grid,self.static_posts)
+                            refined=[p[:2] for p in curve] if curve is not None else simplify_path(points,self.pose[:2],grid,self.static_posts)
                             if refined is not None:
                                 clean=NavPath();clean.header=path.header
-                                for x,y in refined:
+                                for j,(x,y) in enumerate(refined):
                                     p=PoseStamped();p.header=path.header;p.pose.position.x=float(x);p.pose.position.y=float(y);p.pose.orientation.w=1.
+                                    if curve is not None:
+                                        p.pose.orientation.z=math.sin(curve[j][2]/2);p.pose.orientation.w=math.cos(curve[j][2]/2)
                                     clean.poses.append(p)
                                 self.get_logger().info(f'PATH_REFINED {ROUTE[self.index][0]}: {len(points)} -> {len(refined)} points; swept body and live grid checked')
-                                path=clean;self.path_refined=True;self.path_segment=1
+                                path=clean;self.path_refined=True;self.path_segment=1;self.path_curved=curve is not None
                         if ROUTE[self.index][0]=='bottom_east':
                             out=Path('log/paths')/self.run_id;out.mkdir(parents=True,exist_ok=True)
                             evidence={'run_id':self.run_id,'lap_id':self.lap_id,'stamp_ns':now_ns,
                                 'pose':self.pose,'pose_source_ns':self.pose_source_ns,
                                 'grid_source_ns':grid_stamp,'grid_age_s':None if grid_stamp is None else (now_ns-grid_stamp)/1e9,
                                 'raw_points':points,'refined_points':refined,
+                                'strategy':'continuous_arc' if curve is not None else 'checked_segments',
+                                'curve_poses':curve,
                                 'grid':None if grid is None else {'width':grid.width,'height':grid.height,
                                     'resolution':grid.resolution,'origin':grid.origin,'data':list(grid.data)}}
                             (out/f'lap-{self.lap_id:03d}-bottom-{self.path_attempts}.json').write_text(json.dumps(evidence)+'\n')
                         if ROUTE[self.index][0]=='bottom_east' and not self.path_refined:
                             self.fail_path_request('lower junction needs a fresh grid and a whole-body-safe simplified path');return
                         self.path_attempts=0
-                        self.path_align=self.path_refined;self.path_settle_until=now_ns/1e9+.35
+                        self.path_align=self.path_refined and not self.path_curved;self.path_settle_until=now_ns/1e9+.35
                         self.path=path;self.path_pub.publish(path)
                     except Exception as exc:self.fail_path_request('result exception: '+str(exc))
                 handle.get_result_async().add_done_callback(result)
@@ -541,6 +548,11 @@ class Patrol(Node):
         if self.path is None or not self.path.poses:return None
         x,y,yaw=self.pose
         points=[(p.pose.position.x,p.pose.position.y) for p in self.path.poses]
+        if getattr(self,'path_curved',False):
+            error,self.path_curvature,self.curve_progress=curve_target(points,self.pose,self.curve_progress)
+            self.path_points=points;self.path_nearest=self.curve_progress
+            self.path_segment_distance=math.dist((x,y),points[-1])
+            return error
         if self.path_refined:
             target=self.path_segment
             if target<len(points)-1 and math.dist((x,y),points[target])<.02:
@@ -709,7 +721,13 @@ class Patrol(Node):
             if abs(error)>.035:
                 self.publish_command(0.,angular);self.log_status(self.command_guard or 'ALIGN_ROUTE '+name);return
             self.path_align=False
-        if abs(error) > .35:
+        if getattr(self,'path_curved',False) and abs(error)>.55:
+            fresh=self.costmap_stamp_ns is not None and 0<=now.nanoseconds-self.costmap_stamp_ns<=2_000_000_000
+            if not fresh or not pivot_clear(self.pose[:2],self.costmap,self.static_posts):
+                self.publish_command();self.path_index=-1;self.path=None
+                self.log_status('CURVE_HOLD replan after tracking deviation');return
+            self.publish_command(0.,angular);self.log_status('ALIGN_ROUTE '+name);return
+        if abs(error) > .35 and not getattr(self,'path_curved',False):
             linear = 0.0
         else:
             remaining=min(dist,self.path_segment_distance) if getattr(self,'path_refined',False) else dist
@@ -727,7 +745,11 @@ class Patrol(Node):
                 if enough and abs(error)<.06 and self.localization_quality.get('state')=='tracking':
                     linear=max(linear,min(.26,self.speed_pid.calculate(dist)))
                 self.approach_decisions.publish(String(data=json.dumps({'run_id':self.run_id,'lap_id':self.lap_id,'route_point':name,'stamp':now.nanoseconds/1e9,'remaining_lower_s':remaining,'green_sufficient_for_approach_and_body':enough,'commanded_linear_m_s':linear,'source':'Fresh camera colour and camera-observed phase anchor'})))
-            linear=bend_limit(self.path_points,self.path_nearest,error,dist,linear)
+            if getattr(self,'path_curved',False):
+                linear=min(linear,.16,.55/max(abs(self.path_curvature),.01))
+                angular=linear*self.path_curvature
+            else:
+                linear=bend_limit(self.path_points,self.path_nearest,error,dist,linear)
         if self.motion_probe is None:
             self.motion_probe = (now, x, y, yaw)
         elif (now - self.motion_probe[0]).nanoseconds > 4_000_000_000:
