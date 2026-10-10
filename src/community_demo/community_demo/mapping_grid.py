@@ -8,6 +8,38 @@ RESOLUTION = .02
 SIZE = 210
 ORIGIN = (-2.1, -2.1)
 
+def free_ray_indices(origin,angles,ranges,range_min,range_max):
+    """Unique field cells traversed by one source-stamped LaserScan frame.
+
+    Endpoint cells are excluded by the collector. No-return +inf frees only
+    measured-range rays; the sensor's near blind region supplies no free vote.
+    """
+    angles=np.asarray(angles,dtype=float);ranges=np.asarray(ranges,dtype=float)
+    if (angles.ndim!=1 or angles.shape!=ranges.shape or
+            not np.isfinite(angles).all() or not all(math.isfinite(v) for v in origin) or
+            not math.isfinite(range_min) or not math.isfinite(range_max) or not 0<range_min<range_max or
+            not np.all((np.isfinite(ranges)&(ranges>=range_min)&(ranges<=range_max))|np.isposinf(ranges))):
+        raise ValueError('Invalid ray evidence')
+    steps=np.arange(range_min,min(range_max,5.95),RESOLUTION)
+    distances=np.minimum(ranges,min(range_max,5.95))-RESOLUTION
+    col=np.floor((origin[0]+np.cos(angles)[:,None]*steps[None,:]-ORIGIN[0])/RESOLUTION).astype(int)
+    row=np.floor((origin[1]+np.sin(angles)[:,None]*steps[None,:]-ORIGIN[1])/RESOLUTION).astype(int)
+    valid=(steps[None,:]<distances[:,None])&(col>=0)&(row>=0)&(col<SIZE)&(row<SIZE)
+    return np.unique((row*SIZE+col)[valid])
+
+
+def fuse_registered_rays(slam_grid,hit_counts,free_counts):
+    """Sparse inconsistent hits cannot stay occupied after repeated clear rays.
+
+    Votes are unique per scan frame. Clear at >=3 frames and >=3 clear votes
+    per hit vote; otherwise retain measured SLAM/endpoint occupancy or unknown.
+    No SDF, known post locations or ground-truth pose enters this fusion.
+    """
+    result=slam_grid.copy();result[hit_counts>=3]=100
+    clear=(free_counts>=3)&(free_counts.astype(np.uint32)>=3*np.maximum(hit_counts.astype(np.uint32),1))
+    result[clear]=0
+    return result
+
 def field_grid(message, field_to_slam):
     """field_to_slam is a measured/static TF (x,y,yaw), not simulator truth."""
     info=message.info

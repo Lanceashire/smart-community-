@@ -35,7 +35,7 @@ def main():
     parser.add_argument('--output', required=True)
     parser.add_argument('--date', default='2026-10-10')
     parser.add_argument('--team', default='待填写')
-    parser.add_argument('--focus', choices=['world-generation', 'materials'], default='world-generation')
+    parser.add_argument('--focus', choices=['world-generation', 'materials', 'route'], default='world-generation')
     args = parser.parse_args()
     run, output = Path(args.run).resolve(), Path(args.output).resolve()
     pipeline = read(run / 'pipeline.json')
@@ -43,7 +43,17 @@ def main():
     assert pipeline['passed'] and [c['case'] for c in pipeline['cases']] == expected
     assert pipeline['source_frozen']
     frozen = read(run / 'runtime-hashes.json')
-    assert all((ROOT / p).is_file() and sha(ROOT / p) == h for p, h in frozen.items())
+    # This offline presentation builder is not run by ROS or the lap audit.
+    # Permit its own later caption edits, while checking every other frozen file.
+    presentation_changes = []
+    for path, expected_hash in frozen.items():
+        assert (ROOT / path).is_file(), path
+        current_hash = sha(ROOT / path)
+        if path == 'tools/build_demo_video.py' and current_hash != expected_hash:
+            presentation_changes.append({'path': path, 'at_run_sha256': expected_hash,
+                                         'current_sha256': current_hash})
+        else:
+            assert current_hash == expected_hash, path
     output.mkdir(parents=True, exist_ok=True)
     assert not (output / 'video-manifest.json').exists(), 'Preserve earlier videos'
     build = output / 'build'
@@ -118,7 +128,14 @@ def main():
         '人员与车牌结果来自机器人相机；俯视摄影仅用于观察。',
         '演示片段保持记录时的墙钟速度，章节之间有说明页。',
     ], 25 * scale, '01-introduction')
-    if args.focus == 'materials':
+    if args.focus == 'route':
+        page('第二个红绿灯后：路径与转弯修复', [
+            '此前底部路段追随小折线，出现左右摆动和道路恢复。',
+            '新版本只在整车扫过区域通过检查时简化真实 Nav2 路径。',
+            '检查实时代价地图、未知格、车道轮廓及灯柱净空。',
+            '过灯柱后回到车道中心；转弯先停车对准，再前进。',
+        ], 25 * scale, '02-scene')
+    elif args.focus == 'materials':
         page('原始素材恢复：车辆背景与黄灯亮 / 暗态', [
             '三张补充 JPEG 保留原始字节，直接用于 Gazebo 贴图。',
             '黄灯亮、暗态均使用实物照片，替换原有暗黄色圆片。',
@@ -143,7 +160,17 @@ def main():
     imu_sensor = next(line.strip() for line in generator if 'sensor name="body_imu"' in line)
     imu_plugin = next(line.strip() for line in generator if 'filename="gz-sim-imu-system"' in line)
     gain = next(line.strip() for line in generator if '<p_gain>' in line)
-    if args.focus == 'materials':
+    if args.focus == 'route':
+        source = (ROOT / 'src/community_demo/community_demo/route_path.py').read_text()
+        start = source.index('def segment_clear(')
+        end = source.index('\n\ndef pivot_clear', start)
+        page('当前源码 1：整车扫过范围核验', [
+            'community_demo/route_path.py（真实源码片段）', '',
+            *source[start:end].splitlines(), '',
+            'clearance_polygon 检查车道联合区域、灯柱与实时地图。',
+            '下方路段核验失败则停车重试；三次失败后保持停车并报错。',
+        ], 40 * scale, '06-code-generation', code=True)
+    elif args.focus == 'materials':
         source = (ROOT / 'tools/generate_world.py').read_text()
         start = source.index("    if 'car_front' in TEXTURES:")
         end = source.index('    else:', start)
@@ -164,7 +191,16 @@ def main():
     start = localization.index("        if getattr(self,'require_imu',False) and (not self.imu_samples")
     end = localization.index('\n', localization.index('navigation pose withheld', start))
     excerpt = localization[start:end].splitlines()
-    if args.focus == 'materials':
+    if args.focus == 'route':
+        source = (ROOT / 'src/community_demo/community_demo/patrol.py').read_text()
+        start = source.index("        if getattr(self,'path_align',False):")
+        end = source.index('\n        if abs(error) > .35:', start)
+        page('当前源码 2：转弯先停稳并对准', [
+            'community_demo/patrol.py（真实源码片段）', '',
+            *[line[8:] for line in source[start:end].splitlines()], '',
+            '对准期间线速度为零；原车道、灯柱与信号保护继续执行。',
+        ], 40 * scale, '07-code-safety', code=True)
+    elif args.focus == 'materials':
         selection = (ROOT / 'src/community_demo/community_demo/plate_geometry.py').read_text()
         start = selection.index('    if candidates:')
         end = selection.index('\ndef blue_plates', start)
@@ -212,6 +248,8 @@ def main():
                         '-f', 'null', '-'], check=True)
     result = {'passed': True, 'date': args.date, 'team': args.team, 'focus': args.focus,
         'pipeline': str(run / 'pipeline.json'), 'source_frozen': True,
+        'current_runtime_matches_frozen_run': True,
+        'post_run_presentation_tool_changes': presentation_changes,
         'resolution': '1920x1080', 'fps': 10, 'duration_s': duration,
         'audio': 'Chinese captions, no narration', 'chapters': chapters,
         'files': {p.name: {'bytes': p.stat().st_size, 'sha256': sha(p)}

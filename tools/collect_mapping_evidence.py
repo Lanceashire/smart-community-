@@ -15,7 +15,7 @@ from rclpy.parameter import Parameter
 from community_demo.sensor_validation import valid_laser_scan,stamp_ns
 from rclpy.signals import SignalHandlerOptions
 from PIL import Image as PILImage,ImageDraw,ImageFont
-from community_demo.mapping_grid import field_grid,navigation_grid,image,RESOLUTION,ORIGIN
+from community_demo.mapping_grid import field_grid,navigation_grid,image,RESOLUTION,ORIGIN,free_ray_indices,fuse_registered_rays
 ROOT=Path(__file__).resolve().parents[1]
 FONT=ROOT/'src/community_demo/models/fonts/wqy-zenhei.ttc'
 def yaw(q):return math.atan2(2*(q.w*q.z+q.x*q.y),1-2*(q.y*q.y+q.z*q.z))
@@ -30,7 +30,7 @@ class Capture(Node):
   self.create_subscription(String,'/patrol/lap',lambda m:setattr(self,'key',json.loads(m.data)),QoSProfile(depth=1,durability=DurabilityPolicy.TRANSIENT_LOCAL))
   self.create_subscription(Image,'/camera/image',self.on_overview,qos_profile_sensor_data)
   self.font=ImageFont.truetype(str(FONT),20);self.small=ImageFont.truetype(str(FONT),16)
-  self.encoder=None;self.frames=0;self.start=None;self.trans=None;self.error=None;self.hit_counts=np.zeros((210,210),np.uint16);self.pending_scans=[];self.registered_scans=0
+  self.encoder=None;self.frames=0;self.start=None;self.trans=None;self.error=None;self.hit_counts=np.zeros((210,210),np.uint16);self.free_counts=np.zeros((210,210),np.uint16);self.pending_scans=[];self.registered_scans=0
  def on_scan(self,m):
   source=stamp_ns(m.header.stamp)
   if not valid_laser_scan(m) or source in self.scan_stamps:return
@@ -47,7 +47,11 @@ class Capture(Node):
    x=t.translation.x+r[i]*np.cos(angles);y=t.translation.y+r[i]*np.sin(angles)
    col=np.floor((x+2.1)/.02).astype(int);row=np.floor((y+2.1)/.02).astype(int)
    valid=(col>=0)&(row>=0)&(col<210)&(row<210)
-   indices=np.unique(row[valid]*210+col[valid]);flat=self.hit_counts.ravel();flat[indices]=np.minimum(flat[indices]+1,65535)
+   indices=np.unique(row[valid]*210+col[valid]);flat=self.hit_counts.ravel();flat[indices]=np.minimum(flat[indices].astype(np.uint32)+1,65535)
+   all_angles=a+m.angle_min+np.arange(len(r))*m.angle_increment
+   clear=free_ray_indices((t.translation.x,t.translation.y),all_angles,r,m.range_min,m.range_max)
+   clear=np.setdiff1d(clear,indices,assume_unique=True)
+   free=self.free_counts.ravel();free[clear]=np.minimum(free[clear].astype(np.uint32)+1,65535)
    self.registered_scans+=1
   self.pending_scans=pending
  def on_status(self,m):
@@ -74,8 +78,7 @@ class Capture(Node):
   t=self.tf.lookup_transform('slam_map','field',Time()).transform
   self.trans=(t.translation.x,t.translation.y,yaw(t.rotation))
   grid=field_grid(self.map,self.trans)
-  grid[self.hit_counts>=3]=100
-  return grid
+  return fuse_registered_rays(grid,self.hit_counts,self.free_counts)
  def render(self):
   if self.map is None or self.overview is None:return
   try:grid=self.project()
@@ -110,12 +113,12 @@ class Capture(Node):
    raw=np.asarray(self.map.data,dtype=np.int16).reshape(self.map.info.height,self.map.info.width)
    cv2.imwrite(str(self.out/'slam.pgm'),image(raw));self.yaml('slam',self.map.info.resolution,(self.map.info.origin.position.x,self.map.info.origin.position.y,yaw(self.map.info.origin.orientation)))
    grid=self.project();cv2.imwrite(str(self.out/'slam-field.pgm'),image(grid));self.yaml('slam-field',RESOLUTION,(*ORIGIN,0))
-   nav,evidence=navigation_grid(grid);evidence.update(registered_laser_frames=self.registered_scans,confirmed_hit_cells=int((self.hit_counts>=3).sum()),source='SLAM OccupancyGrid plus >=3-frame laser endpoints registered by camera/wheel/IMU source-time TF; supplied lanes separately constrain travel; no SDF collision coordinates');cv2.imwrite(str(self.out/'navigation.pgm'),image(nav));self.yaml('navigation',RESOLUTION,(*ORIGIN,0))
+   nav,evidence=navigation_grid(grid);evidence.update(registered_laser_frames=self.registered_scans,confirmed_hit_cells=int((self.hit_counts>=3).sum()),confirmed_free_ray_cells=int((self.free_counts>=3).sum()),inconsistent_hit_cells_cleared=int(((self.hit_counts>=3)&(grid==0)).sum()),source='SLAM OccupancyGrid, >=3-frame endpoints and unique-per-frame clear rays registered by camera/wheel/IMU source-time TF; clear requires >=3 frames and >=3 clear votes per hit; supplied lanes separately constrain travel; no SDF collision coordinates');cv2.imwrite(str(self.out/'navigation.pgm'),image(nav));self.yaml('navigation',RESOLUTION,(*ORIGIN,0))
    cv2.imwrite(str(self.out/'final-map.png'),image(grid))
    checks['known_road_coverage']=evidence['known_road_fraction']>=.95
    checks['measured_physical_obstacles']=int((grid>65).sum())>=20
    checks['known_map_growth']=self.stats[-1]['known_cells']>self.stats[0]['known_cells']
-   np.savez_compressed(self.out/'occupancy.npz',slam=raw,field=grid,navigation=nav,laser_hit_counts=self.hit_counts)
+   np.savez_compressed(self.out/'occupancy.npz',slam=raw,field=grid,navigation=nav,laser_hit_counts=self.hit_counts,laser_free_counts=self.free_counts)
    client=self.create_client(SerializePoseGraph,'/slam_toolbox/serialize_map')
    checks['posegraph_saved']=False
    if client.wait_for_service(timeout_sec=3):

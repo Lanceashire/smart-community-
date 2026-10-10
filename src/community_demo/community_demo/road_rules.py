@@ -13,8 +13,53 @@ def footprint(x,y,yaw):
     # Sample the full body, including edges; corner-only tests fail at intersections.
     return [(x+c*u-s*v,y+s*u+c*v) for u in [-HALF_LENGTH+i*HALF_LENGTH/4 for i in range(9)] for v in [-HALF_WIDTH+i*HALF_WIDTH/4 for i in range(9)]]
 
+def body_corners(x,y,yaw):
+    c,s=math.cos(yaw),math.sin(yaw)
+    return [(x+c*u-s*v,y+s*u+c*v) for u,v in
+            ((-HALF_LENGTH,-HALF_WIDTH),(HALF_LENGTH,-HALF_WIDTH),
+             (HALF_LENGTH,HALF_WIDTH),(-HALF_LENGTH,HALF_WIDTH))]
+
+
+def clip_axis(polygon,axis,bound,greater):
+    """Clip a convex polygon to a closed axis-aligned half plane."""
+    output=[]
+    for a,b in zip(polygon,polygon[1:]+polygon[:1]):
+        ain=a[axis]>=bound if greater else a[axis]<=bound
+        bin=b[axis]>=bound if greater else b[axis]<=bound
+        if ain:output.append(a)
+        if ain!=bin:
+            k=(bound-a[axis])/(b[axis]-a[axis])
+            output.append((a[0]+k*(b[0]-a[0]),a[1]+k*(b[1]-a[1])))
+    return output
+
+
+def polygon_in_road(polygon,margin=.008):
+    """Exact containment in the rectangle union, including concave junctions.
+
+    Within each vertical strip the union's Y intervals are constant. A convex
+    footprint is covered iff its entire clipped Y range fits a merged interval.
+    Checking only 81 body points misses small triangles at inside corners.
+    """
+    if not polygon or not all(math.isfinite(v) for p in polygon for v in p):return False
+    roads=[(a+margin,b+margin,c-margin,d-margin) for a,b,c,d in CORRIDORS]
+    left=min(p[0] for p in polygon);right=max(p[0] for p in polygon)
+    cuts=sorted({left,right,*[v for r in roads for v in (r[0],r[2]) if left<v<right]})
+    for a,c in zip(cuts,cuts[1:]):
+        if c-a<1e-12:continue
+        part=clip_axis(clip_axis(polygon,0,a,True),0,c,False)
+        if not part:continue
+        low=min(p[1] for p in part);high=max(p[1] for p in part)
+        intervals=sorted((b,d) for x,b,z,d in roads if x<(a+c)/2<z)
+        merged=[]
+        for b,d in intervals:
+            if merged and b<=merged[-1][1]+1e-12:merged[-1][1]=max(merged[-1][1],d)
+            else:merged.append([b,d])
+        if not any(b-1e-12<=low and high<=d+1e-12 for b,d in merged):return False
+    return True
+
+
 def safe_pose(x,y,yaw,margin=.008):
-    return all(in_road(a,b,margin) for a,b in footprint(x,y,yaw))
+    return polygon_in_road(body_corners(x,y,yaw),margin)
 
 def predict(x,y,yaw,v,w,dt):
     if abs(w)<1e-7:return x+v*dt*math.cos(yaw),y+v*dt*math.sin(yaw),yaw

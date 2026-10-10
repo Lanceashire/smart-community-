@@ -12,7 +12,7 @@ from geometry_msgs.msg import TwistStamped,PoseStamped
 from nav2_msgs.action import ComputePathToPose
 from action_msgs.msg import GoalStatus
 from rclpy.action import ActionClient
-from nav_msgs.msg import Odometry
+from nav_msgs.msg import Odometry,OccupancyGrid,Path as NavPath
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, DurabilityPolicy, qos_profile_sensor_data,ReliabilityPolicy
@@ -27,6 +27,7 @@ from community_demo.signal_gate import FreshGreenGate, VisualPhaseClock
 from community_demo.motion_profile import bend_limit
 from community_demo.sensor_validation import valid_rgb_image,valid_odometry,stamp_ns,valid_laser_scan
 from community_demo.inspection_policy import person_evidence_ready,signal_hold_reason
+from community_demo.route_path import GridClearance,simplify_path
 
 
 def wrap(angle):
@@ -47,7 +48,9 @@ ROUTE = [
     ('observe_middle', -.90, .5, False), ('middle_east', -.1, .5, False),
     ('observe_B_east', -.1, -.09, False),
     ('lower_approach', -.1, -.29, False), ('lower_stop', -.1, -.29, True),
-    ('lower_south', -.1, -1.825, False), ('bottom_east', 1.1, -1.825, False),
+    # Pass below the lower gantry before turning; return to the east-lane centre
+    # at the next junction rather than dipping down again before plate 1.
+    ('lower_south', -.1, -1.805, False), ('bottom_east', 1.1, -1.7, False),
     ('observe_plate_1', 1.1, -1.7, False), ('observe_plate_2', 1.1, -1.1, False),
     ('observe_plate_3', 1.1, -.5, False), ('right_north', 1.1, 1.7, False),
 ]
@@ -104,7 +107,12 @@ class Patrol(Node):
         self.planner=ActionClient(self,ComputePathToPose,'/compute_path_to_pose')
         self.path_request_token=0;self.path_request_deadline=None;self.path_goal_handle=None
         self.path_retry_index=None;self.path_attempts=0
-        self.path=None;self.path_pending=False;self.path_index=-1;self.path_pub=self.create_publisher(__import__('nav_msgs.msg',fromlist=['Path']).Path,'/patrol/path',10)
+        self.path=None;self.path_pending=False;self.path_index=-1;self.path_pub=self.create_publisher(NavPath,'/patrol/path',10)
+        self.raw_path_pub=self.create_publisher(NavPath,'/patrol/raw_path',10)
+        self.costmap=None;self.costmap_stamp_ns=None
+        self.create_subscription(OccupancyGrid,'/global_costmap/costmap',self.on_costmap,
+                                 QoSProfile(depth=1,durability=DurabilityPolicy.TRANSIENT_LOCAL))
+        self.path_refined=False;self.path_segment=1;self.path_align=False;self.path_settle_until=0.
         self.command_pub = self.create_publisher(TwistStamped, '/cmd_vel_nav', 10)
         self.status_pub = self.create_publisher(String, '/patrol/status', 10)
         self.signal_decisions = self.create_publisher(String, '/patrol/signal_decision', 10)
@@ -206,7 +214,34 @@ class Patrol(Node):
                                    for p in path.poses):
                             self.fail_path_request('nonfinite path');return
                         self.path_pending=False;self.path_request_deadline=None;self.path_goal_handle=None
+                        self.path_refined=False
+                        if hasattr(self,'raw_path_pub'):self.raw_path_pub.publish(path)
+                        now_ns=self.get_clock().now().nanoseconds
+                        grid=getattr(self,'costmap',None);grid_stamp=getattr(self,'costmap_stamp_ns',None)
+                        points=[(p.pose.position.x,p.pose.position.y) for p in path.poses]
+                        refined=None
+                        if ROUTE[self.index][0]=='bottom_east' and grid is not None and grid_stamp is not None and 0<=now_ns-grid_stamp<=2_000_000_000:
+                            refined=simplify_path(points,self.pose[:2],grid,self.static_posts)
+                            if refined is not None:
+                                clean=NavPath();clean.header=path.header
+                                for x,y in refined:
+                                    p=PoseStamped();p.header=path.header;p.pose.position.x=float(x);p.pose.position.y=float(y);p.pose.orientation.w=1.
+                                    clean.poses.append(p)
+                                self.get_logger().info(f'PATH_REFINED {ROUTE[self.index][0]}: {len(points)} -> {len(refined)} points; swept body and live grid checked')
+                                path=clean;self.path_refined=True;self.path_segment=1
+                        if ROUTE[self.index][0]=='bottom_east':
+                            out=Path('log/paths')/self.run_id;out.mkdir(parents=True,exist_ok=True)
+                            evidence={'run_id':self.run_id,'lap_id':self.lap_id,'stamp_ns':now_ns,
+                                'pose':self.pose,'pose_source_ns':self.pose_source_ns,
+                                'grid_source_ns':grid_stamp,'grid_age_s':None if grid_stamp is None else (now_ns-grid_stamp)/1e9,
+                                'raw_points':points,'refined_points':refined,
+                                'grid':None if grid is None else {'width':grid.width,'height':grid.height,
+                                    'resolution':grid.resolution,'origin':grid.origin,'data':list(grid.data)}}
+                            (out/f'lap-{self.lap_id:03d}-bottom-{self.path_attempts}.json').write_text(json.dumps(evidence)+'\n')
+                        if ROUTE[self.index][0]=='bottom_east' and not self.path_refined:
+                            self.fail_path_request('lower junction needs a fresh grid and a whole-body-safe simplified path');return
                         self.path_attempts=0
+                        self.path_align=self.path_refined;self.path_settle_until=now_ns/1e9+.35
                         self.path=path;self.path_pub.publish(path)
                     except Exception as exc:self.fail_path_request('result exception: '+str(exc))
                 handle.get_result_async().add_done_callback(result)
@@ -214,6 +249,21 @@ class Patrol(Node):
                 if current():self.fail_path_request('goal exception: '+str(exc))
         try:self.planner.send_goal_async(goal).add_done_callback(accepted)
         except Exception as exc:self.fail_path_request('send exception: '+str(exc))
+
+    def on_costmap(self,msg):
+        source=stamp_ns(msg.header.stamp)
+        q=msg.info.origin.orientation
+        if (source is None or msg.header.frame_id!='field' or msg.info.resolution<=0 or
+                not math.isfinite(msg.info.resolution) or msg.info.width*msg.info.height!=len(msg.data) or
+                not all(math.isfinite(v) for v in (msg.info.origin.position.x,msg.info.origin.position.y)) or
+                not all(math.isfinite(v) for v in (q.x,q.y,q.z,q.w)) or
+                abs(q.x)>1e-6 or abs(q.y)>1e-6 or abs(q.z)>1e-6 or abs(q.w-1.)>1e-6):return
+        age=self.get_clock().now().nanoseconds-source
+        if not 0<=age<=2_000_000_000:return
+        if self.costmap_stamp_ns is not None and source<=self.costmap_stamp_ns:return
+        self.costmap=GridClearance(msg.info.width,msg.info.height,msg.info.resolution,
+                                  (msg.info.origin.position.x,msg.info.origin.position.y),msg.data)
+        self.costmap_stamp_ns=source
 
     def on_camera(self,msg):
         if not valid_rgb_image(msg):return
@@ -491,6 +541,21 @@ class Patrol(Node):
         if self.path is None or not self.path.poses:return None
         x,y,yaw=self.pose
         points=[(p.pose.position.x,p.pose.position.y) for p in self.path.poses]
+        if self.path_refined:
+            target=self.path_segment
+            if target<len(points)-1 and math.dist((x,y),points[target])<.02:
+                target+=1;self.path_segment=target;self.path_align=True
+                self.path_settle_until=self.get_clock().now().nanoseconds/1e9+.35
+            self.path_points=points;self.path_nearest=target-1
+            a,b=points[target-1],points[target]
+            # Follow a stable segment, not NavFn's centimetre-scale zigzags.
+            dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy)
+            along=max(0.,min(length,((x-a[0])*dx+(y-a[1])*dy)/length))
+            look=min(length,along+.22)
+            gx,gy=a[0]+look*dx/length,a[1]+look*dy/length
+            self.path_segment_distance=math.dist((x,y),b)
+            if self.path_align:gx,gy=b
+            return wrap(math.atan2(gy-y,gx-x)-yaw)
         nearest=min(range(len(points)),key=lambda i:math.hypot(points[i][0]-x,points[i][1]-y))
         self.path_points=points;self.path_nearest=nearest
         lookahead=nearest
@@ -565,7 +630,7 @@ class Patrol(Node):
         # offset: the camera must keep facing the gantry while stopped.
         tolerance = .05 if name in ('top_approach', 'top_stop',
                                      'lower_approach', 'lower_stop') else .04
-        if name=='lower_south':tolerance=.025
+        if name=='lower_south':tolerance=.008
         observing=name in OBSERVATIONS and self.observation_align
         if dist < tolerance or observing:
             self.motion_probe = None
@@ -637,10 +702,18 @@ class Patrol(Node):
             self.publish_command();self.log_status('WAIT_NAV2_PATH');return
         error = self.path_heading_error()
         angular = self.heading_pid.calculate(error)
+        if getattr(self,'path_align',False):
+            self.motion_probe=None
+            if now.nanoseconds/1e9<self.path_settle_until:
+                self.publish_command();self.log_status('SETTLE_TURN '+name);return
+            if abs(error)>.035:
+                self.publish_command(0.,angular);self.log_status(self.command_guard or 'ALIGN_ROUTE '+name);return
+            self.path_align=False
         if abs(error) > .35:
             linear = 0.0
         else:
-            linear = max(.06, self.speed_pid.calculate(dist))
+            remaining=min(dist,self.path_segment_distance) if getattr(self,'path_refined',False) else dist
+            linear = max(.06, self.speed_pid.calculate(remaining))
             # Extra speed only on straight, well-localized travel, away from stop approaches.
             if abs(error)>.12 or 'approach' in name or stop or self.localization_quality.get('state')!='tracking':
                 linear=min(linear,.14 if self.localization_quality.get('state')=='degraded' else .18)

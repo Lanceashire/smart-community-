@@ -21,6 +21,7 @@ global_costmap:
       robot_base_frame: base_link
       update_frequency: 5.0
       publish_frequency: 1.0
+      always_send_full_costmap: true
       resolution: 0.02
       track_unknown_space: false
       footprint: '[[0.11,0.1125],[0.11,-0.1125],[-0.11,-0.1125],[-0.11,0.1125]]'
