@@ -52,15 +52,19 @@ def main():
     checks['rotated_grid_rejected']=node.costmap is old
     m.info.origin.orientation.z=0.;m.data=[0];Patrol.on_costmap(node,m)
     checks['truncated_grid_rejected']=node.costmap is old
-    # Actual tracking method must follow the segment rather than skipping a bend.
+    # The continuous tracker follows the certified curve without reverting to
+    # the old stop-and-pivot staging algorithm or moving its progress backwards.
+    from community_demo.trajectory import plan_trajectory
+    curve,meta=plan_trajectory([(-1.26,1.7),(-1.7,1.04)],(-1.26,1.7,math.pi),-math.pi/2,grid,[])
     path=NavPath()
-    for x,y in ((-.1,-1.8),(.5,-1.8),(1.1,-1.7)):
+    for x,y,yaw in curve:
         q=PoseStamped();q.pose.position.x=x;q.pose.position.y=y;path.poses.append(q)
-    n=SimpleNamespace(path=path,path_refined=True,path_segment=1,path_align=False,
-                      pose=(.48,-1.8,0.),get_clock=node.get_clock)
-    checks['bend_not_cut_before_staging_point']=abs(Patrol.path_heading_error(n))<1e-9 and n.path_segment==1
-    n.pose=(.49,-1.8,0.);error=Patrol.path_heading_error(n)
-    checks['reached_bend_stops_and_aligns']=n.path_segment==2 and n.path_align and error>0.1 and n.path_settle_until>20.
+    n=SimpleNamespace(path=path,curve_progress=0,path_goal_yaw=-math.pi/2,
+                      pose=curve[40],get_clock=node.get_clock)
+    error=Patrol.path_heading_error(n)
+    checks['continuous_tracker_has_positive_remaining_arc']=math.isfinite(error) and n.path_remaining_arc>0 and n.curve_progress>=39
+    previous=n.curve_progress;n.pose=curve[25];Patrol.path_heading_error(n)
+    checks['curve_progress_never_rewinds']=n.curve_progress>=previous
     # Independent geometry library is test-only, never a runtime dependency.
     from shapely.geometry import Polygon,box
     from shapely.ops import unary_union

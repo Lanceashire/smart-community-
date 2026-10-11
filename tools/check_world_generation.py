@@ -32,6 +32,12 @@ def main():
         checks['regenerated_world_matches_accepted_runtime_bytes'] = first == source.read_bytes()
         checks['regenerated_layout_matches_accepted_layout'] = generated_layout == json.loads(layout.read_text())
         world = E.fromstring(first).find('world')
+        task=json.loads((ROOT/'src/community_demo/config/patrol_task.json').read_text())
+        spawn=list(map(float,world.findtext("model[@name='patrol_bot']/pose").split()))
+        checks['spawn_and_localization_task_agree']=spawn[:2]==task['start'][:2] and abs(spawn[5]-task['start'][2])<1e-9
+        checks['start_finish_inside_supplied_upper_right_square']=(task['start'][:2]==task['finish'][:2]==[1.7,1.7] and task['start_bay']==[1.4,1.4,2.,2.])
+        checks['final_waypoint_returns_inside_square']=task['waypoints'][-1]['position']==task['start'][:2]
+        checks['arrival_follows_right_turn_into_square']=task['finish'][2]==0. and task['waypoints'][-1]['heading']==0.
         plugins = [p for p in world.findall('plugin')
                    if p.get('name') == 'gz::sim::systems::Imu']
         checks['exactly_one_world_imu_system'] = (

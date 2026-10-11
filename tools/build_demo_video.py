@@ -35,7 +35,9 @@ def main():
     parser.add_argument('--output', required=True)
     parser.add_argument('--date', default='2026-10-10')
     parser.add_argument('--team', default='待填写')
-    parser.add_argument('--focus', choices=['world-generation', 'materials', 'route', 'inspection-safety', 'all-turns'], default='world-generation')
+    parser.add_argument('--overview-rotation', type=int, choices=[0,180], default=0,
+                        help='Display-only rotation of the actual overhead panel to match the route sketch')
+    parser.add_argument('--focus', choices=['world-generation', 'materials', 'route', 'inspection-safety', 'all-turns', 'path-speed'], default='world-generation')
     args = parser.parse_args()
     run, output = Path(args.run).resolve(), Path(args.output).resolve()
     pipeline = read(run / 'pipeline.json')
@@ -128,7 +130,15 @@ def main():
         '人员与车牌结果来自机器人相机；俯视摄影仅用于观察。',
         '演示片段保持记录时的墙钟速度，章节之间有说明页。',
     ], 25 * scale, '01-introduction')
-    if args.focus == 'all-turns':
+    if args.focus == 'path-speed':
+        page('路径与速度修正：直线回正，按实际弯道限速', [
+            '起终点保持相同坐标；所有路段使用共同的连续曲率求解器。',
+            '场景坐标、朝向、停车和观察点统一保存在任务配置中。',
+            '直线巡航 0.26 m/s；紧弯依照角速度、曲率和刹车距离限速。',
+            '速度考虑曲率变化、制动延迟及线角速度同步变化。',
+            '独立记录规划命令、平滑命令与实际轨迹，检查速度和加速度。',
+        ], 25 * scale, '02-scene')
+    elif args.focus == 'all-turns':
         page('全程转弯：六个位置逐一优化', [
             '前三个路口提前进入相切圆弧，减少停车后的原地调向。',
             '第二个信号灯后向安全侧移，规划灯柱净空加强至 6.5 cm。',
@@ -170,17 +180,41 @@ def main():
         destination = output / name
         shutil.copy2(source, destination)
         normalized = build / f'{i:02d}-recording.mp4'
-        subprocess.run(ffmpeg + ['-i', str(source), '-vf',
-            'scale=1920:1080:flags=lanczos,fps=10,setsar=1'] + encoding + [str(normalized)], check=True)
+        if args.overview_rotation and name != '自主建图过程-最新.mp4':
+            # Keep camera pixels, terminal text and every timestamp unchanged.
+            # The overhead camera points south; rotate only its image panel
+            # and disclose the display transform beside the panel.
+            filters=('[0:v]split=2[base][overhead];'
+                '[overhead]crop=1200:1200:20:110,hflip,vflip[oriented];'
+                '[base][oriented]overlay=20:110,'
+                'drawbox=x=20:y=76:w=1220:h=34:color=0x0e1624:t=fill,'
+                f"drawtext=fontfile='{font_path}':text='实际俯视相机：画面旋转180度，与赛题图方位一致':x=25:y=82:fontsize=24:fontcolor=0x8ce2cb,"
+                'scale=1920:1080:flags=lanczos,fps=10,setsar=1')
+            command=ffmpeg+['-i',str(source),'-filter_complex',filters]
+        else:
+            command=ffmpeg+['-i',str(source),'-vf','scale=1920:1080:flags=lanczos,fps=10,setsar=1']
+        subprocess.run(command + encoding + [str(normalized)], check=True)
+        if args.overview_rotation and name != '自主建图过程-最新.mp4':
+            shutil.copy2(normalized,destination)
         register(normalized, name[:-4] + '（完整实录）', source)
     generator = (ROOT / 'tools/generate_world.py').read_text().splitlines()
     imu_sensor = next(line.strip() for line in generator if 'sensor name="body_imu"' in line)
     imu_plugin = next(line.strip() for line in generator if 'filename="gz-sim-imu-system"' in line)
     gain = next(line.strip() for line in generator if '<p_gain>' in line)
-    if args.focus == 'all-turns':
+    if args.focus == 'path-speed':
+        source=(ROOT/'src/community_demo/community_demo/trajectory.py').read_text()
+        start=source.index('def integrate_primitives(')
+        end=source.index('def seed(',start)
+        page('当前源码 1：所有路段使用同一组连续曲率原语', [
+            'community_demo/trajectory.py（真实源码片段）','',
+            *source[start:end].splitlines(),'',
+            '共同求解当前姿态、目标坐标与朝向，不按路段名称切换模板。',
+            '位置、切向和曲率连续；随后核验整车、未知网格及灯柱。',
+        ],40*scale,'06-code-generation',code=True)
+    elif args.focus == 'all-turns':
         source = (ROOT / 'src/community_demo/community_demo/route_path.py').read_text()
         start = source.index('def terminal_sweep_clear(')
-        end = source.index('\n\ndef continuous_lower_path', start)
+        end = source.index('\n\ndef curve_target', start)
         page('当前源码 1：末端转向目标也要检查整车扫掠', [
             'community_demo/route_path.py（真实源码片段）', '',
             *source[start:end].splitlines(), '',
@@ -228,7 +262,16 @@ def main():
     start = localization.index("        if getattr(self,'require_imu',False) and (not self.imu_samples")
     end = localization.index('\n', localization.index('navigation pose withheld', start))
     excerpt = localization[start:end].splitlines()
-    if args.focus == 'all-turns':
+    if args.focus == 'path-speed':
+        source=(ROOT/'src/community_demo/community_demo/motion_profile.py').read_text()
+        start=source.index('def coupled_command(')
+        page('当前源码 2：线速度和角速度共同平滑', [
+            'community_demo/motion_profile.py（真实源码片段）','',
+            *source[start:].strip().splitlines(),'',
+            '所有路段共用弧长速度包络、曲率变化限速和延迟制动。',
+            '必需的红灯、观察及定位保护停车仍独立核验。',
+        ],40*scale,'07-code-safety',code=True)
+    elif args.focus == 'all-turns':
         source = (ROOT / 'src/community_demo/community_demo/route_path.py').read_text()
         start = source.index('    j=min(len(points)-2,progress+8)')
         end = source.index('\n    remaining=look+along', start)
@@ -308,6 +351,8 @@ def main():
         'current_runtime_matches_frozen_run': True,
         'post_run_presentation_tool_changes': presentation_changes,
         'resolution': '1920x1080', 'fps': 10, 'duration_s': duration,
+        'display_overview_rotation_degrees': args.overview_rotation,
+        'display_transform_scope': 'Overhead image panel only; robot camera, time scale, raw recordings and driving unchanged.',
         'audio': 'Chinese captions, no narration', 'chapters': chapters,
         'files': {p.name: {'bytes': p.stat().st_size, 'sha256': sha(p)}
                   for p in [composite, *[output / n for n in raw_files]]},

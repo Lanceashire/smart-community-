@@ -14,6 +14,7 @@ from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
 from nav_msgs.msg import Odometry
+from community_demo.task_geometry import START
 
 
 def main():
@@ -59,7 +60,7 @@ def main():
                 if state['signal']==colour:save('signal_'+colour);seen.add(colour)
         if len(seen)!=3:raise RuntimeError('Did not observe all three phases in camera inspection')
     finally:
-        move(1.1,1.7,math.pi);node.destroy_node();rclpy.shutdown()
+        move(*START);node.destroy_node();rclpy.shutdown()
     report={'mode':'Scene-only inspection; pose resets are NOT autonomous navigation evidence','views':evidence}
     (output/'evidence.json').write_text(json.dumps(report,indent=2)+'\n')
 

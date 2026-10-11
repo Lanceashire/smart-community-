@@ -11,6 +11,7 @@ import math
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'src/community_demo/worlds/community.sdf'
 TEXTURES = {}
+TASK=json.loads((ROOT/'src/community_demo/config/patrol_task.json').read_text())
 
 
 def colour(r, g, b, a=1):
@@ -81,7 +82,8 @@ def car(i,y):
 
 
 def robot():
-    return '''<model name="patrol_bot"><pose>1.1 1.7 .002 0 0 3.14159265</pose>
+    spawn=TASK['start']
+    return ('<model name="patrol_bot"><pose>'+f'{spawn[0]} {spawn[1]} .002 0 0 {spawn[2]}'+'''</pose>
       <link name="chassis"><pose>0 0 .13 0 0 0</pose>
         <sensor name="body_imu" type="imu"><topic>/imu/data</topic><always_on>true</always_on><update_rate>50</update_rate><imu/></sensor>
         <inertial><mass>1.5</mass><inertia><ixx>.012</ixx><iyy>.012</iyy><izz>.020</izz></inertia></inertial>
@@ -165,7 +167,7 @@ def robot():
         <tf_topic>/model/patrol_bot/ground_truth_tf</tf_topic>
       </plugin>
       <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher"/>
-    </model>'''
+    </model>''')
 
 
 def main():
@@ -205,14 +207,14 @@ def main():
 </world></sdf>'''
     OUT.parent.mkdir(parents=True,exist_ok=True);OUT.write_text(sdf+'\n')
     layout={'field_m':[4.2,4.2],'road_width_m':.6,'map_texture':'original supplied map; no invented perimeter wall',
-            'origin':'map centre; +X right, +Y top, +Z up','spawn':[1.1,1.7,math.pi],
+            'origin':'map centre; +X right, +Y top, +Z up','spawn':TASK['start'],'finish':TASK['finish'],'start_bay':TASK['start_bay'],
             'people':people,'lamps':lamps,'cars':[{'name':f'car_{i}','x':1.75,'y':y,'yaw':math.pi,'size_m':[.005,.345,.25],'plate_m':[.095,.03]} for i,y in enumerate([-1.7,-1.1,-.5],1)],
             'gantry_m':{'width':.64,'height':.48,'clearance':.34,'panel_height':.14,'leg_width':.025},
             'stop_lines':{'top_x':.30,'bottom_y':-.51},
             'assumptions':['Coordinates inferred from the provided raster map and snapped to nominal 0.1 m; not a surveyed CAD drawing.',
                            'Five A and five B people follow schematic; identities and their exact positions are configurable.',
                            'Lower gantry y=-1.62 m leaves room for the differential robot turning south of the posts.',
-                           'Start is on the driving lane beside the upper-right start/finish box, not inside the parking column.']}
+                           'Start and finish share the centre of the upper-right start/finish square; departure faces west and arrival faces east. The top corridor includes the bay entrance shown in the supplied route sketch.']}
     OUT.with_name('layout.json').write_text(json.dumps(layout,indent=2,ensure_ascii=False)+'\n')
     print(OUT)
 

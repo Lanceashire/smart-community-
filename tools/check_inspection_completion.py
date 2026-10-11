@@ -6,6 +6,7 @@ from types import SimpleNamespace as S
 import numpy as np
 from rclpy.time import Time
 from community_demo.patrol import Patrol,ROUTE,OBSERVATIONS
+from community_demo.task_geometry import FINISH
 from community_demo.inspection_policy import inspection_complete,recognition_complete
 
 class Pub:
@@ -44,7 +45,7 @@ def main():
     checks.update(timeout_does_not_advance=not advanced and p.observation_index==0,
                   timeout_latches_fault=bool(p.fault) and p.fault.startswith('FAULT inspection view'),
                   timeout_retains_failed_evidence=len(p.observation_outcomes)==1 and p.observation_outcomes[0]['confirmed'] is False)
-    p.completed=False;p.tilt=0.;p.pose=(1.1,1.7,0.);p.pose_update=now;p.pose_source_ns=now.nanoseconds
+    p.completed=False;p.tilt=0.;p.pose=FINISH;p.pose_update=now;p.pose_source_ns=now.nanoseconds
     p.require_vision=True;p.perception_update=now;p.perception_stamp=16.;p.scan_update=now;p.scan_source_ns=now.nanoseconds
     p.quality_update=now;p.localization_quality={'state':'tracking'};p.index=len(ROUTE)-1;p.path_index=-1;p.distance_travelled=12.;p.motion_probe=None
     p.recognition_counts=totals;p.recognition_plates=plates;p.expected_people=10;p.expected_plates=3
@@ -58,8 +59,8 @@ def main():
     checks['complete_evidence_still_finishes_route']=p.completed and laps==['completed']
     # Exercise the same terminal branch that prevented the 8mm trial from
     # finishing; the steering extension must never authorize endless travel.
-    p.completed=False;p.fault=None;p.index=len(ROUTE)-1;p.path_index=p.index;p.path_curved=True;p.path_goal_yaw=math.pi
-    p.pose=(1.06,1.7,math.pi);p.path=object();before=len(laps)
+    p.completed=False;p.fault=None;p.index=len(ROUTE)-1;p.path_index=p.index;p.path_curved=True;p.path_goal_yaw=FINISH[2]
+    p.pose=(FINISH[0]+.04,FINISH[1],FINISH[2]);p.path=object();before=len(laps)
     Patrol.tick(p)
     checks['terminal_overshoot_stops_and_replans']=commands[-1]==() and p.path_index==-1 and p.path is None and p.index==len(ROUTE)-1 and len(laps)==before
     for _ in range(2):
@@ -69,12 +70,12 @@ def main():
     Patrol.tick(p)
     checks['new_lap_does_not_inherit_arrival_retry_count']=p.arrival_replans==1 and p.fault is None and p.path_index==-1
     p.fault=None;p.index=next(i for i,v in enumerate(ROUTE)if v[0]=='bottom_east');p.path_index=p.index
-    p.pose=(-.1,-1.67,-math.pi/2);p.path_goal_yaw=math.pi/2;p.path_curved=True
+    p.pose=(-.1,-1.67,-math.pi/2);p.path_goal_yaw=FINISH[2]/2;p.path_curved=True
     p.front_blocked=lambda:True;p.blocked_since=None;p.path_heading_error=lambda:None;p.scan=S(ranges=[.1])
     count=p.arrival_replans;Patrol.tick(p)
     checks['curve_entry_above_terminal_plane_is_not_overshoot']=p.arrival_replans==count and p.path_index==p.index and p.fault is None and statuses[-1].startswith('BLOCKED')
-    p.index=len(ROUTE)-1;p.path_goal_yaw=math.pi
-    p.fault=None;p.path_index=p.index;p.path_curved=False;p.pose=(1.1,1.7,math.pi/2)
+    p.index=len(ROUTE)-1;p.path_goal_yaw=FINISH[2]
+    p.fault=None;p.path_index=p.index;p.path_curved=False;p.pose=(*FINISH[:2],-math.pi/2)
     p.costmap_stamp_ns=now.nanoseconds-3_000_000_000
     Patrol.tick(p)
     checks['stale_grid_blocks_terminal_pivot']=commands[-1]==() and p.path_index==-1 and statuses[-1].startswith('ARRIVAL_HOLD')
@@ -83,6 +84,16 @@ def main():
     p.heading_pid=S(calculate=lambda e:e);p.command_guard=None
     Patrol.tick(p)
     checks['checked_terminal_heading_aligns_without_advancing']=commands[-1][0]==0. and commands[-1][1]>0 and p.index==len(ROUTE)-1 and len(laps)==before
+    # A faster patrol tick must not exhaust retries against a single grid
+    # published before the obstacle cleared. New evidence enables a retry;
+    # a frozen publisher still faults within a finite interval.
+    retry=S(path_retry_deadline=15.,path_retry_grid_ns=10_000_000_000,
+            costmap_stamp_ns=10_000_000_000,fault=None,path_attempts=1)
+    checks['same_grid_cannot_spend_more_planning_attempts']=not Patrol.path_retry_ready(retry,Time(seconds=11.)) and retry.path_attempts==1
+    retry.costmap_stamp_ns=10_500_000_000
+    checks['new_grid_enables_bounded_planning_retry']=Patrol.path_retry_ready(retry,Time(seconds=11.)) and retry.path_retry_deadline is None
+    retry.path_retry_deadline=15.;retry.path_retry_grid_ns=retry.costmap_stamp_ns
+    checks['missing_grid_update_faults_at_retry_deadline']=not Patrol.path_retry_ready(retry,Time(seconds=15.)) and retry.fault.startswith('FAULT no updated live grid')
     result={'passed':all(checks.values()),'checks':checks,'scope':'Synthetic inputs to production inspection and final-route callbacks; actual successful perception remains a live-lap check.'}
     out=Path(args.output);out.parent.mkdir(parents=True,exist_ok=True);out.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result));return 0 if result['passed'] else 1
 
