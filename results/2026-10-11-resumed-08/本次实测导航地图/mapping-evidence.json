@@ -1,0 +1,1182 @@
+{
+  "passed": true,
+  "checks": {
+    "completed_autonomous_route": true,
+    "live_map_updates": true,
+    "distinct_live_grids": true,
+    "unique_laser_scans": true,
+    "map_frame_correct": true,
+    "known_road_coverage": true,
+    "measured_physical_obstacles": true,
+    "known_map_growth": true,
+    "posegraph_saved": true,
+    "continuous_map_video": true,
+    "entire_route_travel": true
+  },
+  "error": null,
+  "run": {
+    "run_id": "391437e96be2",
+    "lap_id": 1,
+    "phase": "completed"
+  },
+  "map_statistics": [
+    {
+      "stamp_s": 0.1,
+      "size": [
+        149,
+        183
+      ],
+      "known_cells": 2265,
+      "occupied_cells": 2,
+      "sha256": "ca6aaf37271cc9544fbb1fb994ba5ced072863b3bfdf6ea9e687d2583fa7cb97"
+    },
+    {
+      "stamp_s": 1.1,
+      "size": [
+        149,
+        183
+      ],
+      "known_cells": 2265,
+      "occupied_cells": 2,
+      "sha256": "ca6aaf37271cc9544fbb1fb994ba5ced072863b3bfdf6ea9e687d2583fa7cb97"
+    },
+    {
+      "stamp_s": 2.1,
+      "size": [
+        149,
+        183
+      ],
+      "known_cells": 2265,
+      "occupied_cells": 2,
+      "sha256": "ca6aaf37271cc9544fbb1fb994ba5ced072863b3bfdf6ea9e687d2583fa7cb97"
+    },
+    {
+      "stamp_s": 3.1,
+      "size": [
+        158,
+        197
+      ],
+      "known_cells": 23972,
+      "occupied_cells": 65,
+      "sha256": "831799ecd1cdf15cbf7886f707753c16540d1596bdee2fa2027cd0a69653cdfd"
+    },
+    {
+      "stamp_s": 4.1,
+      "size": [
+        162,
+        200
+      ],
+      "known_cells": 26346,
+      "occupied_cells": 108,
+      "sha256": "25f0879b3d934ea7bf4929755a2b864d5dad1808b868126ae009ed5f28f01450"
+    },
+    {
+      "stamp_s": 5.1,
+      "size": [
+        167,
+        204
+      ],
+      "known_cells": 28912,
+      "occupied_cells": 145,
+      "sha256": "34bd07e17ea0f82e188968fecd366f7ceb13ed96e90a5a5d21d9d36872470409"
+    },
+    {
+      "stamp_s": 6.1,
+      "size": [
+        170,
+        206
+      ],
+      "known_cells": 32926,
+      "occupied_cells": 148,
+      "sha256": "50b0d0011a807e520455eb6f653d4ed1563d70d5b6f82a0c7d44143c8e974b79"
+    },
+    {
+      "stamp_s": 7.1,
+      "size": [
+        173,
+        211
+      ],
+      "known_cells": 32606,
+      "occupied_cells": 107,
+      "sha256": "2e07b80f992862f80e8f782ab09edfa92e8c54c6bd221e7662968ddfc6b751b0"
+    },
+    {
+      "stamp_s": 8.1,
+      "size": [
+        175,
+        215
+      ],
+      "known_cells": 36047,
+      "occupied_cells": 122,
+      "sha256": "fc557b88717d6979db78d8e175ad67fcb775e6b600a87db16dd5b76e4e08bf73"
+    },
+    {
+      "stamp_s": 9.1,
+      "size": [
+        175,
+        215
+      ],
+      "known_cells": 36059,
+      "occupied_cells": 119,
+      "sha256": "56241cd4d737339b88227776160a44b8b6d508f5c5d179528fb411d14e8f50ec"
+    },
+    {
+      "stamp_s": 10.1,
+      "size": [
+        175,
+        215
+      ],
+      "known_cells": 36059,
+      "occupied_cells": 119,
+      "sha256": "56241cd4d737339b88227776160a44b8b6d508f5c5d179528fb411d14e8f50ec"
+    },
+    {
+      "stamp_s": 11.1,
+      "size": [
+        175,
+        215
+      ],
+      "known_cells": 36059,
+      "occupied_cells": 119,
+      "sha256": "56241cd4d737339b88227776160a44b8b6d508f5c5d179528fb411d14e8f50ec"
+    },
+    {
+      "stamp_s": 12.1,
+      "size": [
+        175,
+        216
+      ],
+      "known_cells": 34020,
+      "occupied_cells": 100,
+      "sha256": "435698e29e5d77f651ab17f884c75695b04c29b8ed4031bea31cd5cba654d52e"
+    },
+    {
+      "stamp_s": 13.1,
+      "size": [
+        176,
+        222
+      ],
+      "known_cells": 35011,
+      "occupied_cells": 98,
+      "sha256": "29009148c1768766f887ef5db2d1910f904f19b6d30597fa59ceaa0030c07a29"
+    },
+    {
+      "stamp_s": 14.1,
+      "size": [
+        176,
+        229
+      ],
+      "known_cells": 38862,
+      "occupied_cells": 96,
+      "sha256": "2d97e86b8e1671974113c97ce9f407c3de424a9f42c5a4553c039ffb49b96a8c"
+    },
+    {
+      "stamp_s": 15.1,
+      "size": [
+        176,
+        233
+      ],
+      "known_cells": 39653,
+      "occupied_cells": 86,
+      "sha256": "6bd7733c47b51c750a84db427150ec1870cc1fd6e3b0934e1ad869a45438f1aa"
+    },
+    {
+      "stamp_s": 16.0,
+      "size": [
+        176,
+        240
+      ],
+      "known_cells": 40725,
+      "occupied_cells": 71,
+      "sha256": "4b5ee82c2b692b9fcf68075f05bb0e57ead81b95bd9d0079d94d8aabf9e841f8"
+    },
+    {
+      "stamp_s": 17.0,
+      "size": [
+        176,
+        242
+      ],
+      "known_cells": 41049,
+      "occupied_cells": 68,
+      "sha256": "ac7f3c9d4cd6d702208cff9d54e78b09354f71832e33f1ad464bc1ea020cc6c3"
+    },
+    {
+      "stamp_s": 18.0,
+      "size": [
+        176,
+        242
+      ],
+      "known_cells": 41049,
+      "occupied_cells": 68,
+      "sha256": "ac7f3c9d4cd6d702208cff9d54e78b09354f71832e33f1ad464bc1ea020cc6c3"
+    },
+    {
+      "stamp_s": 19.1,
+      "size": [
+        176,
+        242
+      ],
+      "known_cells": 41049,
+      "occupied_cells": 68,
+      "sha256": "ac7f3c9d4cd6d702208cff9d54e78b09354f71832e33f1ad464bc1ea020cc6c3"
+    },
+    {
+      "stamp_s": 20.1,
+      "size": [
+        178,
+        244
+      ],
+      "known_cells": 41729,
+      "occupied_cells": 69,
+      "sha256": "650290131db6ee1e74d2756b467423d0a28476bc95d49c320adbd8039c38b6a5"
+    },
+    {
+      "stamp_s": 21.0,
+      "size": [
+        185,
+        250
+      ],
+      "known_cells": 44392,
+      "occupied_cells": 54,
+      "sha256": "46e953056a2ca9da0aade73343cdb9cec03a88c2cfd31802d29f1decb6d057d6"
+    },
+    {
+      "stamp_s": 22.1,
+      "size": [
+        189,
+        252
+      ],
+      "known_cells": 45682,
+      "occupied_cells": 54,
+      "sha256": "590640388b2eb998765321b629ba543c45e245c56f499ea1e7658c99d41b9f2e"
+    },
+    {
+      "stamp_s": 23.1,
+      "size": [
+        189,
+        252
+      ],
+      "known_cells": 45682,
+      "occupied_cells": 54,
+      "sha256": "590640388b2eb998765321b629ba543c45e245c56f499ea1e7658c99d41b9f2e"
+    },
+    {
+      "stamp_s": 24.0,
+      "size": [
+        194,
+        255
+      ],
+      "known_cells": 47822,
+      "occupied_cells": 55,
+      "sha256": "668d33d0d4549c08e112fc637830de2150ffe3ae222f8cd269508e0e34841c11"
+    },
+    {
+      "stamp_s": 25.1,
+      "size": [
+        201,
+        257
+      ],
+      "known_cells": 49875,
+      "occupied_cells": 56,
+      "sha256": "95dbdbd65ef78dc3dd938d2e702f68ddb8e6ee293be869652670f3ea5c34a8a5"
+    },
+    {
+      "stamp_s": 26.0,
+      "size": [
+        208,
+        257
+      ],
+      "known_cells": 49701,
+      "occupied_cells": 69,
+      "sha256": "50db711fafc19c3fe89ff1aa6c3be827129602b245526fdcd31de89fca08268a"
+    },
+    {
+      "stamp_s": 27.0,
+      "size": [
+        218,
+        257
+      ],
+      "known_cells": 53262,
+      "occupied_cells": 87,
+      "sha256": "6c95c91acf92fbccd55dde7bc8895c3b21996ae565bb9d176a82ee1d5ab73805"
+    },
+    {
+      "stamp_s": 28.0,
+      "size": [
+        218,
+        257
+      ],
+      "known_cells": 53262,
+      "occupied_cells": 87,
+      "sha256": "6c95c91acf92fbccd55dde7bc8895c3b21996ae565bb9d176a82ee1d5ab73805"
+    },
+    {
+      "stamp_s": 29.0,
+      "size": [
+        218,
+        257
+      ],
+      "known_cells": 53262,
+      "occupied_cells": 87,
+      "sha256": "6c95c91acf92fbccd55dde7bc8895c3b21996ae565bb9d176a82ee1d5ab73805"
+    },
+    {
+      "stamp_s": 30.0,
+      "size": [
+        218,
+        257
+      ],
+      "known_cells": 53262,
+      "occupied_cells": 87,
+      "sha256": "6c95c91acf92fbccd55dde7bc8895c3b21996ae565bb9d176a82ee1d5ab73805"
+    },
+    {
+      "stamp_s": 31.0,
+      "size": [
+        223,
+        257
+      ],
+      "known_cells": 53745,
+      "occupied_cells": 72,
+      "sha256": "bd8fd7fccc5d40b04cc3ca338a63f0d8935de16c2d730d6efd43ce2e5ff9f6d8"
+    },
+    {
+      "stamp_s": 32.0,
+      "size": [
+        227,
+        257
+      ],
+      "known_cells": 56726,
+      "occupied_cells": 61,
+      "sha256": "8bf1b550f81dd0f32bd33bb4014d2ee1dbece9486bd3d98adabf9fbe3417298e"
+    },
+    {
+      "stamp_s": 33.0,
+      "size": [
+        234,
+        257
+      ],
+      "known_cells": 58871,
+      "occupied_cells": 57,
+      "sha256": "99788e65f9fa5881190a638a68b4ff130ac33d6bfafebb344b46626a56b1ca29"
+    },
+    {
+      "stamp_s": 34.0,
+      "size": [
+        237,
+        257
+      ],
+      "known_cells": 59653,
+      "occupied_cells": 49,
+      "sha256": "463c09deac07cedfe6408a9a4077c620762b1fc178e21fb2278739411ed67fc1"
+    },
+    {
+      "stamp_s": 35.0,
+      "size": [
+        237,
+        257
+      ],
+      "known_cells": 59869,
+      "occupied_cells": 45,
+      "sha256": "1b46e303bd03b442b2b4e7e72632ec5a375c1012200df60cfebb6642a763a348"
+    },
+    {
+      "stamp_s": 36.0,
+      "size": [
+        237,
+        257
+      ],
+      "known_cells": 60200,
+      "occupied_cells": 37,
+      "sha256": "f5e0bab7fe5547efd5b5b83daf0fef35e8155eef1420e525424a2498ebc2f7f3"
+    },
+    {
+      "stamp_s": 37.0,
+      "size": [
+        237,
+        261
+      ],
+      "known_cells": 61129,
+      "occupied_cells": 38,
+      "sha256": "9c383627a913d374063e5c554e7ff75d371ac42b894550bd6983c551a4140791"
+    },
+    {
+      "stamp_s": 38.0,
+      "size": [
+        237,
+        261
+      ],
+      "known_cells": 61129,
+      "occupied_cells": 38,
+      "sha256": "9c383627a913d374063e5c554e7ff75d371ac42b894550bd6983c551a4140791"
+    },
+    {
+      "stamp_s": 39.0,
+      "size": [
+        237,
+        261
+      ],
+      "known_cells": 61129,
+      "occupied_cells": 38,
+      "sha256": "9c383627a913d374063e5c554e7ff75d371ac42b894550bd6983c551a4140791"
+    },
+    {
+      "stamp_s": 40.0,
+      "size": [
+        237,
+        261
+      ],
+      "known_cells": 61129,
+      "occupied_cells": 38,
+      "sha256": "9c383627a913d374063e5c554e7ff75d371ac42b894550bd6983c551a4140791"
+    },
+    {
+      "stamp_s": 41.0,
+      "size": [
+        237,
+        261
+      ],
+      "known_cells": 61129,
+      "occupied_cells": 38,
+      "sha256": "9c383627a913d374063e5c554e7ff75d371ac42b894550bd6983c551a4140791"
+    },
+    {
+      "stamp_s": 42.0,
+      "size": [
+        237,
+        261
+      ],
+      "known_cells": 61129,
+      "occupied_cells": 38,
+      "sha256": "9c383627a913d374063e5c554e7ff75d371ac42b894550bd6983c551a4140791"
+    },
+    {
+      "stamp_s": 43.0,
+      "size": [
+        237,
+        261
+      ],
+      "known_cells": 61129,
+      "occupied_cells": 38,
+      "sha256": "9c383627a913d374063e5c554e7ff75d371ac42b894550bd6983c551a4140791"
+    },
+    {
+      "stamp_s": 44.0,
+      "size": [
+        237,
+        261
+      ],
+      "known_cells": 61129,
+      "occupied_cells": 38,
+      "sha256": "9c383627a913d374063e5c554e7ff75d371ac42b894550bd6983c551a4140791"
+    },
+    {
+      "stamp_s": 45.0,
+      "size": [
+        237,
+        268
+      ],
+      "known_cells": 62667,
+      "occupied_cells": 36,
+      "sha256": "ee82196fd9d18a1b15a34d056b766dc57a3b10c8c0d8326f0a518d35afd1a057"
+    },
+    {
+      "stamp_s": 46.0,
+      "size": [
+        237,
+        274
+      ],
+      "known_cells": 64184,
+      "occupied_cells": 26,
+      "sha256": "7ac2ce5f10d02d5b6e819edbd7ded5a5979fc2e5ba022db61bc1936f749a678d"
+    },
+    {
+      "stamp_s": 47.0,
+      "size": [
+        237,
+        274
+      ],
+      "known_cells": 64184,
+      "occupied_cells": 26,
+      "sha256": "7ac2ce5f10d02d5b6e819edbd7ded5a5979fc2e5ba022db61bc1936f749a678d"
+    },
+    {
+      "stamp_s": 48.0,
+      "size": [
+        237,
+        288
+      ],
+      "known_cells": 67207,
+      "occupied_cells": 36,
+      "sha256": "3188ea35d548bff30342c9c8980a70b17e7c2cdf1e31fc4e97373f54d5f0d85c"
+    },
+    {
+      "stamp_s": 49.0,
+      "size": [
+        237,
+        304
+      ],
+      "known_cells": 71256,
+      "occupied_cells": 23,
+      "sha256": "758936f2c1399041146fc1c3546eef1e816873689f4656f7ef59abe73b19ad16"
+    },
+    {
+      "stamp_s": 50.0,
+      "size": [
+        237,
+        318
+      ],
+      "known_cells": 74682,
+      "occupied_cells": 26,
+      "sha256": "d849e79b6f18642a9572636c79740a98816438324f01ad65b98c04cfdd39c365"
+    },
+    {
+      "stamp_s": 51.0,
+      "size": [
+        237,
+        328
+      ],
+      "known_cells": 77091,
+      "occupied_cells": 23,
+      "sha256": "a0ff58750bb3c44533d2248036752a9bcec92221cf0d379a4a4e76329941ffcf"
+    },
+    {
+      "stamp_s": 52.0,
+      "size": [
+        237,
+        328
+      ],
+      "known_cells": 77091,
+      "occupied_cells": 23,
+      "sha256": "a0ff58750bb3c44533d2248036752a9bcec92221cf0d379a4a4e76329941ffcf"
+    },
+    {
+      "stamp_s": 53.0,
+      "size": [
+        237,
+        328
+      ],
+      "known_cells": 77091,
+      "occupied_cells": 23,
+      "sha256": "a0ff58750bb3c44533d2248036752a9bcec92221cf0d379a4a4e76329941ffcf"
+    },
+    {
+      "stamp_s": 54.0,
+      "size": [
+        237,
+        328
+      ],
+      "known_cells": 77091,
+      "occupied_cells": 23,
+      "sha256": "a0ff58750bb3c44533d2248036752a9bcec92221cf0d379a4a4e76329941ffcf"
+    },
+    {
+      "stamp_s": 55.0,
+      "size": [
+        237,
+        335
+      ],
+      "known_cells": 78749,
+      "occupied_cells": 18,
+      "sha256": "262772ae2f8b8c2a68e7f75391ac68aa0f2433f311fafba94602d628a8077c13"
+    },
+    {
+      "stamp_s": 56.0,
+      "size": [
+        237,
+        335
+      ],
+      "known_cells": 78749,
+      "occupied_cells": 18,
+      "sha256": "262772ae2f8b8c2a68e7f75391ac68aa0f2433f311fafba94602d628a8077c13"
+    },
+    {
+      "stamp_s": 57.0,
+      "size": [
+        237,
+        335
+      ],
+      "known_cells": 78749,
+      "occupied_cells": 18,
+      "sha256": "262772ae2f8b8c2a68e7f75391ac68aa0f2433f311fafba94602d628a8077c13"
+    },
+    {
+      "stamp_s": 58.0,
+      "size": [
+        237,
+        335
+      ],
+      "known_cells": 78749,
+      "occupied_cells": 18,
+      "sha256": "262772ae2f8b8c2a68e7f75391ac68aa0f2433f311fafba94602d628a8077c13"
+    },
+    {
+      "stamp_s": 59.0,
+      "size": [
+        237,
+        335
+      ],
+      "known_cells": 78749,
+      "occupied_cells": 18,
+      "sha256": "262772ae2f8b8c2a68e7f75391ac68aa0f2433f311fafba94602d628a8077c13"
+    },
+    {
+      "stamp_s": 60.0,
+      "size": [
+        237,
+        335
+      ],
+      "known_cells": 78749,
+      "occupied_cells": 18,
+      "sha256": "262772ae2f8b8c2a68e7f75391ac68aa0f2433f311fafba94602d628a8077c13"
+    },
+    {
+      "stamp_s": 61.0,
+      "size": [
+        237,
+        335
+      ],
+      "known_cells": 78749,
+      "occupied_cells": 18,
+      "sha256": "262772ae2f8b8c2a68e7f75391ac68aa0f2433f311fafba94602d628a8077c13"
+    },
+    {
+      "stamp_s": 62.0,
+      "size": [
+        237,
+        335
+      ],
+      "known_cells": 78749,
+      "occupied_cells": 18,
+      "sha256": "262772ae2f8b8c2a68e7f75391ac68aa0f2433f311fafba94602d628a8077c13"
+    },
+    {
+      "stamp_s": 63.0,
+      "size": [
+        237,
+        335
+      ],
+      "known_cells": 78749,
+      "occupied_cells": 18,
+      "sha256": "262772ae2f8b8c2a68e7f75391ac68aa0f2433f311fafba94602d628a8077c13"
+    },
+    {
+      "stamp_s": 64.0,
+      "size": [
+        237,
+        335
+      ],
+      "known_cells": 78749,
+      "occupied_cells": 18,
+      "sha256": "262772ae2f8b8c2a68e7f75391ac68aa0f2433f311fafba94602d628a8077c13"
+    },
+    {
+      "stamp_s": 65.0,
+      "size": [
+        237,
+        335
+      ],
+      "known_cells": 78749,
+      "occupied_cells": 18,
+      "sha256": "262772ae2f8b8c2a68e7f75391ac68aa0f2433f311fafba94602d628a8077c13"
+    },
+    {
+      "stamp_s": 66.0,
+      "size": [
+        237,
+        335
+      ],
+      "known_cells": 78749,
+      "occupied_cells": 18,
+      "sha256": "262772ae2f8b8c2a68e7f75391ac68aa0f2433f311fafba94602d628a8077c13"
+    },
+    {
+      "stamp_s": 67.0,
+      "size": [
+        237,
+        335
+      ],
+      "known_cells": 78749,
+      "occupied_cells": 18,
+      "sha256": "262772ae2f8b8c2a68e7f75391ac68aa0f2433f311fafba94602d628a8077c13"
+    },
+    {
+      "stamp_s": 68.0,
+      "size": [
+        237,
+        346
+      ],
+      "known_cells": 81470,
+      "occupied_cells": 8,
+      "sha256": "7a15675d7287b00a16b46242160d454b2c82a639c5edf74e9008a9968f371dfa"
+    },
+    {
+      "stamp_s": 69.0,
+      "size": [
+        242,
+        354
+      ],
+      "known_cells": 84493,
+      "occupied_cells": 43,
+      "sha256": "f65434d86e8da0c6729be5e1f4421c73dec905cc30f6c64ffe51f065e6d01fd3"
+    },
+    {
+      "stamp_s": 70.0,
+      "size": [
+        246,
+        371
+      ],
+      "known_cells": 90234,
+      "occupied_cells": 41,
+      "sha256": "1c94a4fba91e99d8809950401b03cd44495331e9ae690169b67d5130d6114438"
+    },
+    {
+      "stamp_s": 71.0,
+      "size": [
+        250,
+        384
+      ],
+      "known_cells": 95417,
+      "occupied_cells": 33,
+      "sha256": "be3cd7f40e85d5ceace3627b7a5730e470d9645994f032c8605611cfd33e662f"
+    },
+    {
+      "stamp_s": 72.0,
+      "size": [
+        254,
+        397
+      ],
+      "known_cells": 100374,
+      "occupied_cells": 23,
+      "sha256": "3609d1fc3d5d5b8898424fb27c00a5d034059d3a1fef895c5b32ca7094418fbf"
+    },
+    {
+      "stamp_s": 73.0,
+      "size": [
+        256,
+        404
+      ],
+      "known_cells": 103025,
+      "occupied_cells": 22,
+      "sha256": "8bad4f4cfcfc9daaa7e93ead028c2a97b8728c0fb28d6a7d62fd3f897c44d4df"
+    },
+    {
+      "stamp_s": 74.0,
+      "size": [
+        256,
+        404
+      ],
+      "known_cells": 103025,
+      "occupied_cells": 22,
+      "sha256": "8bad4f4cfcfc9daaa7e93ead028c2a97b8728c0fb28d6a7d62fd3f897c44d4df"
+    },
+    {
+      "stamp_s": 75.0,
+      "size": [
+        258,
+        404
+      ],
+      "known_cells": 103668,
+      "occupied_cells": 38,
+      "sha256": "b020d1103bac289d57aaf1e655b95c5b1903cf9c81e4b154cc076ccd39062dda"
+    },
+    {
+      "stamp_s": 76.0,
+      "size": [
+        258,
+        404
+      ],
+      "known_cells": 103671,
+      "occupied_cells": 37,
+      "sha256": "3b0b602ee3446ed719141627777f0297d4f753d68df4cb66e983e7494c86e4fd"
+    },
+    {
+      "stamp_s": 77.0,
+      "size": [
+        258,
+        411
+      ],
+      "known_cells": 105379,
+      "occupied_cells": 37,
+      "sha256": "b796c8382814539b5840b0bfc448561c0e44b348d590197d7327e4eea99c94b0"
+    },
+    {
+      "stamp_s": 78.0,
+      "size": [
+        258,
+        411
+      ],
+      "known_cells": 105396,
+      "occupied_cells": 36,
+      "sha256": "b0516887fc1dd8410766059ccd5ac4b297653843c92f76874f6b192150e0fa8b"
+    },
+    {
+      "stamp_s": 79.0,
+      "size": [
+        269,
+        411
+      ],
+      "known_cells": 110088,
+      "occupied_cells": 20,
+      "sha256": "4dec6097e03726cb18f1d03c96af2271a7a6b7f75b6df3d54a75020b7f06ccb6"
+    },
+    {
+      "stamp_s": 80.0,
+      "size": [
+        301,
+        411
+      ],
+      "known_cells": 123260,
+      "occupied_cells": 21,
+      "sha256": "9892af7a93761be560d683b4facc6a0b330b0827d0650a5b351c8ff4baa4a6eb"
+    },
+    {
+      "stamp_s": 81.0,
+      "size": [
+        312,
+        411
+      ],
+      "known_cells": 127755,
+      "occupied_cells": 15,
+      "sha256": "04d6e9bb56235fe99456a16787407b7f3fcab5f77c4cfbc4c9fb3a21cc31693e"
+    },
+    {
+      "stamp_s": 82.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130420,
+      "occupied_cells": 29,
+      "sha256": "c421313a6c0593d48ae160727479572043541e1d04fc21bc05f97a2a3b4144b0"
+    },
+    {
+      "stamp_s": 83.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130674,
+      "occupied_cells": 27,
+      "sha256": "04b06cfbe15119aa8c3327cd4c7ef6926aabceb8897d60e0d458971f82b5f014"
+    },
+    {
+      "stamp_s": 84.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130674,
+      "occupied_cells": 27,
+      "sha256": "04b06cfbe15119aa8c3327cd4c7ef6926aabceb8897d60e0d458971f82b5f014"
+    },
+    {
+      "stamp_s": 85.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130674,
+      "occupied_cells": 27,
+      "sha256": "04b06cfbe15119aa8c3327cd4c7ef6926aabceb8897d60e0d458971f82b5f014"
+    },
+    {
+      "stamp_s": 86.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130729,
+      "occupied_cells": 19,
+      "sha256": "2051766bbf1f3bd4f6450afac380a3cbfa95ce4618e1e37891131392b634d8f3"
+    },
+    {
+      "stamp_s": 87.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130763,
+      "occupied_cells": 18,
+      "sha256": "c1c2931d6a1c64b362414b3ad2eee64c7e65e06023912009f4f9bbdb017431e4"
+    },
+    {
+      "stamp_s": 88.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130766,
+      "occupied_cells": 16,
+      "sha256": "764e9717c35624036bf4e82e762969c6efb37591c736149098e2fb333dacc6be"
+    },
+    {
+      "stamp_s": 89.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130813,
+      "occupied_cells": 14,
+      "sha256": "5283f36bb7dd226c8639274f6358e6d4a3c52e7d6381bb5cc77e7d47d352ff39"
+    },
+    {
+      "stamp_s": 90.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130813,
+      "occupied_cells": 14,
+      "sha256": "5283f36bb7dd226c8639274f6358e6d4a3c52e7d6381bb5cc77e7d47d352ff39"
+    },
+    {
+      "stamp_s": 91.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130813,
+      "occupied_cells": 14,
+      "sha256": "5283f36bb7dd226c8639274f6358e6d4a3c52e7d6381bb5cc77e7d47d352ff39"
+    },
+    {
+      "stamp_s": 92.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130818,
+      "occupied_cells": 14,
+      "sha256": "b6e33cc8f15645f57bec77a6ee6d8c46ce0159e3f6f22537916739849622bfbb"
+    },
+    {
+      "stamp_s": 93.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130822,
+      "occupied_cells": 14,
+      "sha256": "9b4b760f312afa5514862664ef8cf2aaee1c76f6080b8e9b18012c1a35d0b805"
+    },
+    {
+      "stamp_s": 94.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130849,
+      "occupied_cells": 12,
+      "sha256": "ef8b02c13b082aa7720c8f0a57a312a926fbfb1ff29e8f0ca65167d1d42e0463"
+    },
+    {
+      "stamp_s": 95.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130849,
+      "occupied_cells": 12,
+      "sha256": "ef8b02c13b082aa7720c8f0a57a312a926fbfb1ff29e8f0ca65167d1d42e0463"
+    },
+    {
+      "stamp_s": 96.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130849,
+      "occupied_cells": 12,
+      "sha256": "ef8b02c13b082aa7720c8f0a57a312a926fbfb1ff29e8f0ca65167d1d42e0463"
+    },
+    {
+      "stamp_s": 97.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130849,
+      "occupied_cells": 12,
+      "sha256": "ef8b02c13b082aa7720c8f0a57a312a926fbfb1ff29e8f0ca65167d1d42e0463"
+    },
+    {
+      "stamp_s": 98.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130872,
+      "occupied_cells": 9,
+      "sha256": "a17f0489bc1f746fd0b7cdb1552b5a2c9be0076992b03c259e482e649dae1072"
+    },
+    {
+      "stamp_s": 99.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130887,
+      "occupied_cells": 7,
+      "sha256": "b98791f71df5c345c7ccdbe8f85cf620086dcd29ea432d1c2b7692da750c07a7"
+    },
+    {
+      "stamp_s": 100.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130896,
+      "occupied_cells": 7,
+      "sha256": "cdb21df53967c3004bb2fa8d70cac626fe4ebc5c381a60cdb3b312572817a050"
+    },
+    {
+      "stamp_s": 101.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130908,
+      "occupied_cells": 5,
+      "sha256": "e10251a0dbc0bf3ea02e9e0a1185f8cfd556d08502785ac8f1a5c515701b97eb"
+    },
+    {
+      "stamp_s": 102.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130911,
+      "occupied_cells": 5,
+      "sha256": "48ce482af718ead90b7811d1bbd61f8dcad4e7d216a8cc886cc70c6f52980436"
+    },
+    {
+      "stamp_s": 103.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130920,
+      "occupied_cells": 5,
+      "sha256": "b899789d931befe174f7a1c62ebf03840f50b1256dd1892bde6c1dd9d15cd297"
+    },
+    {
+      "stamp_s": 104.0,
+      "size": [
+        319,
+        411
+      ],
+      "known_cells": 130924,
+      "occupied_cells": 3,
+      "sha256": "a2eeedea97a240ad44f4a627a8a75dbb288cac547fc3735c23817646c2d0c0c5"
+    },
+    {
+      "stamp_s": 105.0,
+      "size": [
+        329,
+        411
+      ],
+      "known_cells": 135058,
+      "occupied_cells": 2,
+      "sha256": "a657994e6b5611f7a6cb4fcf97fcf03ee4e46e328168218538c4e7ccda4007e2"
+    },
+    {
+      "stamp_s": 106.0,
+      "size": [
+        338,
+        411
+      ],
+      "known_cells": 138751,
+      "occupied_cells": 2,
+      "sha256": "38e72b1f5ff71faac7f54514ed646f6ad8150fab349946c91f3bdf0135735d48"
+    },
+    {
+      "stamp_s": 107.0,
+      "size": [
+        349,
+        411
+      ],
+      "known_cells": 143296,
+      "occupied_cells": 1,
+      "sha256": "4f8c3f5b029e57a9fe58b6c89b96c13b1e9a53e80de7c70dc12388ae95a1d3b1"
+    },
+    {
+      "stamp_s": 108.0,
+      "size": [
+        353,
+        411
+      ],
+      "known_cells": 144939,
+      "occupied_cells": 1,
+      "sha256": "04df87639e094a50dc3f462f1a6ab383500ef6e2a6e6d6dfe58631dccf96c4bc"
+    },
+    {
+      "stamp_s": 109.0,
+      "size": [
+        353,
+        411
+      ],
+      "known_cells": 144939,
+      "occupied_cells": 1,
+      "sha256": "04df87639e094a50dc3f462f1a6ab383500ef6e2a6e6d6dfe58631dccf96c4bc"
+    },
+    {
+      "stamp_s": 110.0,
+      "size": [
+        353,
+        411
+      ],
+      "known_cells": 144939,
+      "occupied_cells": 1,
+      "sha256": "04df87639e094a50dc3f462f1a6ab383500ef6e2a6e6d6dfe58631dccf96c4bc"
+    },
+    {
+      "stamp_s": 111.0,
+      "size": [
+        353,
+        411
+      ],
+      "known_cells": 144939,
+      "occupied_cells": 1,
+      "sha256": "04df87639e094a50dc3f462f1a6ab383500ef6e2a6e6d6dfe58631dccf96c4bc"
+    }
+  ],
+  "unique_scan_frames": 1112,
+  "estimated_travel_m": 12.933403385090338,
+  "field_to_slam_tf": [
+    1.7,
+    1.7,
+    -3.141592653589793
+  ],
+  "planning_grid": {
+    "road_cells": 18200,
+    "known_road_fraction": 1.0,
+    "measured_occupied_road_cells": 7,
+    "padded_occupied_road_cells": 38,
+    "unknown_road_cells": 0,
+    "source": "SLAM OccupancyGrid, >=3-frame endpoints and unique-per-frame clear rays registered by camera/wheel/IMU source-time TF; clear requires >=3 frames and >=3 clear votes per hit; supplied lanes separately constrain travel; no SDF collision coordinates",
+    "unknown_is_free": false,
+    "resolution_m": 0.02,
+    "physical_padding_m": 0.02,
+    "registered_laser_frames": 1110,
+    "confirmed_hit_cells": 351,
+    "confirmed_free_ray_cells": 44044,
+    "inconsistent_hit_cells_cleared": 129
+  },
+  "map_hashes": {
+    "slam.pgm": "c372cf0d04c3c9a6bc548b01e0f14a8c0fff6b666524ee918d0a8c5d50178c49",
+    "slam.yaml": "98baa77f3d50b96b53f559348a5a426a9099828b1d8992a568181d53fa407178",
+    "slam-field.pgm": "36f78897b42b97c92b370f6dec9a482957cf07e0dfc37c863a28dbabc9f1baf6",
+    "slam-field.yaml": "f5d75cf0df4cd4b82684567eaa40b02aa3356611378746cfa60d111bbf8677b6",
+    "navigation.pgm": "d4f37c7168a302bf245b083a0183f9b9e2ec48f914bff06ecfdc761298277bec",
+    "navigation.yaml": "2cc6246080042289902457fa0c5a654bc0ef9b2e59bdf436fc83cedd2599c25a",
+    "occupancy.npz": "d3c384cd87c1fa6a85fcc78c27fc8ab7417cf84eda0fb6e01776b13e329a819b",
+    "slam-graph.posegraph": "128e638363392803dbbbf7fa1a815bec3e45dd1e1ead86ce2c248b0e8ffaf380",
+    "slam-graph.data": "975a452026d77b8cacfa35bc6712d970b0623f6beff1e69d305ec101dc8a91cc"
+  },
+  "source": "Fresh SLAM Toolbox mapping process, actual /scan and wheel/camera/IMU localization; no previously saved SLAM grid loaded",
+  "autonomy": "Known competition route drives the robot; human teleoperation and ground truth are absent from mapping control",
+  "video_frames": 222,
+  "video_fps": 2,
+  "scope": "Known-field autonomous route mapping, not unknown-environment frontier exploration; supplied lane geometry is disclosed separately"
+}
