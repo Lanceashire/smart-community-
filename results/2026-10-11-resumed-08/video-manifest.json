@@ -1,0 +1,460 @@
+{
+  "passed": true,
+  "date": "2026-10-11",
+  "team": "待填写",
+  "focus": "path-speed",
+  "pipeline": "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/bay-resumed-08/pipeline.json",
+  "source_frozen": true,
+  "current_runtime_matches_frozen_run": true,
+  "post_run_presentation_tool_changes": [],
+  "resolution": "1920x1080",
+  "fps": 10,
+  "duration_s": 539.7,
+  "display_overview_rotation_degrees": 180,
+  "display_transform_scope": "Overhead image panel only; robot camera, time scale, raw recordings and driving unchanged.",
+  "audio": "Chinese captions, no narration",
+  "chapters": [
+    {
+      "title": "最新演示：自主建图、地图巡航与动态障碍",
+      "start_s": 0.0,
+      "duration_s": 25.3,
+      "source": null
+    },
+    {
+      "title": "路径与速度修正：直线回正，按实际弯道限速",
+      "start_s": 25.3,
+      "duration_s": 25.3,
+      "source": null
+    },
+    {
+      "title": "自主建图过程-最新（完整实录）",
+      "start_s": 50.6,
+      "duration_s": 111.0,
+      "source": "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/bay-resumed-08/autonomous-mapping/mapping.mp4"
+    },
+    {
+      "title": "新地图完整巡航-最新（完整实录）",
+      "start_s": 161.6,
+      "duration_s": 109.4,
+      "source": "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/bay-resumed-08/mapped-navigation/patrol.mp4"
+    },
+    {
+      "title": "新地图动态障碍-最新（完整实录）",
+      "start_s": 271.0,
+      "duration_s": 116.8,
+      "source": "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/bay-resumed-08/mapped-dynamic/patrol.mp4"
+    },
+    {
+      "title": "当前源码 1：所有路段使用同一组连续曲率原语",
+      "start_s": 387.8,
+      "duration_s": 40.5,
+      "source": null
+    },
+    {
+      "title": "当前源码 2：线速度和角速度共同平滑",
+      "start_s": 428.3,
+      "duration_s": 40.5,
+      "source": null
+    },
+    {
+      "title": "最新实跑结果",
+      "start_s": 468.8,
+      "duration_s": 40.5,
+      "source": null
+    },
+    {
+      "title": "演示边界与后续工作",
+      "start_s": 509.3,
+      "duration_s": 30.4,
+      "source": null
+    }
+  ],
+  "files": {
+    "智慧社区综合演示-2026-10-11.mp4": {
+      "bytes": 13567874,
+      "sha256": "83654d891587942892dba60e43f0d7cd0f75e0f655328f7e300c484e7c41e24c"
+    },
+    "自主建图过程-最新.mp4": {
+      "bytes": 1724364,
+      "sha256": "9c7928b03f29ecedd288e5707f1d93c1d29bdb5e8a9a317180bc4bf9125506d7"
+    },
+    "新地图完整巡航-最新.mp4": {
+      "bytes": 5071689,
+      "sha256": "af3d9c126e0e6c123c39ce8f691687795583e43b08df41fad4ec4e0dbd822476"
+    },
+    "新地图动态障碍-最新.mp4": {
+      "bytes": 5182624,
+      "sha256": "a7dfb93e9bfe7d90d6ad4c0b180d982cfb7d6378e779e93128b73087ba3c17a9"
+    }
+  },
+  "metrics": {
+    "autonomous-mapping": {
+      "source": "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/bay-resumed-08/autonomous-mapping/lap-001.json",
+      "passed": true,
+      "mode": "normal autonomous lap",
+      "run_id": "391437e96be2",
+      "lap_id": 1,
+      "completion_sim_s": 108.0,
+      "completion_wall_s": 108.113,
+      "real_time_factor": 0.999,
+      "state_sim_s": {
+        "": 0.1,
+        "WAIT_FRESH_PERCEPTION": 1.5,
+        "PLAN": 2.25,
+        "GO": 66.45,
+        "GUARD": 0.25,
+        "REACHED": 1.7,
+        "STOP": 14.1,
+        "OBSERVE": 21.35,
+        "ALIGN_ARRIVAL": 0.3,
+        "COMPLETE": 4.05
+      },
+      "position_error_max_m": 0.011826768806539609,
+      "position_error_p95_m": 0.011487417078136412,
+      "position_error_rmse_m": 0.005559604112515263,
+      "processing_ms_p50": 17.3,
+      "processing_ms_p95": 24.0,
+      "image_age_sim_s_p95": 0.10000000000000853,
+      "perception_hz_wall": 9.984,
+      "observations": [
+        {
+          "view": "A_north",
+          "elapsed_s": 2.6,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_west",
+          "elapsed_s": 2.3,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_south",
+          "elapsed_s": 2.1,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_north",
+          "elapsed_s": 5.1,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_east",
+          "elapsed_s": 2.3,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_1",
+          "elapsed_s": 2.1,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_2",
+          "elapsed_s": 2.3,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_3",
+          "elapsed_s": 2.4,
+          "confirmed": true,
+          "attempt": 0
+        }
+      ],
+      "minimum_post_clearance_m": 0.07735201312428297,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "checks": {
+        "pose_source_time_coverage": true,
+        "signal_source_time_alignment": true,
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "road_violation_samples": 0
+    },
+    "mapped-navigation": {
+      "source": "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/bay-resumed-08/mapped-navigation/lap-001.json",
+      "passed": true,
+      "mode": "normal autonomous lap",
+      "run_id": "4ca0011bd1b6",
+      "lap_id": 1,
+      "completion_sim_s": 107.8,
+      "completion_wall_s": 107.916,
+      "real_time_factor": 0.999,
+      "state_sim_s": {
+        "": 0.1,
+        "WAIT_FRESH_PERCEPTION": 1.6,
+        "PLAN": 2.3,
+        "GO": 66.75,
+        "GUARD": 0.25,
+        "REACHED": 1.8,
+        "STOP": 13.6,
+        "OBSERVE": 21.1,
+        "ALIGN_ARRIVAL": 0.3,
+        "COMPLETE": 4.05
+      },
+      "position_error_max_m": 0.030018475201837334,
+      "position_error_p95_m": 0.010849240916859935,
+      "position_error_rmse_m": 0.007788926470864757,
+      "processing_ms_p50": 16.7,
+      "processing_ms_p95": 23.9,
+      "image_age_sim_s_p95": 0.10000000000000853,
+      "perception_hz_wall": 9.987,
+      "observations": [
+        {
+          "view": "A_north",
+          "elapsed_s": 2.7,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_west",
+          "elapsed_s": 2.3,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_south",
+          "elapsed_s": 2.2,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_north",
+          "elapsed_s": 5.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_east",
+          "elapsed_s": 2.3,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_1",
+          "elapsed_s": 2.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_2",
+          "elapsed_s": 2.2,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_3",
+          "elapsed_s": 2.3,
+          "confirmed": true,
+          "attempt": 0
+        }
+      ],
+      "minimum_post_clearance_m": 0.0775114577062038,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "checks": {
+        "pose_source_time_coverage": true,
+        "signal_source_time_alignment": true,
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "road_violation_samples": 0
+    },
+    "mapped-dynamic": {
+      "source": "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/bay-resumed-08/mapped-dynamic/lap-001.json",
+      "passed": true,
+      "mode": "normal autonomous lap",
+      "run_id": "d2ec77dc0945",
+      "lap_id": 1,
+      "completion_sim_s": 112.9,
+      "completion_wall_s": 115.311,
+      "real_time_factor": 0.979,
+      "state_sim_s": {
+        "": 0.1,
+        "WAIT_FRESH_PERCEPTION": 1.6,
+        "PLAN": 2.55,
+        "GO": 66.55,
+        "GUARD": 0.3,
+        "REACHED": 1.6,
+        "STOP": 13.8,
+        "OBSERVE": 21.1,
+        "ALIGN_ARRIVAL": 0.3,
+        "BLOCKED": 4.5,
+        "RECOVER_OBSTACLE": 0.5,
+        "COMPLETE": 4.05
+      },
+      "position_error_max_m": 0.019963595099975064,
+      "position_error_p95_m": 0.010374259467131821,
+      "position_error_rmse_m": 0.007817764609254773,
+      "processing_ms_p50": 19.2,
+      "processing_ms_p95": 25.5,
+      "image_age_sim_s_p95": 0.10000000000000853,
+      "perception_hz_wall": 9.793,
+      "observations": [
+        {
+          "view": "A_north",
+          "elapsed_s": 2.7,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_west",
+          "elapsed_s": 2.3,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "A_south",
+          "elapsed_s": 2.2,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_north",
+          "elapsed_s": 5.0,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "B_east",
+          "elapsed_s": 2.3,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_1",
+          "elapsed_s": 2.3,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_2",
+          "elapsed_s": 2.3,
+          "confirmed": true,
+          "attempt": 0
+        },
+        {
+          "view": "plate_3",
+          "elapsed_s": 1.9,
+          "confirmed": true,
+          "attempt": 0
+        }
+      ],
+      "minimum_post_clearance_m": 0.08117196903698212,
+      "counts": {
+        "residents": 8,
+        "visitors": 2,
+        "total": 10
+      },
+      "plates": [
+        "苏AB8Q62",
+        "鄂D7B5Q2",
+        "苏APL12A"
+      ],
+      "checks": {
+        "pose_source_time_coverage": true,
+        "signal_source_time_alignment": true,
+        "completed": true,
+        "route_order": true,
+        "actual_distance": true,
+        "returned_to_start": true,
+        "road_boundary": true,
+        "two_green_crossings": true,
+        "red_wait_body_before_line": true,
+        "eight_observations": true,
+        "observation_log_reset": true,
+        "recognition_reset": true,
+        "people": true,
+        "plates": true,
+        "event_sequence": true,
+        "event_frame_correspondence": true,
+        "completion_frozen": true,
+        "stationary_after_completion": true,
+        "camera_and_scan_live": true,
+        "restart_while_running_rejected": true,
+        "front_and_rear_green": true,
+        "red_straddle_samples_zero": true,
+        "observation_confirmation": true,
+        "physical_post_clearance": true,
+        "rendered_image_frame_ids": true,
+        "terminal_events_exact": true
+      },
+      "road_violation_samples": 0
+    }
+  },
+  "slides": [
+    "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/videos-resumed-08/build/01-introduction.png",
+    "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/videos-resumed-08/build/02-scene.png",
+    "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/videos-resumed-08/build/06-code-generation.png",
+    "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/videos-resumed-08/build/07-code-safety.png",
+    "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/videos-resumed-08/build/08-results.png",
+    "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/videos-resumed-08/build/09-scope.png"
+  ],
+  "scope": "Three current continuous chronological recordings, unaccelerated. Composite uses one uniform codec/resolution/frame rate. Existing report and defense files are untouched."
+}

@@ -1,0 +1,74 @@
+{
+  "passed": true,
+  "run_id": "4ca0011bd1b6",
+  "lap_id": 1,
+  "source": "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/videos-resumed-08/build/04-recording.mp4",
+  "source_sha256": "af3d9c126e0e6c123c39ce8f691687795583e43b08df41fad4ec4e0dbd822476",
+  "original_recording": "/home/ubuntu/projects/smart-community/validation/unified-trajectory-2026-10-11/bay-resumed-08/mapped-navigation/patrol.mp4",
+  "original_recording_sha256": "560b37021551f2b0cb46f081312350e10300273e113eb5b7e1971edea4edfef7",
+  "display_overview_rotation_degrees": 180,
+  "display_transform_scope": "Overhead image only, explicitly labelled; original robot camera and chronological wall-time preserved",
+  "raw_lap_sha256": "cc6d63f673bd82005b0ff5051c07dbf223ef1dd84bb42fe739b565ef0717689b",
+  "clips": [
+    {
+      "title": "左上路口",
+      "file": "01-左上路口.mp4",
+      "source_wall_begin_s": 21.445771146624217,
+      "source_wall_end_s": 24.79827222146833,
+      "duration_s": 3.3,
+      "composite_start_s": 1.5,
+      "sha256": "cd6090aad5efd06fb2147b8c2032ddccf4a0ba74ce8246464dcb4fa8d03db2b6"
+    },
+    {
+      "title": "左侧中部路口",
+      "file": "02-左侧中部路口.mp4",
+      "source_wall_begin_s": 30.41326805870854,
+      "source_wall_end_s": 33.818066913036105,
+      "duration_s": 3.4,
+      "composite_start_s": 6.3,
+      "sha256": "c70745e0df7ea7651b1ade425ecdb765a9a9a86a15430151860c7c11b4a1d7e2"
+    },
+    {
+      "title": "中部向下路口",
+      "file": "03-中部向下路口.mp4",
+      "source_wall_begin_s": 45.97198868466581,
+      "source_wall_end_s": 49.3754679310659,
+      "duration_s": 3.4,
+      "composite_start_s": 11.2,
+      "sha256": "37e49691fcb0b815ceac299265766029b4fd1f3e059fc5a75751c6ed8f5c1fbb"
+    },
+    {
+      "title": "第二个红绿灯后",
+      "file": "04-第二个红绿灯后.mp4",
+      "source_wall_begin_s": 69.54057059994352,
+      "source_wall_end_s": 77.00556317364314,
+      "duration_s": 7.4,
+      "composite_start_s": 16.1,
+      "sha256": "9acd6bc6bf6671205d6dac54908dc666e1f0dbf3c468584f442f51df0e0bb3f8"
+    },
+    {
+      "title": "第一张车牌前",
+      "file": "05-第一张车牌前.mp4",
+      "source_wall_begin_s": 77.76265964153599,
+      "source_wall_end_s": 83.12505164899885,
+      "duration_s": 5.4,
+      "composite_start_s": 25.0,
+      "sha256": "1da36af2f2278bd53ec6a8195b76fa1c125046b5b3dfd7371155cb961677ad23"
+    },
+    {
+      "title": "最后右转回到方格",
+      "file": "06-最后右转回到方格.mp4",
+      "source_wall_begin_s": 100.3877344258068,
+      "source_wall_end_s": 109.5,
+      "duration_s": 9.0,
+      "composite_start_s": 31.9,
+      "sha256": "74587a006f32da0b7aa9327779f129c8ae3250d5d73f3d9081397dc82385e7aa"
+    }
+  ],
+  "composite": {
+    "file": "全程六处转弯重点演示-2026-10-11.mp4",
+    "duration_s": 40.9,
+    "sha256": "3c261ccf6b4751d22278dc2dd42b0d3500b4934a0cd5eeef0ed14c628c379474"
+  },
+  "scope": "Six individually chronological, unaccelerated real Gazebo excerpts. Title pages disclose cuts between corners. No fabricated frames or simulation-control changes."
+}

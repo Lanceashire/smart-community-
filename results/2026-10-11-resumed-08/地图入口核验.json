@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "method": "Execute only read-only map-selection Python; no simulation launch or map rewrite",
+  "results": {
+    "live": {
+      "map": "/home/jiezichuan/Documents/Codex/2026-09-28/x/outputs/smart-community-docker/workspace/docs/accepted-navigation-2026-10-11/navigation.yaml",
+      "pgm_sha256": "d4f37c7168a302bf245b083a0183f9b9e2ec48f914bff06ecfdc761298277bec"
+    },
+    "packaged": {
+      "map": "/home/jiezichuan/Documents/Codex/2026-10-11/new-chat/work/community-resume/source-package-review08/docs/accepted-navigation-2026-10-11/navigation.yaml",
+      "pgm_sha256": "d4f37c7168a302bf245b083a0183f9b9e2ec48f914bff06ecfdc761298277bec"
+    }
+  },
+  "scope": "Packaged current-task map passed mapping/normal/dynamic navigation checks; complete seven-case matrix retains two explicit failures."
+}

@@ -1,0 +1,33 @@
+{
+  "passed": false,
+  "strict_failed_checks": [
+    "mapped-stress_source_pose_coverage_at_least_98percent",
+    "mapped-dim_plate_entry_no_internal_stop"
+  ],
+  "all_requested_physical_laps_completed": true,
+  "safety_checks_passed": true,
+  "physical_laps": 8,
+  "cases": 7,
+  "independent_checks": 693,
+  "offline_regression_checks": 287,
+  "normal_return_straight": {
+    "samples": 69,
+    "max_error_m": 0.0074829402860252525,
+    "median_speed_m_s": 0.2599999999982237
+  },
+  "final_bend": {
+    "duration_wall_s": 5.162896887999523,
+    "samples": 104,
+    "net_heading_deg": -88.80992911013472,
+    "heading_variation_deg": 88.81922724483341,
+    "excess_heading_variation_deg": 0.009298134698701537,
+    "direction_changes": 0,
+    "stationary_rotation_sim_s": 0.0,
+    "internal_stop_count": 0,
+    "internal_stopped_wall_s": 0,
+    "moving_median_speed_m_s": 0.21666499853640303
+  },
+  "source_inventory": 250,
+  "reports_unchanged": true,
+  "scope": "Path, speed and terminal-turn audit: eight complete physical laps in seven isolated cases, including two successive laps in one running world, same frozen runtime source. Supplied upper-right bay start and finish; opposite departure and arrival headings with safe stationary departure alignment between laps. Fixed supplied field, known gallery and lane prior. No claim about hardware, unfamiliar persons, arbitrary starts or persistent-blockage detouring."
+}
