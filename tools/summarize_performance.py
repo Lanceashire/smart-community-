@@ -13,9 +13,16 @@ def summarize(path):
     for a,b in zip(r,r[1:]):
         state=a['status'].split(' ',1)[0]
         durations[state]+=b['t']-a['t']
-    finish=next((i for i,x in enumerate(r) if x['status'].startswith('COMPLETE')),len(r)-1)
+    # On a live restart the first truth frame can retain the preceding lap's
+    # status. Only a COMPLETE after this lap's active states ends its timing.
+    seen_active=False;finish=len(r)-1
+    for i,x in enumerate(r):
+        if not x['status'].startswith('COMPLETE'):seen_active=True
+        elif seen_active:finish=i;break
     active=r[:finish+1];frames=d.get('performance_frames',[])
     elapsed=active[-1]['t']-active[0]['t'];wall=active[-1]['wall_s']-active[0]['wall_s']
+    if not seen_active or wall<=0 or elapsed<=0:
+        raise ValueError('No positive current-lap activity interval: '+str(path))
     e=[x['fresh_pose_error'][0] for x in active if x['fresh_pose_error']]
     return {'source':str(path),'passed':d['passed'],'mode':d['mode'],'run_id':d['run_id'],'lap_id':d['lap_id'],
       'completion_sim_s':round(elapsed,3),'completion_wall_s':round(wall,3),'real_time_factor':round(elapsed/wall,3),

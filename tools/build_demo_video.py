@@ -35,7 +35,7 @@ def main():
     parser.add_argument('--output', required=True)
     parser.add_argument('--date', default='2026-10-10')
     parser.add_argument('--team', default='待填写')
-    parser.add_argument('--focus', choices=['world-generation', 'materials', 'route', 'inspection-safety'], default='world-generation')
+    parser.add_argument('--focus', choices=['world-generation', 'materials', 'route', 'inspection-safety', 'all-turns'], default='world-generation')
     args = parser.parse_args()
     run, output = Path(args.run).resolve(), Path(args.output).resolve()
     pipeline = read(run / 'pipeline.json')
@@ -49,7 +49,7 @@ def main():
     for path, expected_hash in frozen.items():
         assert (ROOT / path).is_file(), path
         current_hash = sha(ROOT / path)
-        if path == 'tools/build_demo_video.py' and current_hash != expected_hash:
+        if path in ('tools/build_demo_video.py','tools/summarize_performance.py') and current_hash != expected_hash:
             presentation_changes.append({'path': path, 'at_run_sha256': expected_hash,
                                          'current_sha256': current_hash})
         else:
@@ -128,7 +128,15 @@ def main():
         '人员与车牌结果来自机器人相机；俯视摄影仅用于观察。',
         '演示片段保持记录时的墙钟速度，章节之间有说明页。',
     ], 25 * scale, '01-introduction')
-    if args.focus == 'inspection-safety':
+    if args.focus == 'all-turns':
+        page('全程转弯：六个位置逐一优化', [
+            '前三个路口提前进入相切圆弧，减少停车后的原地调向。',
+            '第二个信号灯后向安全侧移，规划灯柱净空加强至 6.5 cm。',
+            '车牌区增加连续入弯；回到起点后朝向下一圈行驶方向。',
+            '按曲率连续调节前瞻距离；末端越过目标后停车并有限重规划。',
+            '下方、车牌区和起点共三个弯，加上前三路口，共六处检查。',
+        ], 25 * scale, '02-scene')
+    elif args.focus == 'inspection-safety':
         page('严格审查后的四项修复', [
             '观察失败超时后停车报错；确认记录不完整时禁止宣告巡检完成。',
             '按图示核对相机实测的 10 人、3 张车牌，数量不足标记不完整。',
@@ -169,7 +177,17 @@ def main():
     imu_sensor = next(line.strip() for line in generator if 'sensor name="body_imu"' in line)
     imu_plugin = next(line.strip() for line in generator if 'filename="gz-sim-imu-system"' in line)
     gain = next(line.strip() for line in generator if '<p_gain>' in line)
-    if args.focus == 'inspection-safety':
+    if args.focus == 'all-turns':
+        source = (ROOT / 'src/community_demo/community_demo/route_path.py').read_text()
+        start = source.index('def terminal_sweep_clear(')
+        end = source.index('\n\ndef continuous_lower_path', start)
+        page('当前源码 1：末端转向目标也要检查整车扫掠', [
+            'community_demo/route_path.py（真实源码片段）', '',
+            *source[start:end].splitlines(), '',
+            '所有弯检查道路、未知格与灯柱；14 cm 延长仅用于转向目标。',
+            '机器人在真实目标点停车；越过目标须停车并重新核验路径。',
+        ], 40 * scale, '06-code-generation', code=True)
+    elif args.focus == 'inspection-safety':
         source=(ROOT/'src/community_demo/community_demo/inspection_policy.py').read_text()
         start=source.index('def inspection_complete(')
         end=source.index('\ndef recognition_complete',start)
@@ -182,7 +200,7 @@ def main():
     elif args.focus == 'route':
         source = (ROOT / 'src/community_demo/community_demo/route_path.py').read_text()
         start = source.index('def pose_sweep_clear(')
-        end = source.index('\n\ndef continuous_lower_path', start)
+        end = source.index('\n\ndef terminal_sweep_clear', start)
         page('当前源码 1：整车扫过范围核验', [
             'community_demo/route_path.py（真实源码片段）', '',
             *source[start:end].splitlines(), '',
@@ -210,7 +228,17 @@ def main():
     start = localization.index("        if getattr(self,'require_imu',False) and (not self.imu_samples")
     end = localization.index('\n', localization.index('navigation pose withheld', start))
     excerpt = localization[start:end].splitlines()
-    if args.focus == 'inspection-safety':
+    if args.focus == 'all-turns':
+        source = (ROOT / 'src/community_demo/community_demo/route_path.py').read_text()
+        start = source.index('    j=min(len(points)-2,progress+8)')
+        end = source.index('\n    remaining=look+along', start)
+        page('当前源码 2：相同弯道采用相同控制参数', [
+            'community_demo/route_path.py（真实源码片段）', '',
+            *[line[4:] for line in source[start:end].splitlines()], '',
+            '前瞻距离由局部曲率连续决定，不再按绝对航向切换。',
+            '同一条路径旋转 90 度、180 度，跟踪控制须保持一致。',
+        ], 40 * scale, '07-code-safety', code=True)
+    elif args.focus == 'inspection-safety':
         source=(ROOT/'src/community_demo/community_demo/mapping_grid.py').read_text()
         start=source.index('    hit_indices=np.unique(')
         end=source.index('\n\ndef fuse_registered_rays',start)

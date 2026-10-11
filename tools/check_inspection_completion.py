@@ -46,7 +46,7 @@ def main():
                   timeout_retains_failed_evidence=len(p.observation_outcomes)==1 and p.observation_outcomes[0]['confirmed'] is False)
     p.completed=False;p.tilt=0.;p.pose=(1.1,1.7,0.);p.pose_update=now;p.pose_source_ns=now.nanoseconds
     p.require_vision=True;p.perception_update=now;p.perception_stamp=16.;p.scan_update=now;p.scan_source_ns=now.nanoseconds
-    p.quality_update=now;p.localization_quality={'state':'tracking'};p.index=len(ROUTE)-1;p.distance_travelled=12.;p.motion_probe=None
+    p.quality_update=now;p.localization_quality={'state':'tracking'};p.index=len(ROUTE)-1;p.path_index=-1;p.distance_travelled=12.;p.motion_probe=None
     p.recognition_counts=totals;p.recognition_plates=plates;p.expected_people=10;p.expected_plates=3
     p.get_clock=lambda:S(now=lambda:now);p.update_signal_context=lambda:None;p.check_path_deadline=lambda t:None;p.publish_lap=laps.append
     Patrol.tick(p);checks['fault_keeps_chassis_stopped']=commands[-1]==() and not p.completed and not laps
@@ -56,6 +56,33 @@ def main():
     checks['all_views_but_partial_totals_cannot_complete']=not p.completed and not laps and p.fault.startswith('FAULT incomplete inspection')
     p.fault=None;p.index=len(ROUTE)-1;p.recognition_plates=plates;Patrol.tick(p)
     checks['complete_evidence_still_finishes_route']=p.completed and laps==['completed']
+    # Exercise the same terminal branch that prevented the 8mm trial from
+    # finishing; the steering extension must never authorize endless travel.
+    p.completed=False;p.fault=None;p.index=len(ROUTE)-1;p.path_index=p.index;p.path_curved=True;p.path_goal_yaw=math.pi
+    p.pose=(1.06,1.7,math.pi);p.path=object();before=len(laps)
+    Patrol.tick(p)
+    checks['terminal_overshoot_stops_and_replans']=commands[-1]==() and p.path_index==-1 and p.path is None and p.index==len(ROUTE)-1 and len(laps)==before
+    for _ in range(2):
+        p.path_index=p.index;p.path=object();Patrol.tick(p)
+    checks['terminal_replans_are_bounded']=p.arrival_replans==3 and p.fault.startswith('FAULT terminal goal missed') and commands[-1]==()
+    p.fault=None;p.path_index=p.index;p.lap_id=2
+    Patrol.tick(p)
+    checks['new_lap_does_not_inherit_arrival_retry_count']=p.arrival_replans==1 and p.fault is None and p.path_index==-1
+    p.fault=None;p.index=next(i for i,v in enumerate(ROUTE)if v[0]=='bottom_east');p.path_index=p.index
+    p.pose=(-.1,-1.67,-math.pi/2);p.path_goal_yaw=math.pi/2;p.path_curved=True
+    p.front_blocked=lambda:True;p.blocked_since=None;p.path_heading_error=lambda:None;p.scan=S(ranges=[.1])
+    count=p.arrival_replans;Patrol.tick(p)
+    checks['curve_entry_above_terminal_plane_is_not_overshoot']=p.arrival_replans==count and p.path_index==p.index and p.fault is None and statuses[-1].startswith('BLOCKED')
+    p.index=len(ROUTE)-1;p.path_goal_yaw=math.pi
+    p.fault=None;p.path_index=p.index;p.path_curved=False;p.pose=(1.1,1.7,math.pi/2)
+    p.costmap_stamp_ns=now.nanoseconds-3_000_000_000
+    Patrol.tick(p)
+    checks['stale_grid_blocks_terminal_pivot']=commands[-1]==() and p.path_index==-1 and statuses[-1].startswith('ARRIVAL_HOLD')
+    from community_demo.route_path import GridClearance
+    p.path_index=p.index;p.costmap_stamp_ns=now.nanoseconds;p.costmap=GridClearance(210,210,.02,(-2.1,-2.1),[0]*44100);p.static_posts=[]
+    p.heading_pid=S(calculate=lambda e:e);p.command_guard=None
+    Patrol.tick(p)
+    checks['checked_terminal_heading_aligns_without_advancing']=commands[-1][0]==0. and commands[-1][1]>0 and p.index==len(ROUTE)-1 and len(laps)==before
     result={'passed':all(checks.values()),'checks':checks,'scope':'Synthetic inputs to production inspection and final-route callbacks; actual successful perception remains a live-lap check.'}
     out=Path(args.output);out.parent.mkdir(parents=True,exist_ok=True);out.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result));return 0 if result['passed'] else 1
 

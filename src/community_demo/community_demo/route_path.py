@@ -51,12 +51,12 @@ class GridClearance:
 
 def clearance_polygon(polygon,grid,posts):
     if not polygon_in_road(polygon):return False
-    # Keep the existing 5cm physical post-clearance acceptance target.
+    # Plan with 6.5cm to allow tracking error; retain the 5cm actual-motion gate.
     for p in posts:
         # Gantry posts in this field are axis-aligned, including the 90deg pair.
         c,s=abs(math.cos(p['yaw'])),abs(math.sin(p['yaw']))
-        rx=(p['width']*c+p['depth']*s)/2+.05
-        ry=(p['width']*s+p['depth']*c)/2+.05
+        rx=(p['width']*c+p['depth']*s)/2+.065
+        ry=(p['width']*s+p['depth']*c)/2+.065
         if intersects_box(polygon,p['x']-rx,p['y']-ry,p['x']+rx,p['y']+ry):return False
     return grid.clear(polygon)
 
@@ -118,7 +118,14 @@ def pose_sweep_clear(a,b,grid,posts):
     return clearance_polygon(swept,grid,posts)
 
 
-def continuous_lower_path(points,pose,grid,posts):
+def terminal_sweep_clear(pose,grid,posts):
+    """Certify the 14cm steering-only tangent continuation as well."""
+    x,y,yaw=pose;n=24
+    extension=[(x+.14*i/n*math.cos(yaw),y+.14*i/n*math.sin(yaw),yaw)for i in range(n+1)]
+    return all(pose_sweep_clear(a,b,grid,posts)for a,b in zip(extension,extension[1:]))
+
+
+def continuous_lower_path(points,pose,grid,posts,arrival_turn=False):
     """Tangent quarter-circle, straight gantry pass, then a gentle tangent bend.
 
     Nav2 still supplies the reachable goal. Candidate turns use measured start
@@ -128,7 +135,7 @@ def continuous_lower_path(points,pose,grid,posts):
     sx,sy,yaw=pose;ex,ey=points[-1]
     if abs(math.atan2(math.sin(yaw+math.pi/2),math.cos(yaw+math.pi/2)))>.15:return None
     if not .8<ex<1.3 or not -1.85<ey<-1.55:return None
-    desired=max(.09,min(.15,sy+1.805))
+    desired=max(.09,min(.16,sy+1.825))
     for radius in (desired,desired-.01,desired+.01,.10,.12,.14):
         if not .08<=radius<=.16:continue
         turn=-yaw;cx=sx-radius*math.sin(yaw);cy=sy+radius*math.cos(yaw)
@@ -137,6 +144,18 @@ def continuous_lower_path(points,pose,grid,posts):
             z=yaw+turn*i/steps;poses.append((cx+radius*math.sin(z),cy-radius*math.cos(z),z))
         ax,ay,_=poses[-1];stage=max(.46,ax+.15)
         if stage>ex-.30:continue
+        if arrival_turn:
+            end_radius=ey-ay;entry=ex-end_radius
+            if not .08<=end_radius<=.18 or entry<stage+.15:continue
+            n=max(1,math.ceil((entry-ax)/.006))
+            poses.extend((ax+(entry-ax)*i/n,ay,0.)for i in range(1,n+1))
+            n=max(2,math.ceil(end_radius*math.pi/2/.006))
+            for i in range(1,n+1):
+                z=math.pi/2*i/n
+                poses.append((entry+end_radius*math.sin(z),ey-end_radius*math.cos(z),z))
+            if (all(pose_sweep_clear(a,b,grid,posts)for a,b in zip(poses,poses[1:])) and
+                    terminal_sweep_clear(poses[-1],grid,posts)):return poses
+            continue
         n=max(1,math.ceil((stage-ax)/.006))
         poses.extend((ax+(stage-ax)*i/n,ay,0.)for i in range(1,n+1))
         # Quadratic starts tangent to the straight and gradually rises to the
@@ -147,11 +166,71 @@ def continuous_lower_path(points,pose,grid,posts):
             y=u*u*ay+2*u*t*control[1]+t*t*ey
             dx=2*u*(control[0]-stage)+2*t*(ex-control[0]);dy=2*t*(ey-control[1])
             poses.append((x,y,math.atan2(dy,dx)))
-        if all(pose_sweep_clear(a,b,grid,posts)for a,b in zip(poses,poses[1:])):return poses
+        if (all(pose_sweep_clear(a,b,grid,posts)for a,b in zip(poses,poses[1:])) and
+                terminal_sweep_clear(poses[-1],grid,posts)):return poses
     return None
 
 
-def curve_target(points,pose,progress):
+def continuous_corner_path(points,pose,outgoing_yaw,grid,posts):
+    """Measured tangent arc onto the outgoing goal line, followed by a straight.
+
+    The reachable endpoint comes from Nav2. The supplied route only specifies
+    the outgoing lane direction; the arc radius is solved from current pose.
+    Every complete rotating-body sweep must pass the same road/grid/post gates.
+    """
+    if grid is None or len(points)<2 or not all(math.isfinite(v) for v in (*pose,outgoing_yaw)):
+        return None
+    sx,sy,yaw=pose;ex,ey=points[-1]
+    turn=math.atan2(math.sin(outgoing_yaw-yaw),math.cos(outgoing_yaw-yaw))
+    if not 1.3<=abs(turn)<=1.8:return None
+    sign=1 if turn>0 else -1
+    ni=(-math.sin(yaw),math.cos(yaw));no=(-math.sin(outgoing_yaw),math.cos(outgoing_yaw))
+    divisor=sign*((ni[0]-no[0])*no[0]+(ni[1]-no[1])*no[1])
+    if abs(divisor)<.5:return None
+    radius=((ex-sx)*no[0]+(ey-sy)*no[1])/divisor
+    if not .10<=radius<=.22:return None
+    cx=sx+sign*radius*ni[0];cy=sy+sign*radius*ni[1]
+    steps=max(2,math.ceil(radius*abs(turn)/.006));poses=[]
+    for i in range(steps+1):
+        z=yaw+turn*i/steps
+        poses.append((cx+sign*radius*math.sin(z),cy-sign*radius*math.cos(z),z))
+    ax,ay,_=poses[-1]
+    forward=(ex-ax)*math.cos(outgoing_yaw)+(ey-ay)*math.sin(outgoing_yaw)
+    if forward<.10:return None
+    n=max(1,math.ceil(math.hypot(ex-ax,ey-ay)/.006))
+    poses.extend((ax+(ex-ax)*i/n,ay+(ey-ay)*i/n,outgoing_yaw)for i in range(1,n+1))
+    return poses if all(pose_sweep_clear(a,b,grid,posts)for a,b in zip(poses,poses[1:])) else None
+
+
+def continuous_return_path(points,pose,grid,posts):
+    """Enter the upper-right bend tangentially and finish facing the next lap."""
+    if grid is None or len(points)<2 or not all(math.isfinite(v)for v in pose):return None
+    sx,sy,yaw=pose;ex,ey=points[-1]
+    if abs(math.atan2(math.sin(yaw-math.pi/2),math.cos(yaw-math.pi/2)))>.15:return None
+    if not 1.0<ex<1.2 or not 1.6<ey<1.8 or sy>ey-.8:return None
+    for radius in (.14,.12,.16):
+        goal=(ex+radius,ey-radius);length=math.dist((sx,sy),goal);handle=length/5
+        controls=[(sx,sy),(sx+handle*math.cos(yaw),sy+handle*math.sin(yaw)),
+                  (sx+2*handle*math.cos(yaw),sy+2*handle*math.sin(yaw)),
+                  (goal[0],goal[1]-2*handle),(goal[0],goal[1]-handle),goal]
+        n=max(2,math.ceil(sum(math.dist(a,b)for a,b in zip(controls,controls[1:]))/.006));poses=[]
+        for i in range(n+1):
+            t=i/n;u=1-t
+            weights=[math.comb(5,j)*u**(5-j)*t**j for j in range(6)]
+            x=sum(w*p[0]for w,p in zip(weights,controls));y=sum(w*p[1]for w,p in zip(weights,controls))
+            dw=[5*math.comb(4,j)*u**(4-j)*t**j for j in range(5)]
+            dx=sum(w*(b[0]-a[0])for w,a,b in zip(dw,controls,controls[1:]));dy=sum(w*(b[1]-a[1])for w,a,b in zip(dw,controls,controls[1:]))
+            poses.append((x,y,math.atan2(dy,dx)))
+        n=max(2,math.ceil(radius*math.pi/2/.006))
+        for i in range(1,n+1):
+            z=math.pi/2+math.pi/2*i/n
+            poses.append((ex+radius*math.sin(z),ey-radius-radius*math.cos(z),z))
+        if (all(pose_sweep_clear(a,b,grid,posts)for a,b in zip(poses,poses[1:])) and
+                terminal_sweep_clear(poses[-1],grid,posts)):return poses
+    return None
+
+
+def curve_target(points,pose,progress,terminal_yaw=None):
     """Monotonic nearest segment and arc-length carrot for pure pursuit."""
     x,y,yaw=pose
     nearest=min(range(max(0,progress-2),len(points)-1),
@@ -160,12 +239,25 @@ def curve_target(points,pose,progress):
     dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy)
     along=max(0.,min(length,((x-a[0])*dx+(y-a[1])*dy)/length))
     # Tight turn: a short carrot; following straight: longer, smoother tracking.
-    heading=math.atan2(dy,dx);look=.075 if abs(heading)>.35 else .14
+    # Curvature is geometric, not an absolute field heading. Rotate a route
+    # and tracking should be unchanged; avoid the old 7.5/14cm hard switch.
+    j=min(len(points)-2,progress+8);before=max(0,progress-4)
+    u,v=points[before],points[before+1];q,r=points[j],points[j+1]
+    h1=math.atan2(v[1]-u[1],v[0]-u[0]);h2=math.atan2(r[1]-q[1],r[0]-q[0])
+    change=abs(math.atan2(math.sin(h2-h1),math.cos(h2-h1)))
+    span=sum(math.dist(points[k][:2],points[k+1][:2])for k in range(before,j+1))
+    local_curvature=change/max(span,.006)
+    look=.14-.065*min(1.,local_curvature/8.)
     remaining=look+along;i=progress
     while i<len(points)-2 and remaining>math.dist(points[i][:2],points[i+1][:2]):
         remaining-=math.dist(points[i][:2],points[i+1][:2]);i+=1
     a,b=points[i],points[i+1];length=math.dist(a[:2],b[:2]);f=min(1.,remaining/max(length,1e-9))
     gx,gy=a[0]+f*(b[0]-a[0]),a[1]+f*(b[1]-a[1])
+    if terminal_yaw is not None and i==len(points)-2 and remaining>length:
+        # Steering-only tangent continuation avoids aiming backwards at a
+        # nearly reached endpoint. The robot still stops at the real goal.
+        extra=min(.14,remaining-length)
+        gx=points[-1][0]+extra*math.cos(terminal_yaw);gy=points[-1][1]+extra*math.sin(terminal_yaw)
     error=math.atan2(math.sin(math.atan2(gy-y,gx-x)-yaw),math.cos(math.atan2(gy-y,gx-x)-yaw))
     curvature=2*math.sin(error)/max(math.hypot(gx-x,gy-y),.025)
     return error,curvature,progress

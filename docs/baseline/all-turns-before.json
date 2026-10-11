@@ -1,0 +1,881 @@
+{
+  "passed": true,
+  "laps": [
+    {
+      "run_id": "0fdf35ce5dd4",
+      "lap_id": 1,
+      "passed": true,
+      "lap_sha256": "5a7f62e42061a3ede6051b7f0a4fd0182888bee8c6b279a7cbc810365403348e",
+      "corners": {
+        "top_west": {
+          "duration_wall_s": 6.5549653420000595,
+          "samples": 132,
+          "net_heading_deg": 90.90944549895123,
+          "heading_variation_deg": 102.07883507073949,
+          "excess_heading_variation_deg": 11.169389571788257,
+          "direction_changes": 1,
+          "stationary_rotation_sim_s": 2.6499999999999986,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.6022845729999062
+        },
+        "left_middle": {
+          "duration_wall_s": 6.052559417999873,
+          "samples": 122,
+          "net_heading_deg": 92.54669180474063,
+          "heading_variation_deg": 92.68464763555701,
+          "excess_heading_variation_deg": 0.1379558308163738,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.1499999999999986,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.099870213000031
+        },
+        "middle_down": {
+          "duration_wall_s": 6.3500162590000855,
+          "samples": 128,
+          "net_heading_deg": -92.45040877594866,
+          "heading_variation_deg": 92.46032021641578,
+          "excess_heading_variation_deg": 0.009911440467121032,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.299999999999997,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.349902630000088
+        },
+        "lower_east": {
+          "duration_wall_s": 7.251430873000118,
+          "samples": 146,
+          "net_heading_deg": 92.93882083258394,
+          "heading_variation_deg": 93.79119391297111,
+          "excess_heading_variation_deg": 0.8523730803871629,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "plate_entry": {
+          "duration_wall_s": 5.0531630069999665,
+          "samples": 102,
+          "net_heading_deg": 79.5495588037318,
+          "heading_variation_deg": 79.5495588037318,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.1499999999999915,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "return_start": {
+          "duration_wall_s": 2.599821837000036,
+          "samples": 53,
+          "net_heading_deg": -4.658135989216824e-05,
+          "heading_variation_deg": 4.658135989216824e-05,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        }
+      },
+      "camera_alignment": {
+        "observe_A_west": {
+          "duration_wall_s": 1.2500103259999378,
+          "samples": 26,
+          "net_heading_deg": 15.216889017974493,
+          "heading_variation_deg": 15.216889017974493,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.1000000000000014,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_middle": {
+          "duration_wall_s": 1.3493373300000258,
+          "samples": 28,
+          "net_heading_deg": 12.726209944913386,
+          "heading_variation_deg": 12.726209944913386,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.2000000000000028,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_B_east": {
+          "duration_wall_s": 1.0501979250000204,
+          "samples": 22,
+          "net_heading_deg": -10.471804395725142,
+          "heading_variation_deg": 10.471804395725142,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_1": {
+          "duration_wall_s": 2.2515946349999467,
+          "samples": 46,
+          "net_heading_deg": 71.84835707683757,
+          "heading_variation_deg": 71.84835707683757,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.1499999999999915,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_2": {
+          "duration_wall_s": 0.0,
+          "samples": 0,
+          "net_heading_deg": 0.0,
+          "heading_variation_deg": 0.0,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_3": {
+          "duration_wall_s": 0.0,
+          "samples": 0,
+          "net_heading_deg": 0.0,
+          "heading_variation_deg": 0.0,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        }
+      },
+      "stationary_rotation_sim_s_total": 9.249999999999986,
+      "road_violations": 0,
+      "red_straddles": 0,
+      "scope": "Same fixed 60cm corner windows from actual Gazebo pose samples; plate-entry ends before sampling, return-start excludes initial departure and completion tail. Includes waypoint planning stops, excludes required observation/light waits."
+    },
+    {
+      "run_id": "d225e48dd5de",
+      "lap_id": 1,
+      "passed": true,
+      "lap_sha256": "c13f8c157291fa355ae9fce64dfd388ce9d05a1e4593afd83beadb08a7e76840",
+      "corners": {
+        "top_west": {
+          "duration_wall_s": 6.453983971999833,
+          "samples": 130,
+          "net_heading_deg": 92.40013790029839,
+          "heading_variation_deg": 92.49337070192952,
+          "excess_heading_variation_deg": 0.09323280163112455,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.3500000000000014,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.34983986799989
+        },
+        "left_middle": {
+          "duration_wall_s": 6.303772480000134,
+          "samples": 127,
+          "net_heading_deg": 92.71649471639485,
+          "heading_variation_deg": 92.75209101748867,
+          "excess_heading_variation_deg": 0.03559630109381255,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.25,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.304027496999879
+        },
+        "middle_down": {
+          "duration_wall_s": 6.352397058999941,
+          "samples": 128,
+          "net_heading_deg": -92.94790843143954,
+          "heading_variation_deg": 97.30107493039426,
+          "excess_heading_variation_deg": 4.353166498954716,
+          "direction_changes": 1,
+          "stationary_rotation_sim_s": 2.3999999999999986,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.401977472999988
+        },
+        "lower_east": {
+          "duration_wall_s": 6.899752865999972,
+          "samples": 139,
+          "net_heading_deg": 92.88021935018128,
+          "heading_variation_deg": 93.34396984428696,
+          "excess_heading_variation_deg": 0.46375049410567376,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "plate_entry": {
+          "duration_wall_s": 5.100073385999849,
+          "samples": 103,
+          "net_heading_deg": 79.34648178282791,
+          "heading_variation_deg": 79.34648178282791,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.299999999999997,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "return_start": {
+          "duration_wall_s": 2.5497018089999983,
+          "samples": 52,
+          "net_heading_deg": 3.650187927963803e-05,
+          "heading_variation_deg": 0.00026224113265179127,
+          "excess_heading_variation_deg": 0.00022573925337215328,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        }
+      },
+      "camera_alignment": {
+        "observe_A_west": {
+          "duration_wall_s": 1.149704834999966,
+          "samples": 24,
+          "net_heading_deg": 11.891800286529115,
+          "heading_variation_deg": 11.891800286529115,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_middle": {
+          "duration_wall_s": 1.1500985339998806,
+          "samples": 24,
+          "net_heading_deg": 10.70694056371071,
+          "heading_variation_deg": 10.70694056371071,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.0499999999999972,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_B_east": {
+          "duration_wall_s": 1.249988915999893,
+          "samples": 26,
+          "net_heading_deg": -15.9386958643127,
+          "heading_variation_deg": 15.9386958643127,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.2000000000000028,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_1": {
+          "duration_wall_s": 2.349522868999884,
+          "samples": 48,
+          "net_heading_deg": 71.62275842436455,
+          "heading_variation_deg": 71.62275842436455,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.299999999999997,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_2": {
+          "duration_wall_s": 0.9988628460000655,
+          "samples": 21,
+          "net_heading_deg": 11.656185715953587,
+          "heading_variation_deg": 11.850282007143166,
+          "excess_heading_variation_deg": 0.1940962911895783,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.8999999999999915,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_3": {
+          "duration_wall_s": 0.0,
+          "samples": 0,
+          "net_heading_deg": 0.0,
+          "heading_variation_deg": 0.0,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        }
+      },
+      "stationary_rotation_sim_s_total": 9.299999999999997,
+      "road_violations": 0,
+      "red_straddles": 0,
+      "scope": "Same fixed 60cm corner windows from actual Gazebo pose samples; plate-entry ends before sampling, return-start excludes initial departure and completion tail. Includes waypoint planning stops, excludes required observation/light waits."
+    },
+    {
+      "run_id": "7118609745de",
+      "lap_id": 1,
+      "passed": true,
+      "lap_sha256": "9264d79b0253b965fdacdafbae27db4cb7a231792ec1953f0174d6f65894d61f",
+      "corners": {
+        "top_west": {
+          "duration_wall_s": 6.549671156000159,
+          "samples": 132,
+          "net_heading_deg": 91.08202179185497,
+          "heading_variation_deg": 102.37574276570088,
+          "excess_heading_variation_deg": 11.293720973845907,
+          "direction_changes": 1,
+          "stationary_rotation_sim_s": 2.6499999999999986,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.600102436000043
+        },
+        "left_middle": {
+          "duration_wall_s": 6.053056679000065,
+          "samples": 122,
+          "net_heading_deg": 91.19694392856208,
+          "heading_variation_deg": 91.6296026380142,
+          "excess_heading_variation_deg": 0.43265870945213536,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.049999999999997,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 1.9998738770000273
+        },
+        "middle_down": {
+          "duration_wall_s": 6.3533891179999955,
+          "samples": 128,
+          "net_heading_deg": -92.8170856466594,
+          "heading_variation_deg": 92.94021858487955,
+          "excess_heading_variation_deg": 0.12313293822015696,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.200000000000003,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.2003395700000965
+        },
+        "lower_east": {
+          "duration_wall_s": 7.150006159999975,
+          "samples": 144,
+          "net_heading_deg": 93.04818196336704,
+          "heading_variation_deg": 93.623357087273,
+          "excess_heading_variation_deg": 0.5751751239059575,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "plate_entry": {
+          "duration_wall_s": 5.451226751000149,
+          "samples": 110,
+          "net_heading_deg": 79.16378633040661,
+          "heading_variation_deg": 79.16378633040661,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.5999999999999943,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "return_start": {
+          "duration_wall_s": 2.5500882999999703,
+          "samples": 52,
+          "net_heading_deg": 2.5176903033677397e-05,
+          "heading_variation_deg": 5.571115018391816e-05,
+          "excess_heading_variation_deg": 3.053424715024076e-05,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        }
+      },
+      "camera_alignment": {
+        "observe_A_west": {
+          "duration_wall_s": 1.1499919130001217,
+          "samples": 24,
+          "net_heading_deg": 15.144871054586357,
+          "heading_variation_deg": 15.144871054586357,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.1000000000000014,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_middle": {
+          "duration_wall_s": 1.2491903620000357,
+          "samples": 26,
+          "net_heading_deg": 11.426833902823809,
+          "heading_variation_deg": 11.426833902823809,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.1499999999999986,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_B_east": {
+          "duration_wall_s": 1.1003452030001881,
+          "samples": 23,
+          "net_heading_deg": -11.015252256774087,
+          "heading_variation_deg": 11.015252256774087,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.0499999999999972,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_1": {
+          "duration_wall_s": 2.64992161400005,
+          "samples": 54,
+          "net_heading_deg": 71.28537258876904,
+          "heading_variation_deg": 71.28537258876904,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.5999999999999943,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_2": {
+          "duration_wall_s": 0.9498318490000202,
+          "samples": 20,
+          "net_heading_deg": 11.765435355093596,
+          "heading_variation_deg": 11.765435355093596,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.8499999999999943,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_3": {
+          "duration_wall_s": 0.0,
+          "samples": 0,
+          "net_heading_deg": 0.0,
+          "heading_variation_deg": 0.0,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        }
+      },
+      "stationary_rotation_sim_s_total": 9.499999999999993,
+      "road_violations": 0,
+      "red_straddles": 0,
+      "scope": "Same fixed 60cm corner windows from actual Gazebo pose samples; plate-entry ends before sampling, return-start excludes initial departure and completion tail. Includes waypoint planning stops, excludes required observation/light waits."
+    },
+    {
+      "run_id": "7bac1fad1834",
+      "lap_id": 1,
+      "passed": true,
+      "lap_sha256": "dcdc39042091b0751187692c7feef782d9b0087bbfba63fc1d175f9d9c62001b",
+      "corners": {
+        "top_west": {
+          "duration_wall_s": 6.552122931999975,
+          "samples": 132,
+          "net_heading_deg": 91.6773852732177,
+          "heading_variation_deg": 94.09098508611977,
+          "excess_heading_variation_deg": 2.413599812902078,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.4499999999999993,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.4497690279999915
+        },
+        "left_middle": {
+          "duration_wall_s": 6.60034779700004,
+          "samples": 133,
+          "net_heading_deg": 92.10950718800765,
+          "heading_variation_deg": 103.15787784595712,
+          "excess_heading_variation_deg": 11.048370657949457,
+          "direction_changes": 1,
+          "stationary_rotation_sim_s": 2.5500000000000043,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.5008169039999757
+        },
+        "middle_down": {
+          "duration_wall_s": 6.452318681999941,
+          "samples": 130,
+          "net_heading_deg": -92.29532903136229,
+          "heading_variation_deg": 103.63065165090819,
+          "excess_heading_variation_deg": 11.335322619545916,
+          "direction_changes": 1,
+          "stationary_rotation_sim_s": 2.299999999999997,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.301150615000097
+        },
+        "lower_east": {
+          "duration_wall_s": 7.349907816000041,
+          "samples": 148,
+          "net_heading_deg": 92.54826615584697,
+          "heading_variation_deg": 100.1831124361274,
+          "excess_heading_variation_deg": 7.634846280280425,
+          "direction_changes": 1,
+          "stationary_rotation_sim_s": 0.04999999999999716,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "plate_entry": {
+          "duration_wall_s": 5.550068571999873,
+          "samples": 112,
+          "net_heading_deg": 79.38748556100255,
+          "heading_variation_deg": 79.52658071939881,
+          "excess_heading_variation_deg": 0.13909515839626732,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.5999999999999943,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "return_start": {
+          "duration_wall_s": 2.549982319000037,
+          "samples": 52,
+          "net_heading_deg": 0.821510896300643,
+          "heading_variation_deg": 2.6375706674524895,
+          "excess_heading_variation_deg": 1.8160597711518462,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        }
+      },
+      "camera_alignment": {
+        "observe_A_west": {
+          "duration_wall_s": 1.0495510529999592,
+          "samples": 22,
+          "net_heading_deg": 12.16336264103191,
+          "heading_variation_deg": 12.16336264103191,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_middle": {
+          "duration_wall_s": 1.3498994899998706,
+          "samples": 28,
+          "net_heading_deg": 13.650217720260565,
+          "heading_variation_deg": 13.885840517376437,
+          "excess_heading_variation_deg": 0.23562279711587064,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.2000000000000028,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_B_east": {
+          "duration_wall_s": 1.3526943970000502,
+          "samples": 28,
+          "net_heading_deg": -16.63555335954301,
+          "heading_variation_deg": 16.63555335954301,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.1499999999999915,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_1": {
+          "duration_wall_s": 2.7501293600000736,
+          "samples": 56,
+          "net_heading_deg": 71.35490214705125,
+          "heading_variation_deg": 71.35490214705125,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.5999999999999943,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_2": {
+          "duration_wall_s": 0.8499942869998449,
+          "samples": 18,
+          "net_heading_deg": 9.989284691351797,
+          "heading_variation_deg": 9.989284691351797,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.7999999999999972,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_3": {
+          "duration_wall_s": 0.0,
+          "samples": 0,
+          "net_heading_deg": 0.0,
+          "heading_variation_deg": 0.0,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        }
+      },
+      "stationary_rotation_sim_s_total": 9.949999999999992,
+      "road_violations": 0,
+      "red_straddles": 0,
+      "scope": "Same fixed 60cm corner windows from actual Gazebo pose samples; plate-entry ends before sampling, return-start excludes initial departure and completion tail. Includes waypoint planning stops, excludes required observation/light waits."
+    },
+    {
+      "run_id": "6162e35515b8",
+      "lap_id": 1,
+      "passed": true,
+      "lap_sha256": "4a9844013b211edc9a6c4417c529624067c6099a5769fcc5d58ee25b2222ea04",
+      "corners": {
+        "top_west": {
+          "duration_wall_s": 6.506470368000009,
+          "samples": 131,
+          "net_heading_deg": 91.26729516750271,
+          "heading_variation_deg": 101.11663306739416,
+          "excess_heading_variation_deg": 9.849337899891458,
+          "direction_changes": 1,
+          "stationary_rotation_sim_s": 2.5500000000000007,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.5007810490001248
+        },
+        "left_middle": {
+          "duration_wall_s": 6.316001834999952,
+          "samples": 127,
+          "net_heading_deg": 93.08727944765684,
+          "heading_variation_deg": 93.11774099373558,
+          "excess_heading_variation_deg": 0.030461546078734855,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.25,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.3071547720001035
+        },
+        "middle_down": {
+          "duration_wall_s": 6.550878259000001,
+          "samples": 132,
+          "net_heading_deg": -92.08380206061432,
+          "heading_variation_deg": 104.15662069927215,
+          "excess_heading_variation_deg": 12.072818638657832,
+          "direction_changes": 1,
+          "stationary_rotation_sim_s": 2.4000000000000057,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.4003237479998916
+        },
+        "lower_east": {
+          "duration_wall_s": 7.054118820999975,
+          "samples": 142,
+          "net_heading_deg": 92.78413720926986,
+          "heading_variation_deg": 93.6983047274392,
+          "excess_heading_variation_deg": 0.9141675181693357,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "plate_entry": {
+          "duration_wall_s": 5.399984880999909,
+          "samples": 109,
+          "net_heading_deg": 78.94593678927376,
+          "heading_variation_deg": 78.94593678927376,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.5,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "return_start": {
+          "duration_wall_s": 2.4997884820002128,
+          "samples": 51,
+          "net_heading_deg": 2.825363494500721e-05,
+          "heading_variation_deg": 5.192642071927401e-05,
+          "excess_heading_variation_deg": 2.36727857742668e-05,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        }
+      },
+      "camera_alignment": {
+        "observe_A_west": {
+          "duration_wall_s": 1.2498508229998606,
+          "samples": 26,
+          "net_heading_deg": 15.63599783800202,
+          "heading_variation_deg": 15.63599783800202,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.2000000000000028,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_middle": {
+          "duration_wall_s": 1.2494477150000876,
+          "samples": 26,
+          "net_heading_deg": 11.205840071075903,
+          "heading_variation_deg": 11.205840071075903,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.0500000000000043,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_B_east": {
+          "duration_wall_s": 1.2993959100001575,
+          "samples": 27,
+          "net_heading_deg": -15.214311266949991,
+          "heading_variation_deg": 15.284736484114037,
+          "excess_heading_variation_deg": 0.07042521716404664,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.1500000000000057,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_1": {
+          "duration_wall_s": 2.648997055999871,
+          "samples": 54,
+          "net_heading_deg": 71.36377086262985,
+          "heading_variation_deg": 71.36377086262985,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.5,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_2": {
+          "duration_wall_s": 0.8995600939999804,
+          "samples": 19,
+          "net_heading_deg": 11.173221389627674,
+          "heading_variation_deg": 11.173221389627674,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.8499999999999943,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_3": {
+          "duration_wall_s": 0.0,
+          "samples": 0,
+          "net_heading_deg": 0.0,
+          "heading_variation_deg": 0.0,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        }
+      },
+      "stationary_rotation_sim_s_total": 9.700000000000006,
+      "road_violations": 0,
+      "red_straddles": 0,
+      "scope": "Same fixed 60cm corner windows from actual Gazebo pose samples; plate-entry ends before sampling, return-start excludes initial departure and completion tail. Includes waypoint planning stops, excludes required observation/light waits."
+    },
+    {
+      "run_id": "90e1edbcf4f9",
+      "lap_id": 1,
+      "passed": true,
+      "lap_sha256": "c751497822ab38be07df9d354bfd556eaa5a5743c638a1b2da828c6a1cee5566",
+      "corners": {
+        "top_west": {
+          "duration_wall_s": 6.4531718409998575,
+          "samples": 130,
+          "net_heading_deg": 92.24014161288241,
+          "heading_variation_deg": 92.39663345599793,
+          "excess_heading_variation_deg": 0.15649184311551384,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.3500000000000014,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.351271832999828
+        },
+        "left_middle": {
+          "duration_wall_s": 6.499282721999862,
+          "samples": 131,
+          "net_heading_deg": 91.25841167367967,
+          "heading_variation_deg": 103.2785254732366,
+          "excess_heading_variation_deg": 12.020113799556924,
+          "direction_changes": 1,
+          "stationary_rotation_sim_s": 2.450000000000003,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.449759345000075
+        },
+        "middle_down": {
+          "duration_wall_s": 6.451395317999868,
+          "samples": 130,
+          "net_heading_deg": -92.75359589965029,
+          "heading_variation_deg": 99.85682119765293,
+          "excess_heading_variation_deg": 7.103225298002639,
+          "direction_changes": 1,
+          "stationary_rotation_sim_s": 2.3999999999999915,
+          "internal_stop_count": 1,
+          "internal_stopped_wall_s": 2.399995100999604
+        },
+        "lower_east": {
+          "duration_wall_s": 7.052459040000031,
+          "samples": 142,
+          "net_heading_deg": 93.00126965178194,
+          "heading_variation_deg": 94.10720876188745,
+          "excess_heading_variation_deg": 1.105939110105516,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "plate_entry": {
+          "duration_wall_s": 5.450905882999905,
+          "samples": 110,
+          "net_heading_deg": 79.27384134124785,
+          "heading_variation_deg": 79.27384134124785,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.5999999999999943,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "return_start": {
+          "duration_wall_s": 2.6007479449999664,
+          "samples": 53,
+          "net_heading_deg": 3.4053129799168153e-06,
+          "heading_variation_deg": 4.0368129846656014e-05,
+          "excess_heading_variation_deg": 3.69628168667392e-05,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        }
+      },
+      "camera_alignment": {
+        "observe_A_west": {
+          "duration_wall_s": 1.0498726299997543,
+          "samples": 22,
+          "net_heading_deg": 11.107020946428808,
+          "heading_variation_deg": 11.107020946428808,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_middle": {
+          "duration_wall_s": 1.3508951040003012,
+          "samples": 28,
+          "net_heading_deg": 13.80548960339757,
+          "heading_variation_deg": 13.80548960339757,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.25,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_B_east": {
+          "duration_wall_s": 1.2000133589999677,
+          "samples": 25,
+          "net_heading_deg": -15.725932697247186,
+          "heading_variation_deg": 15.725932697247186,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 1.1000000000000085,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_1": {
+          "duration_wall_s": 2.650071157000184,
+          "samples": 54,
+          "net_heading_deg": 71.447753681596,
+          "heading_variation_deg": 71.447753681596,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 2.5999999999999943,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_2": {
+          "duration_wall_s": 0.950034826999854,
+          "samples": 20,
+          "net_heading_deg": 11.658102510704351,
+          "heading_variation_deg": 11.658102510704351,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.8999999999999915,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        },
+        "observe_plate_3": {
+          "duration_wall_s": 0.0,
+          "samples": 0,
+          "net_heading_deg": 0.0,
+          "heading_variation_deg": 0.0,
+          "excess_heading_variation_deg": 0.0,
+          "direction_changes": 0,
+          "stationary_rotation_sim_s": 0.0,
+          "internal_stop_count": 0,
+          "internal_stopped_wall_s": 0
+        }
+      },
+      "stationary_rotation_sim_s_total": 9.79999999999999,
+      "road_violations": 0,
+      "red_straddles": 0,
+      "scope": "Same fixed 60cm corner windows from actual Gazebo pose samples; plate-entry ends before sampling, return-start excludes initial departure and completion tail. Includes waypoint planning stops, excludes required observation/light waits."
+    }
+  ]
+}

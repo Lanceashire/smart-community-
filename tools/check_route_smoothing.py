@@ -18,12 +18,13 @@ def main():
     checks['whole_body_not_only_centre_checked']=not segment_clear((.3,-1.95),(1.1,-1.95),grid,[])
     post={'x':.2075,'y':-1.62,'yaw':math.pi/2,'width':.025,'depth':.025}
     checks['post_margin_blocks_premature_diagonal_to_lane_centre']=not segment_clear((-.1,-1.78),(1.1,-1.7),grid,[post])
-    checks['post_clear_lower_pass_permitted']=segment_clear((-.1,-1.8),(.5,-1.8),grid,[post])
+    checks['old_5_5cm_pass_rejected_by_larger_planned_margin']=not segment_clear((-.1,-1.8),(.5,-1.8),grid,[post])
+    checks['post_clear_lower_pass_permitted']=segment_clear((-.1,-1.825),(.5,-1.825),grid,[post])
     registered=list(grid.data);registered[22*210+116]=100
     measured=GridClearance(210,210,.02,(-2.1,-2.1),registered)
-    crooked=[(-.1,-1.8),(.1,-1.84),(.36,-1.844),(.42,-1.775),(.7,-1.75),(1.1,-1.7)]
+    crooked=[(-.1,-1.825),(.1,-1.84),(.36,-1.844),(.42,-1.775),(.7,-1.775),(1.1,-1.7)]
     staged=simplify_path(crooked,crooked[0],measured,[post])
-    checks['unsafe_gradient_bend_gets_checked_staging_point']=bool(staged) and len(staged)==3 and staged[1][1]==-1.8
+    checks['unsafe_gradient_bend_gets_checked_staging_point']=bool(staged) and len(staged)==3 and staged[1][1]==-1.825
     checks['both_staged_sweeps_and_pivot_remain_clear']=bool(staged) and all(segment_clear(x,y,measured,[post]) for x,y in zip(staged,staged[1:])) and pivot_clear(staged[1],measured,[post])
     checks['pivot_near_outer_line_rejected']=not pivot_clear((.5,-1.85),grid,[])
     checks['pivot_at_junction_has_full_rotation_clearance']=pivot_clear((1.1,-1.7),grid,[])

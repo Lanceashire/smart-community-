@@ -27,7 +27,7 @@ from community_demo.signal_gate import FreshGreenGate, VisualPhaseClock
 from community_demo.motion_profile import bend_limit
 from community_demo.sensor_validation import valid_rgb_image,valid_odometry,stamp_ns,valid_laser_scan
 from community_demo.inspection_policy import person_evidence_ready,signal_hold_reason,inspection_complete,recognition_complete
-from community_demo.route_path import GridClearance,simplify_path,continuous_lower_path,curve_target,pivot_clear
+from community_demo.route_path import GridClearance,simplify_path,continuous_lower_path,continuous_corner_path,continuous_return_path,curve_target,pivot_clear
 
 
 def wrap(angle):
@@ -43,9 +43,9 @@ def yaw_from_quaternion(q):
 # front of the 0.22 m body before the white stop line (0.16 m nominal margin).
 ROUTE = [
     ('top_approach', .52, 1.7, False), ('top_stop', .52, 1.7, True),
-    ('observe_A_north', -.74, 1.7, False), ('top_west', -1.7, 1.7, False),
-    ('observe_A_west', -1.7, 1.04, False), ('left_south', -1.7, .5, False),
-    ('observe_middle', -.90, .5, False), ('middle_east', -.1, .5, False),
+    ('observe_A_north', -.74, 1.7, False), ('top_west', -1.54, 1.7, False),
+    ('observe_A_west', -1.7, 1.04, False), ('left_south', -1.7, .66, False),
+    ('observe_middle', -.90, .5, False), ('middle_east', -.26, .5, False),
     ('observe_B_east', -.1, -.09, False),
     ('lower_approach', -.1, -.29, False), ('lower_stop', -.1, -.29, True),
     # Enter the checked arc earlier, leaving room for the full body to turn
@@ -64,6 +64,7 @@ OBSERVATIONS = {
     'observe_plate_2':[('plate_2', -math.pi/2)],
     'observe_plate_3':[('plate_3', -math.pi/2)],
 }
+CONTINUOUS_CORNERS={'observe_A_west':-math.pi/2,'observe_middle':0.,'observe_B_east':-math.pi/2}
 
 
 
@@ -120,6 +121,7 @@ class Patrol(Node):
                                  QoSProfile(depth=1,durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.path_refined=False;self.path_segment=1;self.path_align=False;self.path_settle_until=0.
         self.path_curved=False;self.curve_progress=0;self.path_curvature=0.
+        self.path_goal_yaw=None
         self.command_pub = self.create_publisher(TwistStamped, '/cmd_vel_nav', 10)
         self.status_pub = self.create_publisher(String, '/patrol/status', 10)
         self.signal_decisions = self.create_publisher(String, '/patrol/signal_decision', 10)
@@ -222,14 +224,19 @@ class Patrol(Node):
                             self.fail_path_request('nonfinite path');return
                         self.path_pending=False;self.path_request_deadline=None;self.path_goal_handle=None
                         self.path_refined=False
-                        self.path_curved=False;self.curve_progress=0
+                        self.path_curved=False;self.curve_progress=0;self.path_goal_yaw=None
                         if hasattr(self,'raw_path_pub'):self.raw_path_pub.publish(path)
                         now_ns=self.get_clock().now().nanoseconds
                         grid=getattr(self,'costmap',None);grid_stamp=getattr(self,'costmap_stamp_ns',None)
                         points=[(p.pose.position.x,p.pose.position.y) for p in path.poses]
                         refined=None;curve=None
-                        if ROUTE[self.index][0]=='bottom_east' and grid is not None and grid_stamp is not None and 0<=now_ns-grid_stamp<=2_000_000_000:
-                            curve=continuous_lower_path(points,self.pose,grid,self.static_posts)
+                        route_name=ROUTE[self.index][0]
+                        needs_checked_turn=route_name in ('bottom_east','right_north') or route_name in CONTINUOUS_CORNERS
+                        if needs_checked_turn and grid is not None and grid_stamp is not None and 0<=now_ns-grid_stamp<=2_000_000_000:
+                            if route_name=='bottom_east':curve=continuous_lower_path(points,self.pose,grid,self.static_posts,arrival_turn=True)
+                            elif route_name=='right_north':curve=continuous_return_path(points,self.pose,grid,self.static_posts)
+                            else:curve=continuous_corner_path(points,self.pose,CONTINUOUS_CORNERS[route_name],grid,self.static_posts)
+                            if route_name in ('bottom_east','right_north'):self.path_goal_yaw=math.pi/2 if route_name=='bottom_east' else math.pi
                             refined=[p[:2] for p in curve] if curve is not None else simplify_path(points,self.pose[:2],grid,self.static_posts)
                             if refined is not None:
                                 clean=NavPath();clean.header=path.header
@@ -240,7 +247,7 @@ class Patrol(Node):
                                     clean.poses.append(p)
                                 self.get_logger().info(f'PATH_REFINED {ROUTE[self.index][0]}: {len(points)} -> {len(refined)} points; swept body and live grid checked')
                                 path=clean;self.path_refined=True;self.path_segment=1;self.path_curved=curve is not None
-                        if ROUTE[self.index][0]=='bottom_east':
+                        if needs_checked_turn:
                             out=Path('log/paths')/self.run_id;out.mkdir(parents=True,exist_ok=True)
                             evidence={'run_id':self.run_id,'lap_id':self.lap_id,'stamp_ns':now_ns,
                                 'pose':self.pose,'pose_source_ns':self.pose_source_ns,
@@ -250,9 +257,9 @@ class Patrol(Node):
                                 'curve_poses':curve,
                                 'grid':None if grid is None else {'width':grid.width,'height':grid.height,
                                     'resolution':grid.resolution,'origin':grid.origin,'data':list(grid.data)}}
-                            (out/f'lap-{self.lap_id:03d}-bottom-{self.path_attempts}.json').write_text(json.dumps(evidence)+'\n')
-                        if ROUTE[self.index][0]=='bottom_east' and not self.path_refined:
-                            self.fail_path_request('lower junction needs a fresh grid and a whole-body-safe simplified path');return
+                            (out/f'lap-{self.lap_id:03d}-{route_name}-{self.path_attempts}.json').write_text(json.dumps(evidence)+'\n')
+                        if needs_checked_turn and not self.path_refined:
+                            self.fail_path_request('junction needs a fresh grid and a whole-body-safe path');return
                         self.path_attempts=0
                         self.path_align=self.path_refined and not self.path_curved;self.path_settle_until=now_ns/1e9+.35
                         self.path=path;self.path_pub.publish(path)
@@ -563,7 +570,7 @@ class Patrol(Node):
         x,y,yaw=self.pose
         points=[(p.pose.position.x,p.pose.position.y) for p in self.path.poses]
         if getattr(self,'path_curved',False):
-            error,self.path_curvature,self.curve_progress=curve_target(points,self.pose,self.curve_progress)
+            error,self.path_curvature,self.curve_progress=curve_target(points,self.pose,self.curve_progress,getattr(self,'path_goal_yaw',None))
             self.path_points=points;self.path_nearest=self.curve_progress
             self.path_segment_distance=math.dist((x,y),points[-1])
             return error
@@ -656,7 +663,28 @@ class Patrol(Node):
         # offset: the camera must keep facing the gantry while stopped.
         tolerance = .05 if name in ('top_approach', 'top_stop',
                                      'lower_approach', 'lower_stop') else .04
-        if name=='lower_south':tolerance=.008
+        if name in ('top_west','left_south','middle_east','lower_south'):tolerance=.008
+        goal_yaw=getattr(self,'path_goal_yaw',None) if self.path_index==self.index else None
+        if goal_yaw is not None:tolerance=.02
+        if goal_yaw is not None and getattr(self,'path_curved',False) and dist>=tolerance:
+            # The tangent extension is a steering target, not permission to
+            # drive indefinitely past a missed goal circle.
+            passed=(x-tx)*math.cos(goal_yaw)+(y-ty)*math.sin(goal_yaw)
+            if dist<.20 and passed>.025:
+                key=(self.lap_id,self.index)
+                if getattr(self,'arrival_replan_key',None)!=key:
+                    self.arrival_replan_key=key;self.arrival_replans=0
+                self.arrival_replans+=1
+                self.publish_command();self.motion_probe=None;self.path_index=-1;self.path=None
+                if self.arrival_replans>=3:
+                    self.fault='FAULT terminal goal missed after three checked arrivals'
+                self.log_status(self.fault or 'ARRIVAL_HOLD missed goal; replan checked path');return
+        if dist<tolerance and goal_yaw is not None and abs(wrap(goal_yaw-yaw))>.025:
+            fresh=self.costmap_stamp_ns is not None and 0<=now.nanoseconds-self.costmap_stamp_ns<=2_000_000_000
+            if not fresh or not pivot_clear(self.pose[:2],self.costmap,self.static_posts):
+                self.publish_command();self.path_index=-1;self.path=None;self.log_status('ARRIVAL_HOLD replan safe final heading');return
+            self.publish_command(0.,self.heading_pid.calculate(wrap(goal_yaw-yaw)))
+            self.log_status(self.command_guard or 'ALIGN_ARRIVAL '+name);return
         observing=name in OBSERVATIONS and self.observation_align
         if dist < tolerance or observing:
             self.motion_probe = None
