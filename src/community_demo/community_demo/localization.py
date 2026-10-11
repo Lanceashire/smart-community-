@@ -22,6 +22,7 @@ from std_msgs.msg import Float64,String
 from tf2_ros import TransformBroadcaster,StaticTransformBroadcaster
 from community_demo.patrol import yaw_from_quaternion,wrap
 from community_demo.pose_sync import interpolate,field_pose
+from community_demo.task_geometry import START,local_pose
 from community_demo.sensor_validation import valid_rgb_image,valid_odometry,pan_sample,stamp_ns,decode_xyz_cloud
 
 class Localization(Node):
@@ -33,7 +34,7 @@ class Localization(Node):
         self.scans=self.create_publisher(LaserScan,'/scan',qos_profile_sensor_data)
         self.cloud_source_ns=None
         self.status=self.create_publisher(String,'/localization/status',10)
-        self.xy=np.array([1.1,1.7]);self.yaw=math.pi;self.previous=None;self.pan=0.;self.pan_time=-1e9;self.frame_time=-1e9;self.odom_time=None;self.odom_received=-1e9;self.camera_received=-1e9
+        self.xy=np.array(START[:2]);self.yaw=START[2];self.previous=None;self.pan=0.;self.pan_time=-1e9;self.frame_time=-1e9;self.odom_time=None;self.odom_received=-1e9;self.camera_received=-1e9
         source=Path(get_package_share_directory('community_demo'))/'models/community_assets/materials/textures/floor.png'
         floor=cv2.imread(str(source),0);self.distance=cv2.distanceTransform((floor<210).astype(np.uint8),cv2.DIST_L2,5)*4.2/floor.shape[0]
         self.map_n=floor.shape[0];self.score=None
@@ -49,13 +50,15 @@ class Localization(Node):
         grid=np.array(np.meshgrid(np.linspace(-.045,.045,7),np.linspace(-.045,.045,7),np.linspace(-.04,.04,7),indexing='ij')).reshape(3,-1).T
         self.grid=grid
         latest=QoSProfile(depth=1,reliability=ReliabilityPolicy.BEST_EFFORT)
-        self.create_subscription(Odometry,'/model/patrol_bot/odometry',self.odom,latest)
+        # Wheel increments need a short queue while paint registration runs.
+        # Keep the source-age rejection in odom(); queued stale data is never used.
+        self.create_subscription(Odometry,'/model/patrol_bot/odometry',self.odom,qos_profile_sensor_data)
         self.create_subscription(PointCloud2,'/lidar/raw/points',self.cloud,latest)
         self.create_subscription(Image,'/camera/image',self.queue_image,latest)
         self.create_subscription(Float64,'/model/patrol_bot/camera_pan',self.on_pan,qos_profile_sensor_data)
         self.create_subscription(JointState,'/world/community/model/patrol_bot/joint_state',self.on_joint_state,qos_profile_sensor_data)
         static=[]
-        for parent,child,xyz,yaw in [('field','slam_map',(1.1,1.7,0),math.pi),('slam_base','laser_frame',(0,0,.235),0)]:
+        for parent,child,xyz,yaw in [('field','slam_map',(*START[:2],0),START[2]),('slam_base','laser_frame',(0,0,.235),0)]:
             t=TransformStamped();t.header.stamp=self.get_clock().now().to_msg();t.header.frame_id=parent;t.child_frame_id=child
             t.transform.translation.x,t.transform.translation.y,t.transform.translation.z=map(float,xyz)
             t.transform.rotation.z=math.sin(yaw/2);t.transform.rotation.w=math.cos(yaw/2);static.append(t)
@@ -66,7 +69,7 @@ class Localization(Node):
         t,yaw,rate=sample;age=self.get_clock().now().nanoseconds/1e9-t
         if not 0<=age<=.15 or (self.imu_samples and t<=self.imu_samples[-1][0]):return
         if self.imu_reference is None:self.imu_reference=yaw
-        self.imu_samples.append((t,wrap(math.pi+yaw-self.imu_reference),rate))
+        self.imu_samples.append((t,wrap(START[2]+yaw-self.imu_reference),rate))
 
     def on_joint_state(self,m):
         sample=pan_sample(m)
@@ -95,6 +98,11 @@ class Localization(Node):
         self.wheel_samples.append((stamp,tuple(current)))
         imu_yaw=heading_at(getattr(self,'imu_samples',[]),stamp)
         if imu_yaw is not None:self.yaw=imu_yaw
+        # Publish each accepted wheel source immediately. A same-rate timer
+        # can skip intermediate wheel stamps after a delayed callback, leaving
+        # avoidable holes in source-time TF/pose coverage. publish() retains
+        # the existing IMU, camera and odometry freshness checks and stamps.
+        self.publish()
     def queue_image(self,m):
         if not valid_rgb_image(m):return
         now_ns=self.get_clock().now().nanoseconds
@@ -201,7 +209,7 @@ class Localization(Node):
         # Pose belongs to the last integrated wheel sample, not the publication time.
         stamp=self.odom_time;transforms=[]
         # Separate mapping base avoids assigning two parents to navigation base.
-        for parent,child,x,y,yaw in [('field','base_link',*self.xy,self.yaw),('odom','slam_base',1.1-self.xy[0],1.7-self.xy[1],wrap(self.yaw-math.pi))]:
+        for parent,child,x,y,yaw in [('field','base_link',*self.xy,self.yaw),('odom','slam_base',*local_pose((*self.xy,self.yaw)))]:
             t=TransformStamped();t.header.stamp=stamp;t.header.frame_id=parent;t.child_frame_id=child;t.transform.translation.x=float(x);t.transform.translation.y=float(y);t.transform.rotation.z=math.sin(yaw/2);t.transform.rotation.w=math.cos(yaw/2);transforms.append(t)
         self.tf.sendTransform(transforms)
         m=Odometry();m.header.stamp=stamp;m.header.frame_id='field';m.child_frame_id='base_link';m.pose.pose.position.x=float(self.xy[0]);m.pose.pose.position.y=float(self.xy[1]);m.pose.pose.orientation=transforms[0].transform.rotation;self.poses.publish(m)

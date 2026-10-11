@@ -1,7 +1,7 @@
 """Metric drivable corridors from the supplied 4.2 m map, and full footprint."""
 import math
 # left,bottom,right,top. These polygons constrain navigation; they add no walls.
-CORRIDORS=[(-2,1.4,1.4,2),(-2,.2,-1.4,2),(-2,.2,.2,.8),(-.4,-2,.2,.8),(-.4,-2,1.4,-1.4),(.8,-2,1.4,2)]
+from community_demo.task_geometry import CORRIDORS
 HALF_LENGTH=.11
 HALF_WIDTH=.1125  # includes outer wheel faces
 
@@ -33,7 +33,7 @@ def clip_axis(polygon,axis,bound,greater):
     return output
 
 
-def polygon_in_road(polygon,margin=.008):
+def polygon_in_road(polygon,margin=.008,corridors=None):
     """Exact containment in the rectangle union, including concave junctions.
 
     Within each vertical strip the union's Y intervals are constant. A convex
@@ -41,7 +41,7 @@ def polygon_in_road(polygon,margin=.008):
     Checking only 81 body points misses small triangles at inside corners.
     """
     if not polygon or not all(math.isfinite(v) for p in polygon for v in p):return False
-    roads=[(a+margin,b+margin,c-margin,d-margin) for a,b,c,d in CORRIDORS]
+    roads=[(a+margin,b+margin,c-margin,d-margin) for a,b,c,d in (CORRIDORS if corridors is None else corridors)]
     left=min(p[0] for p in polygon);right=max(p[0] for p in polygon)
     cuts=sorted({left,right,*[v for r in roads for v in (r[0],r[2]) if left<v<right]})
     for a,c in zip(cuts,cuts[1:]):

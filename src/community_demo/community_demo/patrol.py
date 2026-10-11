@@ -24,10 +24,13 @@ from community_demo.bounded_pid import BoundedPID
 from community_demo.road_rules import safe_pose,predict,footprint,clear_of_posts,corridor_recovery
 from ament_index_python.packages import get_package_share_directory
 from community_demo.signal_gate import FreshGreenGate, VisualPhaseClock
-from community_demo.motion_profile import bend_limit
+from community_demo.motion_profile import path_velocity,velocity_envelope,coupled_command
 from community_demo.sensor_validation import valid_rgb_image,valid_odometry,stamp_ns,valid_laser_scan
 from community_demo.inspection_policy import person_evidence_ready,signal_hold_reason,inspection_complete,recognition_complete
-from community_demo.route_path import GridClearance,simplify_path,continuous_lower_path,continuous_corner_path,continuous_return_path,curve_target,pivot_clear
+from community_demo.trajectory import plan_trajectory
+from community_demo.route_path import GridClearance,curve_target,pivot_clear,rolling_terminal_allowed
+from community_demo.task_geometry import TASK,START,in_start_bay
+from community_demo.road_rules import body_corners
 
 
 def wrap(angle):
@@ -39,32 +42,11 @@ def yaw_from_quaternion(q):
                       1.0 - 2.0 * (q.y * q.y + q.z * q.z))
 
 
-# Centre-line route from the supplied sketch. The two stop waypoints put the
-# front of the 0.22 m body before the white stop line (0.16 m nominal margin).
-ROUTE = [
-    ('top_approach', .52, 1.7, False), ('top_stop', .52, 1.7, True),
-    ('observe_A_north', -.74, 1.7, False), ('top_west', -1.54, 1.7, False),
-    ('observe_A_west', -1.7, 1.04, False), ('left_south', -1.7, .66, False),
-    ('observe_middle', -.90, .5, False), ('middle_east', -.26, .5, False),
-    ('observe_B_east', -.1, -.09, False),
-    ('lower_approach', -.1, -.29, False), ('lower_stop', -.1, -.29, True),
-    # Enter the checked arc earlier, leaving room for the full body to turn
-    # continuously below the gantry and return to the east-lane centre.
-    ('lower_south', -.1, -1.67, False), ('bottom_east', 1.1, -1.7, False),
-    ('observe_plate_1', 1.1, -1.7, False), ('observe_plate_2', 1.1, -1.1, False),
-    ('observe_plate_3', 1.1, -.5, False), ('right_north', 1.1, 1.7, False),
-]
-OBSERVATION_HEADING={'observe_A_north':math.pi,'observe_A_west':-math.pi/2,'observe_middle':0.,'observe_B_east':-math.pi/2,'observe_plate_1':math.pi/2,'observe_plate_2':math.pi/2,'observe_plate_3':math.pi/2}
-OBSERVATIONS = {
-    'observe_A_north':[('A_north', math.pi/2)],
-    'observe_A_west':[('A_west', math.pi/2)],
-    'observe_middle':[('A_south', math.pi/2),('B_north', -math.pi/2+.16)],
-    'observe_B_east':[('B_east', -math.pi/2)],
-    'observe_plate_1':[('plate_1', -math.pi/2)],
-    'observe_plate_2':[('plate_2', -math.pi/2)],
-    'observe_plate_3':[('plate_3', -math.pi/2)],
-}
-CONTINUOUS_CORNERS={'observe_A_west':-math.pi/2,'observe_middle':0.,'observe_B_east':-math.pi/2}
+# Task geometry and semantic stops are data; every path uses one solver.
+WAYPOINTS=TASK['waypoints']
+ROUTE=[(w['name'],*w['position'],w['stop_for_light']) for w in WAYPOINTS]
+OBSERVATIONS={w['name']:w['views'] for w in WAYPOINTS if w['views']}
+OBSERVATION_HEADING={w['name']:w['heading'] for w in WAYPOINTS if w['views']}
 
 
 
@@ -114,6 +96,7 @@ class Patrol(Node):
         self.planner=ActionClient(self,ComputePathToPose,'/compute_path_to_pose')
         self.path_request_token=0;self.path_request_deadline=None;self.path_goal_handle=None
         self.path_retry_index=None;self.path_attempts=0
+        self.path_retry_deadline=None;self.path_retry_grid_ns=None
         self.path=None;self.path_pending=False;self.path_index=-1;self.path_pub=self.create_publisher(NavPath,'/patrol/path',10)
         self.raw_path_pub=self.create_publisher(NavPath,'/patrol/raw_path',10)
         self.costmap=None;self.costmap_stamp_ns=None
@@ -127,6 +110,7 @@ class Patrol(Node):
         self.signal_decisions = self.create_publisher(String, '/patrol/signal_decision', 10)
         self.signal_hold_pub = self.create_publisher(String, '/patrol/signal_hold', 10)
         self.approach_decisions = self.create_publisher(String, '/patrol/approach_decision', 10)
+        self.control_trace_pub=self.create_publisher(String,'/patrol/control_trace',10)
         self.lap_pub = self.create_publisher(String, '/patrol/lap', QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.run_id = uuid.uuid4().hex[:12]
         self.lap_id = 1
@@ -182,7 +166,23 @@ class Patrol(Node):
         if self.path_attempts >= 3:
             self.fault='FAULT Nav2 planning failed after three attempts: '+reason
         else:
+            # Do not spend every retry on one pre-clearance costmap. The
+            # full grid is published more slowly than scans or patrol ticks.
+            self.path_retry_grid_ns=getattr(self,'costmap_stamp_ns',None)
+            self.path_retry_deadline=self.get_clock().now().nanoseconds/1e9+5.
             self.get_logger().warning('Nav2 bounded retry: '+reason)
+
+    def path_retry_ready(self,now):
+        deadline=getattr(self,'path_retry_deadline',None)
+        if deadline is None:return True
+        if now.nanoseconds/1e9>=deadline:
+            self.fault='FAULT no updated live grid within bounded planning retry'
+            return False
+        before=getattr(self,'path_retry_grid_ns',None)
+        stamp=getattr(self,'costmap_stamp_ns',None)
+        if stamp is None or (before is not None and stamp<=before):return False
+        self.path_retry_deadline=None;self.path_retry_grid_ns=None
+        return True
 
     def check_path_deadline(self,now):
         if (self.path_pending and self.path_request_deadline is not None and
@@ -192,6 +192,8 @@ class Patrol(Node):
     def request_path(self,tx,ty):
         if self.path_retry_index != self.index:
             self.path_retry_index=self.index;self.path_attempts=0
+            self.path_retry_deadline=None;self.path_retry_grid_ns=None
+        if not self.path_retry_ready(self.get_clock().now()):return
         self.cancel_path_request()
         self.path_attempts += 1
         self.path_pending=True;self.path_index=self.index
@@ -201,7 +203,8 @@ class Patrol(Node):
         goal=ComputePathToPose.Goal();goal.goal=PoseStamped()
         goal.goal.header.frame_id='field';goal.goal.header.stamp=self.get_clock().now().to_msg()
         goal.goal.pose.position.x=float(tx);goal.goal.pose.position.y=float(ty)
-        goal.goal.pose.orientation.w=1.0;goal.planner_id='GridBased'
+        heading=WAYPOINTS[self.index]['heading']
+        goal.goal.pose.orientation.z=math.sin(heading/2);goal.goal.pose.orientation.w=math.cos(heading/2);goal.planner_id='GridBased'
         def current():
             return token == self.path_request_token and route_index == self.index and not self.completed
         def accepted(f):
@@ -229,37 +232,39 @@ class Patrol(Node):
                         now_ns=self.get_clock().now().nanoseconds
                         grid=getattr(self,'costmap',None);grid_stamp=getattr(self,'costmap_stamp_ns',None)
                         points=[(p.pose.position.x,p.pose.position.y) for p in path.poses]
-                        refined=None;curve=None
                         route_name=ROUTE[self.index][0]
-                        needs_checked_turn=route_name in ('bottom_east','right_north') or route_name in CONTINUOUS_CORNERS
-                        if needs_checked_turn and grid is not None and grid_stamp is not None and 0<=now_ns-grid_stamp<=2_000_000_000:
-                            if route_name=='bottom_east':curve=continuous_lower_path(points,self.pose,grid,self.static_posts,arrival_turn=True)
-                            elif route_name=='right_north':curve=continuous_return_path(points,self.pose,grid,self.static_posts)
-                            else:curve=continuous_corner_path(points,self.pose,CONTINUOUS_CORNERS[route_name],grid,self.static_posts)
-                            if route_name in ('bottom_east','right_north'):self.path_goal_yaw=math.pi/2 if route_name=='bottom_east' else math.pi
-                            refined=[p[:2] for p in curve] if curve is not None else simplify_path(points,self.pose[:2],grid,self.static_posts)
-                            if refined is not None:
-                                clean=NavPath();clean.header=path.header
-                                for j,(x,y) in enumerate(refined):
-                                    p=PoseStamped();p.header=path.header;p.pose.position.x=float(x);p.pose.position.y=float(y);p.pose.orientation.w=1.
-                                    if curve is not None:
-                                        p.pose.orientation.z=math.sin(curve[j][2]/2);p.pose.orientation.w=math.cos(curve[j][2]/2)
-                                    clean.poses.append(p)
-                                self.get_logger().info(f'PATH_REFINED {ROUTE[self.index][0]}: {len(points)} -> {len(refined)} points; swept body and live grid checked')
-                                path=clean;self.path_refined=True;self.path_segment=1;self.path_curved=curve is not None
-                        if needs_checked_turn:
-                            out=Path('log/paths')/self.run_id;out.mkdir(parents=True,exist_ok=True)
-                            evidence={'run_id':self.run_id,'lap_id':self.lap_id,'stamp_ns':now_ns,
-                                'pose':self.pose,'pose_source_ns':self.pose_source_ns,
-                                'grid_source_ns':grid_stamp,'grid_age_s':None if grid_stamp is None else (now_ns-grid_stamp)/1e9,
-                                'raw_points':points,'refined_points':refined,
-                                'strategy':'continuous_arc' if curve is not None else 'checked_segments',
-                                'curve_poses':curve,
-                                'grid':None if grid is None else {'width':grid.width,'height':grid.height,
-                                    'resolution':grid.resolution,'origin':grid.origin,'data':list(grid.data)}}
-                            (out/f'lap-{self.lap_id:03d}-{route_name}-{self.path_attempts}.json').write_text(json.dumps(evidence)+'\n')
-                        if needs_checked_turn and not self.path_refined:
-                            self.fail_path_request('junction needs a fresh grid and a whole-body-safe path');return
+                        fresh=(grid is not None and grid_stamp is not None and 0<=now_ns-grid_stamp<=2_000_000_000)
+                        if not fresh:
+                            self.fail_path_request('every trajectory requires a fresh live grid');return
+                        goal_yaw=WAYPOINTS[self.index]['heading']
+                        curve,planning=plan_trajectory(points,self.pose,goal_yaw,grid,self.static_posts,TASK['trajectory'])
+                        if curve is None:
+                            out=Path('log/planning-rejections')/self.run_id;out.mkdir(parents=True,exist_ok=True)
+                            (out/f'lap-{self.lap_id:03d}-{route_name}-{now_ns}.json').write_text(json.dumps({
+                                'pose':self.pose,'goal_heading':goal_yaw,'raw_points':points,
+                                'planning':planning,'stamp_ns':now_ns,'grid_source_ns':grid_stamp,
+                                'grid':{'width':grid.width,'height':grid.height,'resolution':grid.resolution,
+                                    'origin':grid.origin,'data':list(grid.data)}})+'\n')
+                            self.fail_path_request('no whole-body-safe continuous trajectory');return
+                        self.path_velocity_envelope=velocity_envelope(curve,TASK['motion'])
+                        if self.path_velocity_envelope is None:
+                            self.fail_path_request('invalid arc-distance retiming');return
+                        refined=[p[:2] for p in curve]
+                        clean=NavPath();clean.header=path.header
+                        for x,y,z in curve:
+                            p=PoseStamped();p.header=path.header;p.pose.position.x=float(x);p.pose.position.y=float(y)
+                            p.pose.orientation.z=math.sin(z/2);p.pose.orientation.w=math.cos(z/2);clean.poses.append(p)
+                        path=clean;self.path_refined=True;self.path_curved=True;self.path_goal_yaw=goal_yaw
+                        out=Path('log/paths')/self.run_id;out.mkdir(parents=True,exist_ok=True)
+                        evidence={'run_id':self.run_id,'lap_id':self.lap_id,'stamp_ns':now_ns,
+                            'pose':self.pose,'pose_source_ns':self.pose_source_ns,'grid_source_ns':grid_stamp,
+                            'grid_age_s':(now_ns-grid_stamp)/1e9,'raw_points':points,'refined_points':refined,
+                            'strategy':'unified_continuous_curvature','planning':planning,'curve_poses':curve,
+                            'velocity_envelope':self.path_velocity_envelope,
+                            'grid':{'width':grid.width,'height':grid.height,'resolution':grid.resolution,
+                                'origin':grid.origin,'data':list(grid.data)}}
+                        (out/f'lap-{self.lap_id:03d}-{route_name}-{self.path_attempts}.json').write_text(json.dumps(evidence)+'\n')
+                        self.get_logger().info(f'PATH_REFINED {route_name}: {len(points)} -> {len(curve)}; shared continuous-curvature solver')
                         self.path_attempts=0
                         self.path_align=self.path_refined and not self.path_curved;self.path_settle_until=now_ns/1e9+.35
                         self.path=path;self.path_pub.publish(path)
@@ -398,14 +403,16 @@ class Patrol(Node):
 
     def restart(self, request, response):
         fresh = self.pose_update is not None and (self.get_clock().now()-self.pose_update).nanoseconds < 700_000_000
-        if not fresh or not self.completed or self.pose is None or math.hypot(self.pose[0]-1.1, self.pose[1]-1.7) > .25:
+        if not fresh or not self.completed or self.pose is None or not in_start_bay(body_corners(*self.pose)):
             response.success = False
             response.message = 'Restart requires a live simulation and a completed lap at the start area.'
             return response
         self.index = 0
+        self.start_alignment=True
         self.blocked_since=None;self.clear_scans=0;self.recovery_count=0
         self.cancel_path_request()
         self.path_retry_index=None;self.path_attempts=0
+        self.path_retry_deadline=None;self.path_retry_grid_ns=None
         self.path_index=-1;self.path=None;self.path_pending=False
         self.completed = False
         self.distance_travelled = 0.0
@@ -555,6 +562,7 @@ class Patrol(Node):
             self.road_recovery_started=None;self.road_recovery_origin=None
         cmd.twist.linear.x = float(linear)
         cmd.twist.angular.z = float(angular)
+        self.published_command=(float(linear),float(angular))
         self.command_pub.publish(cmd)
 
     def log_status(self, value):
@@ -569,36 +577,14 @@ class Patrol(Node):
         if self.path is None or not self.path.poses:return None
         x,y,yaw=self.pose
         points=[(p.pose.position.x,p.pose.position.y) for p in self.path.poses]
-        if getattr(self,'path_curved',False):
-            error,self.path_curvature,self.curve_progress=curve_target(points,self.pose,self.curve_progress,getattr(self,'path_goal_yaw',None))
-            self.path_points=points;self.path_nearest=self.curve_progress
-            self.path_segment_distance=math.dist((x,y),points[-1])
-            return error
-        if self.path_refined:
-            target=self.path_segment
-            if target<len(points)-1 and math.dist((x,y),points[target])<.02:
-                target+=1;self.path_segment=target;self.path_align=True
-                self.path_settle_until=self.get_clock().now().nanoseconds/1e9+.35
-            self.path_points=points;self.path_nearest=target-1
-            a,b=points[target-1],points[target]
-            # Follow a stable segment, not NavFn's centimetre-scale zigzags.
-            dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy)
-            along=max(0.,min(length,((x-a[0])*dx+(y-a[1])*dy)/length))
-            look=min(length,along+.22)
-            gx,gy=a[0]+look*dx/length,a[1]+look*dy/length
-            self.path_segment_distance=math.dist((x,y),b)
-            if self.path_align:gx,gy=b
-            return wrap(math.atan2(gy-y,gx-x)-yaw)
-        nearest=min(range(len(points)),key=lambda i:math.hypot(points[i][0]-x,points[i][1]-y))
-        self.path_points=points;self.path_nearest=nearest
-        lookahead=nearest
-        near_post=any(math.hypot(p['x']-x,p['y']-y)<.45 for p in self.static_posts)
-        # Short lookahead around a real bend, not every straight pass of a post.
-        turning=bend_limit(points,nearest,0.,1.,.24)<.24
-        distance=.09 if near_post and turning else .14
-        while lookahead<len(points)-1 and math.hypot(points[lookahead][0]-x,points[lookahead][1]-y)<distance:lookahead+=1
-        gx,gy=points[lookahead]
-        return wrap(math.atan2(gy-y,gx-x)-yaw)
+        error,self.path_curvature,self.curve_progress=curve_target(points,self.pose,self.curve_progress,self.path_goal_yaw)
+        self.path_points=points;self.path_nearest=self.curve_progress
+        self.path_segment_distance=math.dist((x,y),points[-1])
+        a,b=points[self.curve_progress],points[self.curve_progress+1]
+        length=math.dist(a,b);dx,dy=b[0]-a[0],b[1]-a[1]
+        along=max(0.,min(length,((x-a[0])*dx+(y-a[1])*dy)/max(length,1e-9)))
+        self.path_remaining_arc=length-along+sum(math.dist(a,b)for a,b in zip(points[self.curve_progress+1:],points[self.curve_progress+2:]))
+        return error
 
     def front_blocked(self):
         if self.scan is None or not self.scan.ranges:
@@ -656,16 +642,22 @@ class Patrol(Node):
             self.pan_pub.publish(Float64(data=0.0))
             self.log_status('RECOVER_LOCALIZATION wait for fresh road-paint registration')
             return
+        if getattr(self,'start_alignment',False):
+            error=wrap(START[2]-self.pose[2])
+            if abs(error)>.025:
+                fresh=self.costmap_stamp_ns is not None and 0<=now.nanoseconds-self.costmap_stamp_ns<=2_000_000_000
+                if not fresh or not pivot_clear(self.pose[:2],self.costmap,self.static_posts):
+                    self.publish_command();self.log_status('START_HOLD waiting for safe departure orientation');return
+                self.publish_command(0.,self.heading_pid.calculate(error))
+                self.log_status(self.command_guard or 'ALIGN_START in configured bay');return
+            self.start_alignment=False
         name, tx, ty, stop = ROUTE[self.index]
         x, y, yaw = self.pose
         dist = math.hypot(tx - x, ty - y)
         # Avoid a last-centimetre heading flip toward the waypoint's lateral
         # offset: the camera must keep facing the gantry while stopped.
-        tolerance = .05 if name in ('top_approach', 'top_stop',
-                                     'lower_approach', 'lower_stop') else .04
-        if name in ('top_west','left_south','middle_east','lower_south'):tolerance=.008
+        tolerance=WAYPOINTS[self.index]['tolerance']
         goal_yaw=getattr(self,'path_goal_yaw',None) if self.path_index==self.index else None
-        if goal_yaw is not None:tolerance=.02
         if goal_yaw is not None and getattr(self,'path_curved',False) and dist>=tolerance:
             # The tangent extension is a steering target, not permission to
             # drive indefinitely past a missed goal circle.
@@ -679,14 +671,35 @@ class Patrol(Node):
                 if self.arrival_replans>=3:
                     self.fault='FAULT terminal goal missed after three checked arrivals'
                 self.log_status(self.fault or 'ARRIVAL_HOLD missed goal; replan checked path');return
+        moving_terminal=False
         if dist<tolerance and goal_yaw is not None and abs(wrap(goal_yaw-yaw))>.025:
             fresh=self.costmap_stamp_ns is not None and 0<=now.nanoseconds-self.costmap_stamp_ns<=2_000_000_000
-            if not fresh or not pivot_clear(self.pose[:2],self.costmap,self.static_posts):
-                self.publish_command();self.path_index=-1;self.path=None;self.log_status('ARRIVAL_HOLD replan safe final heading');return
-            self.publish_command(0.,self.heading_pid.calculate(wrap(goal_yaw-yaw)))
-            self.log_status(self.command_guard or 'ALIGN_ARRIVAL '+name);return
+            key=(self.lap_id,self.index)
+            if getattr(self,'terminal_tracking_key',None)!=key:
+                self.terminal_tracking_key=key;self.terminal_tracking_started=now.nanoseconds/1e9
+            elapsed=now.nanoseconds/1e9-self.terminal_tracking_started
+            terminal_speed=terminal_curvature=0.
+            if self.path is not None and getattr(self,'path_curved',False):
+                self.path_heading_error()
+                terminal_speed,_=path_velocity(self.path_points,self.path_nearest,self.path_curvature,
+                    self.path_remaining_arc,tolerance=tolerance,settings=TASK['motion'])
+                terminal_speed=min(.06,terminal_speed,self.path_velocity_envelope['speed_m_s'][self.path_nearest])
+                terminal_curvature=self.path_curvature
+            moving_terminal=(fresh and self.path is not None and getattr(self,'path_curved',False) and
+                self.localization_quality.get('state')=='tracking' and
+                rolling_terminal_allowed(self.pose,(tx,ty),goal_yaw,tolerance,self.costmap,self.static_posts,elapsed,
+                    speed=terminal_speed,curvature=terminal_curvature))
+            if not moving_terminal:
+                if not fresh or not pivot_clear(self.pose[:2],self.costmap,self.static_posts):
+                    self.publish_command();self.path_index=-1;self.path=None;self.log_status('ARRIVAL_HOLD replan safe final heading');return
+                # Goal-pose feedback has its own convergence rate; pursuit's
+                # slower heading gain can leave a tiny correction stopped for
+                # several ticks. Keep the same angular and slew limits.
+                self.publish_command(0.,max(-TASK['motion']['angular_speed'],min(
+                    TASK['motion']['angular_speed'],3.0*wrap(goal_yaw-yaw))))
+                self.log_status(self.command_guard or 'ALIGN_ARRIVAL '+name);return
         observing=name in OBSERVATIONS and self.observation_align
-        if dist < tolerance or observing:
+        if (dist < tolerance and not moving_terminal) or observing:
             self.motion_probe = None
             if name in OBSERVATIONS and not self.observe(name,now):return
             if stop:
@@ -761,6 +774,7 @@ class Patrol(Node):
             self.publish_command();self.log_status('WAIT_NAV2_PATH');return
         error = self.path_heading_error()
         angular = self.heading_pid.calculate(error)
+        limits=None
         if getattr(self,'path_align',False):
             self.motion_probe=None
             if now.nanoseconds/1e9<self.path_settle_until:
@@ -774,29 +788,23 @@ class Patrol(Node):
                 self.publish_command();self.path_index=-1;self.path=None
                 self.log_status('CURVE_HOLD replan after tracking deviation');return
             self.publish_command(0.,angular);self.log_status('ALIGN_ROUTE '+name);return
-        if abs(error) > .35 and not getattr(self,'path_curved',False):
-            linear = 0.0
-        else:
-            remaining=min(dist,self.path_segment_distance) if getattr(self,'path_refined',False) else dist
-            linear = max(.06, self.speed_pid.calculate(remaining))
-            # Extra speed only on straight, well-localized travel, away from stop approaches.
-            if abs(error)>.12 or 'approach' in name or stop or self.localization_quality.get('state')!='tracking':
-                linear=min(linear,.14 if self.localization_quality.get('state')=='degraded' else .18)
-            # A fresh, camera-anchored green can permit normal straight speed.
-            # The release gate and whole-body budget remain unchanged.
-            if 'approach' in name:
-                fresh=self.fresh_signal(now)
-                remaining=self.phase_clock.remaining_lower(now.nanoseconds/1e9)
-                enough=(fresh and self.light_state=='green' and remaining is not None and
-                        remaining>=max(0.,dist-.05)/.18+self.signal_gate.crossing_budget)
-                if enough and abs(error)<.06 and self.localization_quality.get('state')=='tracking':
-                    linear=max(linear,min(.26,self.speed_pid.calculate(dist)))
-                self.approach_decisions.publish(String(data=json.dumps({'run_id':self.run_id,'lap_id':self.lap_id,'route_point':name,'stamp':now.nanoseconds/1e9,'remaining_lower_s':remaining,'green_sufficient_for_approach_and_body':enough,'commanded_linear_m_s':linear,'source':'Fresh camera colour and camera-observed phase anchor'})))
-            if getattr(self,'path_curved',False):
-                linear=min(linear,.16,.55/max(abs(self.path_curvature),.01))
-                angular=linear*self.path_curvature
-            else:
-                linear=bend_limit(self.path_points,self.path_nearest,error,dist,linear)
+        linear,limits=path_velocity(self.path_points,self.path_nearest,self.path_curvature,self.path_remaining_arc,tolerance=tolerance,settings=TASK['motion'])
+        # Extra speed only on straight, well-localized travel, away from stop approaches.
+        if ('approach' in name or stop or self.localization_quality.get('state')!='tracking'):
+            linear=min(linear,.14 if self.localization_quality.get('state')=='degraded' else .18)
+        # A fresh, camera-anchored green can permit normal straight speed.
+        # The release gate and whole-body budget remain unchanged.
+        if 'approach' in name:
+            fresh=self.fresh_signal(now)
+            remaining=self.phase_clock.remaining_lower(now.nanoseconds/1e9)
+            enough=(fresh and self.light_state=='green' and remaining is not None and
+                    remaining>=max(0.,dist-.05)/.18+self.signal_gate.crossing_budget)
+            if enough and abs(error)<.06 and self.localization_quality.get('state')=='tracking':
+                linear=min(limits['selected_before_semantic_caps'],.26)
+            self.approach_decisions.publish(String(data=json.dumps({'run_id':self.run_id,'lap_id':self.lap_id,'route_point':name,'stamp':now.nanoseconds/1e9,'remaining_lower_s':remaining,'green_sufficient_for_approach_and_body':enough,'commanded_linear_m_s':linear,'source':'Fresh camera colour and camera-observed phase anchor'})))
+        linear=min(linear,self.path_velocity_envelope['speed_m_s'][self.path_nearest])
+        if moving_terminal:linear=min(linear,.06)
+        angular=linear*self.path_curvature
         if self.motion_probe is None:
             self.motion_probe = (now, x, y, yaw)
         elif (now - self.motion_probe[0]).nanoseconds > 4_000_000_000:
@@ -813,7 +821,20 @@ class Patrol(Node):
                 abs(wrap(OBSERVATION_HEADING[name]-yaw))<.035 and
                 self.localization_quality.get('state')=='tracking')
         self.pan_pub.publish(Float64(data=OBSERVATIONS[name][0][1] if prepan else 0.0))
+        stamp=now.nanoseconds/1e9
+        dt=stamp-getattr(self,'last_tracking_command_stamp',stamp-.1)
+        linear,angular=coupled_command(linear,self.path_curvature,getattr(self,'published_command',(0.,0.)),dt,TASK['motion'])
+        self.last_tracking_command_stamp=stamp
         self.publish_command(linear, angular)
+        if hasattr(self,'control_trace_pub'):
+            self.control_trace_pub.publish(String(data=json.dumps({'run_id':self.run_id,'lap_id':self.lap_id,
+                'route':name,'stamp':now.nanoseconds/1e9,'pose':self.pose,'curved':getattr(self,'path_curved',False),
+                'linear':linear,'angular':angular,'published_command':self.published_command,
+                'localization_quality':self.localization_quality.get('state'),
+                'terminal_tracking':moving_terminal,
+                'pose_age_s':None if self.pose_source_ns is None else (now.nanoseconds-self.pose_source_ns)/1e9,
+                'heading_error':error,'limits':limits,
+                'guard':self.command_guard})))
         self.log_status(self.command_guard or f'GO {name} ({self.index + 1}/{len(ROUTE)})')
 
 
