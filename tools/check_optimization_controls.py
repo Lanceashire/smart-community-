@@ -132,7 +132,7 @@ checks['different_view_plate_feedback_cannot_finish_early']=not plate_observatio
 def quality_hold(reason=None):
     now=Time(seconds=20.);pan=[];commands=[]
     state=SimpleNamespace(get_clock=lambda:SimpleNamespace(now=lambda:now),update_signal_context=lambda:None,
-        check_path_deadline=lambda now:None,tilt=0.,fault=None,completed=False,pose=(1.1,1.7,math.pi),pose_update=Time(seconds=19.95),
+        check_path_deadline=lambda now:None,tilt=0.,fault=None,completed=False,pose=(1.7,1.7,0.),pose_update=Time(seconds=19.95),
         pose_source_ns=19_950_000_000,require_vision=True,perception_update=Time(seconds=19.95),
         perception_stamp=19.95,scan_update=Time(seconds=19.95),scan_source_ns=19_950_000_000,quality_update=Time(seconds=19.95),
         localization_quality={'state':'lost','reason':reason},motion_probe=None,

@@ -50,7 +50,7 @@ def main():
     for name,dx,dy,da in [('start-plus',.025,-.025,.035),('start-minus',-.025,.025,-.035)]:
         tree=ET.parse(ROOT/'src/community_demo/worlds/community.sdf')
         robot=tree.getroot().find("world/model[@name='patrol_bot']")
-        robot.find('pose').text=f'{1.1+dx} {1.7+dy} .002 0 0 {math.pi+da}'
+        robot.find('pose').text=f'{1.7+dx} {1.7+dy} .002 0 0 {math.pi+da}'
         world=ROOT/'src/community_demo/worlds'/f'four-fixes-{name}.sdf'
         tree.write(world,encoding='utf-8',xml_declaration=True)
         manifest.append({'name':name,'world':world.name,'dx_m':dx,'dy_m':dy,'yaw_delta_rad':da,'sha256':hashlib.sha256(world.read_bytes()).hexdigest()})

@@ -62,7 +62,7 @@ for d,c in zip(reports,['#f59e0b','#0ea5e9','#22c55e','#a855f7','#e11d48','#14b8
     xy=[r['pose'][:2] for r in d['records']]
     label=f"{d['scenario']} / lap {d['lap_id']}：{d['physical_distance_m']:.2f} m"
     ax.plot([p[0] for p in xy],[p[1] for p in xy],color=c,lw=1.6,alpha=.85,label=label)
-ax.scatter([1.1],[1.7],s=130,marker='*',c='#a7f3d0',edgecolors='black',zorder=8)
+ax.scatter([1.7],[1.7],s=130,marker='*',c='#a7f3d0',edgecolors='black',zorder=8)
 ax.plot([.3,.3],[1.4,2.0],color='#ef4444',lw=3);ax.plot([-.4,.2],[-.51,-.51],color='#ef4444',lw=3)
 ax.set(xlim=(-2.1,2.1),ylim=(-2.1,2.1),xlabel='X (m)',ylabel='Y (m)',aspect='equal')
 ax.set_title('巡航优化验收：六圈实际物理轨迹',fontproperties=font,fontsize=17,pad=14)

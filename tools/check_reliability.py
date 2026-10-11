@@ -4,7 +4,7 @@ import argparse
 import json,math
 from pathlib import Path
 from community_demo.person_evidence import PersonEvidence
-from community_demo.motion_profile import bend_limit
+from community_demo.motion_profile import path_velocity
 
 tracker=PersonEvidence();confirmed=[]
 for frame,name in enumerate(['resident_01']*3+['visitor_01']*8,1):
@@ -22,9 +22,9 @@ out=tracker.update([{'name':'resident_01','confidence':.85,'bbox':[600,400,630,5
 assert len(out)==1
 straight=[(i*.02,0.) for i in range(30)]
 corner=[(i*.02,0.) for i in range(10)]+[(.18,i*.02) for i in range(1,15)]
-assert bend_limit(straight,0,0.,1.,.22)==.22
-assert bend_limit(corner,0,0.,1.,.22)==.12
-assert bend_limit(straight,0,.3,1.,.22)==.12
+assert path_velocity(straight,0,0.,1.,.22)[0]==.22
+assert path_velocity(corner,6,0.,.4,.22)[0]<.22
+assert path_velocity(straight,0,10.,1.,.22)[0]<=.065
 report={'passed':True,'identity_flip_does_not_double_count':True,'pan_compensated_track':True,
         'overlapping_identity_boxes_suppressed':True,'bend_slowdown_before_turn':True,
         'scope':'Actual evidence association and motion profile functions, no ROS answers'}

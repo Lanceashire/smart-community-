@@ -20,7 +20,7 @@ def node_at(index=1):
     gate=FreshGreenGate(phase)
     for t in [20.7,20.8,20.9,21.,21.1]:phase.observe('green',t);gate.observe('green',t)
     n=SimpleNamespace(get_clock=lambda:SimpleNamespace(now=lambda:Time(seconds=clock[0])),
-        get_logger=lambda:SimpleNamespace(warning=lambda m:None),
+        get_logger=lambda:SimpleNamespace(warning=lambda m:None,info=lambda m:None),
         index=index,completed=False,signal_context='top' if index==1 else None,
         crossing_gate=None,signal_gate=gate,phase_clock=phase,tilt=0.,fault=None,
         run_id='boundary-regression',lap_id=1,observation_align=False,
@@ -133,14 +133,21 @@ old.fire();checks['late_acceptance_is_cancelled']=old.value.cancelled==1 and n.p
 clock[0]=200.;n,cmd,status,dec=node_at(2);n.planner=Planner();n.path=None
 n.request_path(-.74,1.7);f=n.planner.futures[-1];f.fire();handle=f.value
 clock[0]+=5.;n.check_path_deadline(Time(seconds=clock[0]));n.request_path(-.74,1.7)
-path=NavPath();path.poses=[PoseStamped()]
+path=NavPath()
+for x,y in ((.52,1.7),(-.74,1.7)):
+    p=PoseStamped();p.pose.position.x=x;p.pose.position.y=y;path.poses.append(p)
 handle.future.value=SimpleNamespace(status=GoalStatus.STATUS_SUCCEEDED,result=SimpleNamespace(path=path));handle.future.fire()
 checks['late_path_cannot_replace_new_request']=n.path is None and n.path_pending and handle.cancelled==1
 f=n.planner.futures[-1];f.error=RuntimeError('injected transport error');f.fire()
 checks['future_exception_is_bounded_not_uncaught']=not n.path_pending and n.fault is None
 n.request_path(-.74,1.7);f=n.planner.futures[-1];f.fire()
+from community_demo.route_path import GridClearance
+n.costmap=GridClearance(210,210,.02,(-2.1,-2.1),[0]*44100)
+n.costmap_stamp_ns=Time(seconds=clock[0]).nanoseconds
+n.pose_source_ns=n.costmap_stamp_ns
 f.value.future.value=SimpleNamespace(status=GoalStatus.STATUS_SUCCEEDED,result=SimpleNamespace(path=path));f.value.future.fire()
-checks['valid_planner_result_recovers']=n.path is path and not n.path_pending and n.path_request_deadline is None
+checks['valid_planner_result_recovers']=(n.path is not None and n.path_curved and len(n.path.poses)>2 and
+    abs(n.path.poses[-1].pose.position.x+.74)<1e-6 and not n.path_pending and n.path_request_deadline is None)
 checks['successful_plan_resets_retry_budget']=n.path_attempts==0
 clock[0]=300.;n,cmd,status,dec=node_at(2);n.planner=SimpleNamespace(server_is_ready=lambda:False)
 for _ in range(3):n.request_path(0.,0.);clock[0]+=5.;n.check_path_deadline(Time(seconds=clock[0]))

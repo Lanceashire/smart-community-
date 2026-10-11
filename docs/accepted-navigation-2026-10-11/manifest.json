@@ -1,0 +1,16 @@
+{
+  "source": "Current resumed-08 autonomous laser mapping and saved-map eight-lap review; strict stress coverage failure disclosed",
+  "task_sha256": "e16215fc96c5fb97ac1ba8712682682317da4f4e38e112bb7d02a8cee50c8554",
+  "sha256": {
+    "navigation.yaml": "2cc6246080042289902457fa0c5a654bc0ef9b2e59bdf436fc83cedd2599c25a",
+    "navigation.pgm": "d4f37c7168a302bf245b083a0183f9b9e2ec48f914bff06ecfdc761298277bec"
+  },
+  "run_id": "391437e96be2",
+  "map_navigation_checks_passed": true,
+  "complete_matrix_passed": false,
+  "failed_matrix_checks": [
+    "mapped-stress_source_pose_coverage_at_least_98percent",
+    "mapped-dim_plate_entry_no_internal_stop"
+  ],
+  "scope": "Path, speed and terminal-turn audit: eight complete physical laps in seven isolated cases, including two successive laps in one running world, same frozen runtime source. Supplied upper-right bay start and finish; opposite departure and arrival headings with safe stationary departure alignment between laps. Fixed supplied field, known gallery and lane prior. No claim about hardware, unfamiliar persons, arbitrary starts or persistent-blockage detouring."
+}

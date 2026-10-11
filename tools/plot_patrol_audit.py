@@ -19,7 +19,7 @@ for report,colour in zip(reports,['#f59e0b','#22d3ee']):
  xy=[r['pose'][:2] for r in report['records']]
  label=('故障恢复测试' if report['mode']=='fault injection' else '正常重复巡航')+f"：{report['physical_distance_m']:.2f} m"
  ax.plot([p[0] for p in xy],[p[1] for p in xy],color=colour,lw=1.9,alpha=.9,label=label)
-ax.scatter([1.1],[1.7],s=120,marker='*',c='#a7f3d0',edgecolors='black',zorder=5)
+ax.scatter([1.7],[1.7],s=120,marker='*',c='#a7f3d0',edgecolors='black',zorder=5)
 ax.text(1.0,1.98,'起终点',fontproperties=font,color='#064e3b',ha='center',bbox={'facecolor':'white','alpha':.85,'edgecolor':'none'})
 ax.plot([.3,.3],[1.4,2.0],color='#ef4444',lw=3)
 ax.plot([-.4,.2],[-.51,-.51],color='#ef4444',lw=3)
