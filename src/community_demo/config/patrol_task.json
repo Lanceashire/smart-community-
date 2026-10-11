@@ -1,0 +1,301 @@
+{
+  "source": "Supplied competition route sketch; scenario inputs, not controller branches",
+  "start": [
+    1.7,
+    1.7,
+    3.141592653589793
+  ],
+  "finish": [
+    1.7,
+    1.7,
+    0.0
+  ],
+  "waypoints": [
+    {
+      "name": "top_approach",
+      "position": [
+        0.52,
+        1.7
+      ],
+      "heading": 3.141592653589793,
+      "stop_for_light": false,
+      "tolerance": 0.05,
+      "views": []
+    },
+    {
+      "name": "top_stop",
+      "position": [
+        0.52,
+        1.7
+      ],
+      "heading": 3.141592653589793,
+      "stop_for_light": true,
+      "tolerance": 0.05,
+      "views": []
+    },
+    {
+      "name": "observe_A_north",
+      "position": [
+        -0.74,
+        1.7
+      ],
+      "heading": 3.141592653589793,
+      "stop_for_light": false,
+      "tolerance": 0.02,
+      "views": [
+        [
+          "A_north",
+          1.5707963267948966
+        ]
+      ]
+    },
+    {
+      "name": "top_west",
+      "position": [
+        -1.26,
+        1.7
+      ],
+      "heading": 3.141592653589793,
+      "stop_for_light": false,
+      "tolerance": 0.008,
+      "views": []
+    },
+    {
+      "name": "observe_A_west",
+      "position": [
+        -1.7,
+        1.04
+      ],
+      "heading": -1.5707963267948966,
+      "stop_for_light": false,
+      "tolerance": 0.02,
+      "views": [
+        [
+          "A_west",
+          1.5707963267948966
+        ]
+      ]
+    },
+    {
+      "name": "left_south",
+      "position": [
+        -1.7,
+        0.94
+      ],
+      "heading": -1.5707963267948966,
+      "stop_for_light": false,
+      "tolerance": 0.008,
+      "views": []
+    },
+    {
+      "name": "observe_middle",
+      "position": [
+        -0.9,
+        0.5
+      ],
+      "heading": 0,
+      "stop_for_light": false,
+      "tolerance": 0.02,
+      "views": [
+        [
+          "A_south",
+          1.5707963267948966
+        ],
+        [
+          "B_north",
+          -1.4107963267948966
+        ]
+      ]
+    },
+    {
+      "name": "middle_east",
+      "position": [
+        -0.54,
+        0.5
+      ],
+      "heading": 0,
+      "stop_for_light": false,
+      "tolerance": 0.008,
+      "views": []
+    },
+    {
+      "name": "observe_B_east",
+      "position": [
+        -0.1,
+        -0.09
+      ],
+      "heading": -1.5707963267948966,
+      "stop_for_light": false,
+      "tolerance": 0.02,
+      "views": [
+        [
+          "B_east",
+          -1.5707963267948966
+        ]
+      ]
+    },
+    {
+      "name": "lower_approach",
+      "position": [
+        -0.1,
+        -0.29
+      ],
+      "heading": -1.5707963267948966,
+      "stop_for_light": false,
+      "tolerance": 0.05,
+      "views": []
+    },
+    {
+      "name": "lower_stop",
+      "position": [
+        -0.1,
+        -0.29
+      ],
+      "heading": -1.5707963267948966,
+      "stop_for_light": true,
+      "tolerance": 0.05,
+      "views": []
+    },
+    {
+      "name": "lower_south",
+      "position": [
+        -0.1,
+        -1.67
+      ],
+      "heading": -1.5707963267948966,
+      "stop_for_light": false,
+      "tolerance": 0.008,
+      "views": []
+    },
+    {
+      "name": "bottom_east",
+      "position": [
+        1.1,
+        -1.7
+      ],
+      "heading": 1.5707963267948966,
+      "stop_for_light": false,
+      "tolerance": 0.02,
+      "views": []
+    },
+    {
+      "name": "observe_plate_1",
+      "position": [
+        1.1,
+        -1.7
+      ],
+      "heading": 1.5707963267948966,
+      "stop_for_light": false,
+      "tolerance": 0.02,
+      "views": [
+        [
+          "plate_1",
+          -1.5707963267948966
+        ]
+      ]
+    },
+    {
+      "name": "observe_plate_2",
+      "position": [
+        1.1,
+        -1.1
+      ],
+      "heading": 1.5707963267948966,
+      "stop_for_light": false,
+      "tolerance": 0.02,
+      "views": [
+        [
+          "plate_2",
+          -1.5707963267948966
+        ]
+      ]
+    },
+    {
+      "name": "observe_plate_3",
+      "position": [
+        1.1,
+        -0.5
+      ],
+      "heading": 1.5707963267948966,
+      "stop_for_light": false,
+      "tolerance": 0.02,
+      "views": [
+        [
+          "plate_3",
+          -1.5707963267948966
+        ]
+      ]
+    },
+    {
+      "name": "right_north",
+      "position": [
+        1.7,
+        1.7
+      ],
+      "heading": 0.0,
+      "stop_for_light": false,
+      "tolerance": 0.02,
+      "views": []
+    }
+  ],
+  "trajectory": {
+    "minimum_radius": 0.08,
+    "maximum_radius": 0.44,
+    "radius_step": 0.01,
+    "terminal_transition_window": 0.75,
+    "reference_prefix_deviation": 0.15
+  },
+  "motion": {
+    "cruise": 0.26,
+    "angular_speed": 0.65,
+    "linear_acceleration": 0.5,
+    "braking_acceleration": 0.3,
+    "angular_acceleration": 1.2,
+    "lateral_acceleration": 0.2,
+    "command_latency_budget": 0.25
+  },
+  "start_bay": [
+    1.4,
+    1.4,
+    2.0,
+    2.0
+  ],
+  "drivable_corridors": [
+    [
+      -2,
+      1.4,
+      2,
+      2
+    ],
+    [
+      -2,
+      0.2,
+      -1.4,
+      2
+    ],
+    [
+      -2,
+      0.2,
+      0.2,
+      0.8
+    ],
+    [
+      -0.4,
+      -2,
+      0.2,
+      0.8
+    ],
+    [
+      -0.4,
+      -2,
+      1.4,
+      -1.4
+    ],
+    [
+      0.8,
+      -2,
+      1.4,
+      2
+    ]
+  ]
+}
