@@ -7,9 +7,20 @@
   "map_texture": "original supplied map; no invented perimeter wall",
   "origin": "map centre; +X right, +Y top, +Z up",
   "spawn": [
-    1.1,
+    1.7,
     1.7,
     3.141592653589793
+  ],
+  "finish": [
+    1.7,
+    1.7,
+    0.0
+  ],
+  "start_bay": [
+    1.4,
+    1.4,
+    2.0,
+    2.0
   ],
   "people": [
     {
@@ -357,6 +368,6 @@
     "Coordinates inferred from the provided raster map and snapped to nominal 0.1 m; not a surveyed CAD drawing.",
     "Five A and five B people follow schematic; identities and their exact positions are configurable.",
     "Lower gantry y=-1.62 m leaves room for the differential robot turning south of the posts.",
-    "Start is on the driving lane beside the upper-right start/finish box, not inside the parking column."
+    "Start and finish share the centre of the upper-right start/finish square; departure faces west and arrival faces east. The top corridor includes the bay entrance shown in the supplied route sketch."
   ]
 }
