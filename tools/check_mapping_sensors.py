@@ -55,6 +55,23 @@ checks['same_scan_published_once']=len(published)==1
 bad=copy.deepcopy(scan);bad.header.stamp=Time(seconds=9.).to_msg();Adapter.scan(adapter,bad)
 bad.header.stamp=Time(seconds=10.1).to_msg();Adapter.scan(adapter,bad)
 checks['old_and_future_scan_rejected']=len(published)==1
+# Exercise the real perturbation callback with delayed wheel sources. A short
+# input queue must preserve the full source-time outage rather than replay it.
+from nav_msgs.msg import Odometry
+from community_demo.sensor_stress import SensorStress
+stress_output=[];clock[0]=11.03
+stress=S(get_clock=node.get_clock,blackout_start=9.,blackout_end=11.,
+    counts={'odometry':dict(received=0,published=0,dropped=0,blackout=0)},
+    input_ages={'odometry':[]},outputs={'odometry':S(publish=stress_output.append)},
+    rng=S(random=lambda:.9,normal=lambda *a,**kw:0.))
+wheel=Odometry();wheel.pose.pose.orientation.w=1.
+wheel.header.stamp=Time(seconds=10.99).to_msg();SensorStress.receive(stress,'odometry',wheel)
+checks['queued_blackout_source_never_replayed']=not stress_output and stress.counts['odometry']['blackout']==1
+wheel.header.stamp=Time(seconds=11.02).to_msg();SensorStress.receive(stress,'odometry',wheel)
+checks['real_post_blackout_source_resumes']=len(stress_output)==1 and stress_output[0].header.stamp==wheel.header.stamp
+stress.rng.random=lambda:.05
+SensorStress.receive(stress,'odometry',wheel)
+checks['configured_random_drop_still_applied']=len(stress_output)==1 and stress.counts['odometry']['dropped']==1
 report={'passed':all(checks.values()),'checks':checks,'scope':'Actual production functions, isolated outputs; Gazebo IMU noise and real hardware calibration remain untested.'}
 p=argparse.ArgumentParser();p.add_argument('--output',required=True);a=p.parse_args();out=Path(a.output);out.parent.mkdir(parents=True,exist_ok=True)
 out.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2));raise SystemExit(0 if report['passed'] else 1)

@@ -159,7 +159,7 @@ def robot():
         <wheel_separation>.20</wheel_separation><wheel_radius>.055</wheel_radius>
         <topic>/model/patrol_bot/cmd_vel</topic><odom_topic>/model/patrol_bot/odometry</odom_topic>
         <frame_id>odom</frame_id><child_frame_id>base_link</child_frame_id>
-        <odom_publish_frequency>20</odom_publish_frequency>
+        <odom_publish_frequency>50</odom_publish_frequency>
       </plugin>
       <plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher">
         <dimensions>3</dimensions><odom_frame>world</odom_frame><robot_base_frame>base_link</robot_base_frame>

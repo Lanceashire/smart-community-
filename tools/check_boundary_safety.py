@@ -36,11 +36,12 @@ def node_at(index=1):
         blocked_since=None,clear_scans=0,recovery_count=0,front_blocked=lambda:False,
         path_index=index,path_pending=False,path=SimpleNamespace(poses=[1]),path_request_token=0,
         path_request_deadline=None,path_goal_handle=None,path_retry_index=None,path_attempts=0,
+        path_retry_deadline=None,path_retry_grid_ns=None,costmap_stamp_ns=round((clock[0]-.05)*1e9),
         path_pub=sink,path_heading_error=lambda:0.,path_points=[(.52,1.7),(-.74,1.7)],path_nearest=0,
         speed_pid=SimpleNamespace(calculate=lambda e:.24),heading_pid=SimpleNamespace(calculate=lambda e:0.),
         publish_lap=lambda phase:None,distance_travelled=12.)
     for method in ['update_signal_context','fresh_signal','publish_command','check_path_deadline',
-                   'cancel_path_request','fail_path_request','request_path']:
+                   'cancel_path_request','fail_path_request','path_retry_ready','request_path','install_path']:
         setattr(n,method,MethodType(getattr(Patrol,method),n))
     return n,commands,statuses,decisions
 
@@ -127,12 +128,16 @@ clock[0]=100.;n,cmd,status,dec=node_at(2);n.planner=Planner()
 n.request_path(-.74,1.7);old=n.planner.futures[-1]
 for attempt in range(3):
     clock[0]+=5.;n.check_path_deadline(Time(seconds=clock[0]))
-    if attempt<2:n.request_path(-.74,1.7)
+    if attempt<2:
+        n.costmap_stamp_ns=Time(seconds=clock[0]).nanoseconds
+        n.request_path(-.74,1.7)
 checks['nav2_times_out_and_faults_after_three_attempts']=n.fault is not None and not n.path_pending and n.path_attempts==3
 old.fire();checks['late_acceptance_is_cancelled']=old.value.cancelled==1 and n.path is None
 clock[0]=200.;n,cmd,status,dec=node_at(2);n.planner=Planner();n.path=None
 n.request_path(-.74,1.7);f=n.planner.futures[-1];f.fire();handle=f.value
-clock[0]+=5.;n.check_path_deadline(Time(seconds=clock[0]));n.request_path(-.74,1.7)
+clock[0]+=5.;n.check_path_deadline(Time(seconds=clock[0]))
+n.costmap_stamp_ns=Time(seconds=clock[0]).nanoseconds
+n.request_path(-.74,1.7)
 path=NavPath()
 for x,y in ((.52,1.7),(-.74,1.7)):
     p=PoseStamped();p.pose.position.x=x;p.pose.position.y=y;path.poses.append(p)
@@ -140,6 +145,7 @@ handle.future.value=SimpleNamespace(status=GoalStatus.STATUS_SUCCEEDED,result=Si
 checks['late_path_cannot_replace_new_request']=n.path is None and n.path_pending and handle.cancelled==1
 f=n.planner.futures[-1];f.error=RuntimeError('injected transport error');f.fire()
 checks['future_exception_is_bounded_not_uncaught']=not n.path_pending and n.fault is None
+n.costmap_stamp_ns=Time(seconds=clock[0]+.05).nanoseconds
 n.request_path(-.74,1.7);f=n.planner.futures[-1];f.fire()
 from community_demo.route_path import GridClearance
 n.costmap=GridClearance(210,210,.02,(-2.1,-2.1),[0]*44100)
@@ -150,7 +156,9 @@ checks['valid_planner_result_recovers']=(n.path is not None and n.path_curved an
     abs(n.path.poses[-1].pose.position.x+.74)<1e-6 and not n.path_pending and n.path_request_deadline is None)
 checks['successful_plan_resets_retry_budget']=n.path_attempts==0
 clock[0]=300.;n,cmd,status,dec=node_at(2);n.planner=SimpleNamespace(server_is_ready=lambda:False)
-for _ in range(3):n.request_path(0.,0.);clock[0]+=5.;n.check_path_deadline(Time(seconds=clock[0]))
+for _ in range(3):
+    n.costmap_stamp_ns=Time(seconds=clock[0]).nanoseconds
+    n.request_path(0.,0.);clock[0]+=5.;n.check_path_deadline(Time(seconds=clock[0]))
 checks['absent_planner_server_also_bounded']=n.fault is not None and n.path_attempts==3
 report={'passed':all(checks.values()),'checks':checks,'scope':'Actual runtime functions on isolated state, no actuator connection; full physical Gazebo acceptance separate.'}
 p=argparse.ArgumentParser();p.add_argument('--output',default='validation/boundary-fixes-2026-10-06/controller-regression.json');a=p.parse_args()

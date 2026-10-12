@@ -6,14 +6,14 @@ import numpy as np
 from shapely.geometry import Polygon,box
 from shapely.ops import unary_union
 from community_demo.trajectory import plan_trajectory
-from community_demo.route_path import GridClearance,curve_target,rolling_terminal_allowed
+from community_demo.route_path import GridClearance,curve_target,rolling_terminal_allowed,pose_sweep_clear
 from community_demo.road_rules import CORRIDORS,body_corners
 from community_demo.motion_profile import path_velocity,velocity_envelope,coupled_command
 
 ROOT=Path(__file__).resolve().parents[1]
 parser=argparse.ArgumentParser();parser.add_argument('--output',required=True);args=parser.parse_args()
 posts=json.loads((ROOT/'src/community_demo/maps/planning-obstacles.json').read_text())['posts']
-road=unary_union([box(*r)for r in CORRIDORS]);checks={};dense=0;cases=[]
+road=unary_union([box(*r)for r in CORRIDORS]);checks={};dense=0;cases=[];curves={}
 specs=[('top',(-1.26,1.7,math.pi),(-1.7,1.04,-math.pi/2)),
  ('left',(-1.7,.94,-math.pi/2),(-.9,.5,0)),('middle',(-.54,.5,0),(-.1,-.09,-math.pi/2)),
  ('lower',(-.1,-1.676,-math.pi/2),(1.1,-1.7,math.pi/2)),
@@ -23,6 +23,7 @@ for name,start,goal in specs:
     points=[start[:2],(start[0],goal[1]),goal[:2]] if name=='finish' else [start[:2],goal[:2]];curve,meta=plan_trajectory(points,start,goal[2],grid,posts)
     checks[name+'_certified_curve_exists']=curve is not None
     if curve is None:continue
+    curves[name]=curve
     checks[name+'_exact_start_and_goal']=math.dist(curve[0][:2],start[:2])<1e-8 and math.dist(curve[-1][:2],goal[:2])<1e-5
     checks[name+'_both_endpoint_headings']=abs(math.atan2(math.sin(curve[0][2]-start[2]),math.cos(curve[0][2]-start[2])))<1e-8 and abs(math.atan2(math.sin(curve[-1][2]-goal[2]),math.cos(curve[-1][2]-goal[2])))<1e-5
     valid=[]
@@ -92,9 +93,62 @@ checks['terminal_creep_cannot_escape_arrival_circle']=not rolling_terminal_allow
     (-.5433,.5006,.0674),(-.54,.5),0.,.008,grid,posts,0.,speed=.00516,curvature=-2.013)
 checks['terminal_wrong_direction_rejected']=not rolling_terminal_allowed(
     (-.5433,.5006,.0674),(-.54,.5),0.,.008,grid,posts,0.,speed=.00516,curvature=2.013)
+# The dark-scene entry reached its position with heading still unfinished,
+# then needed a stopped pivot. Check the complete feedback loop against an
+# independently integrated unicycle, including command slew and small entry
+# offsets; the position, heading and rolling-time limits stay unchanged.
+def terminal_tracking_completes(curve,offset,heading_offset,late_lateral_bias=0.):
+    points=[z[:2] for z in curve];goal=curve[-1]
+    pose=(curve[0][0]+offset,curve[0][1],curve[0][2]+heading_offset)
+    envelope=velocity_envelope(curve);previous=(0.,0.);progress=0;entered=None
+    bias=0.
+    for tick in range(600):
+        if math.dist(pose[:2],goal[:2])<.08:bias=late_lateral_bias
+        measured=(pose[0]-bias*math.sin(goal[2]),pose[1]+bias*math.cos(goal[2]),pose[2])
+        _,curvature,progress=curve_target(points,measured,progress,goal[2])
+        a,b=points[progress:progress+2];dx,dy=b[0]-a[0],b[1]-a[1];length=math.dist(a,b)
+        along=max(0.,min(length,((measured[0]-a[0])*dx+(measured[1]-a[1])*dy)/length))
+        remaining=length-along+sum(math.dist(a,b)for a,b in zip(points[progress+1:],points[progress+2:]))
+        speed,_=path_velocity(points,progress,curvature,remaining,tolerance=.02)
+        speed=min(speed,envelope['speed_m_s'][progress])
+        heading_error=abs(math.atan2(math.sin(goal[2]-pose[2]),math.cos(goal[2]-pose[2])))
+        if math.dist(measured[:2],goal[:2])<.02:
+            if entered is None:entered=tick*.1
+            if heading_error<=.025:return True
+            speed=min(speed,.06)
+            if not rolling_terminal_allowed(measured,goal[:2],goal[2],.02,grid,posts,
+                    tick*.1-entered,speed=speed,curvature=curvature):return False
+        speed,angular=coupled_command(speed,curvature,previous,.1);previous=(speed,angular)
+        heading=pose[2]+angular*.1
+        if abs(angular)<1e-9:
+            pose=(pose[0]+speed*.1*math.cos(pose[2]),pose[1]+speed*.1*math.sin(pose[2]),heading)
+        else:
+            pose=(pose[0]+speed/angular*(math.sin(heading)-math.sin(pose[2])),
+                  pose[1]-speed/angular*(math.cos(heading)-math.cos(pose[2])),heading)
+    return False
+for label,offset,heading_offset in [('centred',0.,0.),('right_offset',.005,0.),
+        ('left_offset',-.005,0.),('heading_plus',0.,.01),('heading_minus',0.,-.01)]:
+    checks['tight_entry_rolling_heading_'+label]=('lower' in curves and
+        terminal_tracking_completes(curves['lower'],offset,heading_offset))
+for label,bias in [('positive_4mm',.004),('positive_7mm',.007),('positive_9mm',.009),
+        ('negative_4mm',-.004),('negative_7mm',-.007),('negative_9mm',-.009)]:
+    checks['finish_late_localization_update_'+label]=('finish' in curves and
+        terminal_tracking_completes(curves['finish'],0.,0.,bias))
+_,straight_curvature,_=curve_target([(-.3,0.),(-.1,0.),(0.,0.)],(-.02,.003,0.),0,0.)
+checks['short_straight_terminal_keeps_bounded_lateral_feedback']=abs(straight_curvature)<1.2
+restart=(1.097,.31,math.pi/2)
+rejoined,joining=plan_trajectory([restart[:2],(1.1,1.7),(1.7,1.7)],restart,0.,grid,posts)
+join_index=joining.get('initial_centre_join_end_index',-1)
+checks['offset_restart_keeps_real_start_in_certified_connection']=(rejoined is not None and
+    0<join_index<len(rejoined) and math.dist(rejoined[0][:2],restart[:2])<1e-9 and
+    all(pose_sweep_clear(a,b,grid,posts)for a,b in zip(rejoined[:join_index+1],rejoined[1:join_index+1])))
+checks['offset_restart_settled_straight_still_within_2mm']=(rejoined is not None and
+    0<join_index<len(rejoined) and abs(rejoined[join_index][0]-1.1)<1e-9 and
+    all(abs(p[0]-1.1)<=.002 for p in rejoined[join_index:]if -.3<=p[1]<=.6))
 source=(ROOT/'src/community_demo/community_demo/patrol.py').read_text()
 checks['no_named_geometry_templates']=all(s not in source for s in ('continuous_lower_path','continuous_return_path','CONTINUOUS_CORNERS','bend_limit'))
-checks['single_solver_and_speed_entry']=source.count('plan_trajectory(points,')==1 and source.count('linear,limits=path_velocity(')==1
+batch_source=(ROOT/'src/community_demo/community_demo/continuous_route.py').read_text()
+checks['single_solver_and_speed_entry']=source.count('curve,planning=plan_batch(')==1 and batch_source.count('segment,meta=plan_trajectory(')==1 and source.count('linear,limits=path_velocity(')==1
 task=json.loads((ROOT/'src/community_demo/config/patrol_task.json').read_text())
 checks['task_start_finish_identical']=task['start'][:2]==task['finish'][:2]
 # Counterexample observed in Gazebo: Nav2 smoothing drifts toward a side goal

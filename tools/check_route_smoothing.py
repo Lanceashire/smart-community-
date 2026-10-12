@@ -8,7 +8,7 @@ from nav_msgs.msg import OccupancyGrid,Path as NavPath
 from geometry_msgs.msg import PoseStamped
 from community_demo.road_rules import safe_pose,CORRIDORS,body_corners
 from community_demo.route_path import GridClearance,simplify_path,segment_clear,pivot_clear
-from community_demo.patrol import Patrol
+from community_demo.patrol import Patrol,WAYPOINTS
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--output',required=True);a=p.parse_args();checks={}
@@ -60,6 +60,7 @@ def main():
     for x,y,yaw in curve:
         q=PoseStamped();q.pose.position.x=x;q.pose.position.y=y;path.poses.append(q)
     n=SimpleNamespace(path=path,curve_progress=0,path_goal_yaw=-math.pi/2,
+                      index=next(i for i,w in enumerate(WAYPOINTS) if w['name']=='observe_A_west'),
                       pose=curve[40],get_clock=node.get_clock)
     error=Patrol.path_heading_error(n)
     checks['continuous_tracker_has_positive_remaining_arc']=math.isfinite(error) and n.path_remaining_arc>0 and n.curve_progress>=39

@@ -47,6 +47,12 @@ def main():
             len(sensors) == 1 and sensors[0].findtext('topic') == '/imu/data'
             and float(sensors[0].findtext('update_rate', '0')) == 50
             and sensors[0].findtext('always_on') == 'true')
+        wheel = world.find("model[@name='patrol_bot']/plugin[@name='gz::sim::systems::DiffDrive']")
+        truth = world.find("model[@name='patrol_bot']/plugin[@name='gz::sim::systems::OdometryPublisher']")
+        checks['wheel_odometry_50hz_with_independent_truth_20hz'] = (
+            wheel is not None and truth is not None
+            and float(wheel.findtext('odom_publish_frequency', '0')) == 50
+            and float(truth.findtext('odom_publish_frequency', '0')) == 20)
         recording = E.parse(source.with_name('community_recording.sdf')).getroot().find('world')
         cameras = recording.findall("model[@name='recording_camera']")
         checks['recording_world_has_one_observer_camera'] = len(cameras) == 1

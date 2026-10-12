@@ -7,7 +7,7 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile,DurabilityPolicy
 from nav_msgs.msg import OccupancyGrid,Path as NavPath
 from std_msgs.msg import String
-from community_demo.patrol import ROUTE
+from community_demo.patrol import ROUTE,WAYPOINTS
 class Verify(Node):
  def __init__(self,mapfile,out):
   super().__init__('mapped_navigation_evidence');self.out=out;self.mapfile=mapfile;self.loaded=None;self.costmaps=[];self.paths=[];self.completed=None;self.status='';self.error=None
@@ -43,9 +43,12 @@ class Verify(Node):
   self.status=m.data
   if m.data.startswith('COMPLETE') and self.completed is None:self.completed=time.monotonic()
  def save(self):
+  coverage={w['name']:any(any(((x-w['position'][0])**2+(y-w['position'][1])**2)**.5<.002 for x,y in path['points']) for path in self.paths)for w in WAYPOINTS}
+  endpoints={w['name']:any(path['points'] and ((path['points'][-1][0]-w['position'][0])**2+(path['points'][-1][1]-w['position'][1])**2)**.5<.002 for path in self.paths)for w in WAYPOINTS if w['views'] or w['stop_for_light'] or w is WAYPOINTS[-1]}
   checks={'completed':self.completed is not None,'new_grid_exactly_loaded':bool(self.loaded) and self.loaded['exact_cells_match'],
     'field_frame':bool(self.loaded) and self.loaded['frame']=='field',
-    'grid_metadata_match':bool(self.loaded) and abs(self.loaded['resolution']-.02)<1e-6 and all(abs(a-b)<1e-6 for a,b in zip(self.loaded['origin'],[-2.1,-2.1])),'all_moving_goals_planned':all(any(path['points'] and ((path['points'][-1][0]-x)**2+(path['points'][-1][1]-y)**2)**.5<.06 for path in self.paths) for name,x,y,stop in ROUTE if not stop),
+    'grid_metadata_match':bool(self.loaded) and abs(self.loaded['resolution']-.02)<1e-6 and all(abs(a-b)<1e-6 for a,b in zip(self.loaded['origin'],[-2.1,-2.1])),
+    'all_waypoints_in_continuous_paths':all(coverage.values()),'semantic_stops_are_path_endpoints':all(endpoints.values()),
     'no_path_through_occupied_or_unknown':bool(self.paths) and all(not x['lethal_points'] and not x['unknown_points'] for x in self.paths),
     'live_global_costmap':len(self.costmaps)>=30}
   if self.costmaps:
@@ -54,7 +57,8 @@ class Verify(Node):
    if same:np.savez_compressed(self.out/'costmaps.npz',stamps=np.asarray([m['t'] for m in same]),grids=np.stack([m['data'] for m in same]))
   report={'passed':all(checks.values()) and self.error is None,'checks':checks,'error':self.error,'map_yaml':str(self.mapfile),
     'pgm_sha256':hashlib.sha256(self.mapfile.with_suffix('.pgm').read_bytes()).hexdigest(),'loaded':self.loaded,
-    'paths':self.paths,'costmap_frames':len(self.costmaps),'scope':'Nav2 input provenance and path feasibility; actual movement, lane rules and post clearance independently checked by lap audit'}
+    'paths':self.paths,'waypoint_coverage':coverage,'semantic_endpoints':endpoints,'costmap_frames':len(self.costmaps),
+    'scope':'Nav2 input provenance and path feasibility; every waypoint lies on a published path within2mm, observation/light/final points are endpoints. Transit waypoints need not terminate a separate path. Actual movement, lane rules and post clearance independently checked by lap audit'}
   (self.out/'mapped-navigation-evidence.json').write_text(json.dumps(report,indent=2)+'\n')
   print(json.dumps({k:v for k,v in report.items() if k!='paths'}),flush=True);return report['passed']
 def main():
