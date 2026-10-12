@@ -47,6 +47,9 @@ if(BUILD_TESTING)
   )
   target_link_libraries(recovery_state_machine_test ${PROJECT_NAME})
 
+  ament_add_gtest(command_buffer_test test/command_buffer_test.cpp)
+  target_link_libraries(command_buffer_test ${PROJECT_NAME})
+
   ament_add_gtest(stuck_detector_test
     test/stuck_detector_test.cpp
   )
