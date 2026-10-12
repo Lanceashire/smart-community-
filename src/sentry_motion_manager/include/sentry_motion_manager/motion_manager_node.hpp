@@ -25,6 +25,7 @@
 #include "nav_msgs/msg/odometry.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "sentry_motion_manager/motion_types.hpp"
+#include "sentry_motion_manager/command_buffer.hpp"
 #include "sentry_motion_manager/recovery_state_machine.hpp"
 #include "std_msgs/msg/bool.hpp"
 #include "std_msgs/msg/string.hpp"
@@ -45,6 +46,7 @@ private:
     double timeout_s;
     rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr subscription;
     MotionCommand latest_command;
+    CommandBuffer commands;
   };
 
   static constexpr std::size_t kSourceCount = 5;
