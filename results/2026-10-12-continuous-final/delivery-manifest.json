@@ -1,0 +1,100 @@
+{
+  "passed": true,
+  "checks": 566,
+  "frozen_entries": 256,
+  "run_id": "765ef7c1cd72",
+  "files": {
+    "defect-comparison.png": {
+      "bytes": 189205,
+      "sha256": "ad22d8247594d96b8bec541bdc3e95f4bc26c5d6a2545ad0e59050e16598f6d3"
+    },
+    "full-turns.json": {
+      "bytes": 10951,
+      "sha256": "74af0b153d8b41398dfd6254a356afb6dad19011ad23d7df8450d4f92e344fb7"
+    },
+    "连续转弯-完整一圈.mp4": {
+      "bytes": 5667134,
+      "sha256": "a71974b3ab9bc3b81799b2aae895564c88a8dfdf8656503da845481578e9ccf4"
+    },
+    "左上转弯.mp4": {
+      "bytes": 331737,
+      "sha256": "094cc417d20ac7948f859701859e590e2231d37469f4dcd14edcd3e6c900963b"
+    },
+    "左侧中部转弯.mp4": {
+      "bytes": 702132,
+      "sha256": "2e70a9d2dce5a72e4d3e84f98608fe8a7c9898551ab44f2eef0e49b055c6a80d"
+    },
+    "中部向下转弯.mp4": {
+      "bytes": 430296,
+      "sha256": "2f2be7682455a48ecc1af5a84d0bcc8e7136dc3455f72d73a7e6d9d004d87e06"
+    },
+    "下方左转.mp4": {
+      "bytes": 276632,
+      "sha256": "2a01a1995f3251c6a9327610833544101d5e82ec3bff6a5904bb4cf29c4d36ed"
+    },
+    "车牌前转弯.mp4": {
+      "bytes": 497204,
+      "sha256": "01844cda487d7e80f4a456bb03c9e82c0cf973cbe76ef6c46d99b14c6db7f6d9"
+    },
+    "最后右转回方格.mp4": {
+      "bytes": 247980,
+      "sha256": "5e5e484d87e97a7ef4f5f65236ed808ade8b692ee4e74d6a1d635b5f2aa5d8fc"
+    },
+    "final-turn-frame-0.png": {
+      "bytes": 284999,
+      "sha256": "17f24840d8435504acb486f2fe47448c7dc426c5e53804a401765ea88f99068a"
+    },
+    "final-turn-frame-1.png": {
+      "bytes": 303058,
+      "sha256": "6af1539b29982fa185bd67482127ea7d455c864f5cde3abdd7d4971aaeb2816c"
+    },
+    "final-turn-frame-2.png": {
+      "bytes": 259247,
+      "sha256": "2ce60fc773683d6cbd6d4f23a5f2410373254c9bc588edb0d780b193de4518d8"
+    },
+    "final-turn-frame-3.png": {
+      "bytes": 255287,
+      "sha256": "39e65934e58698da41a755dd9cb22432adb89270f278bef3edc0b2707d462e50"
+    },
+    "最后右转四帧核对.jpg": {
+      "bytes": 292702,
+      "sha256": "eb68965bdae2c3da259fec284aa94be508aa3f603bdf13b9d5072218ea7dcebb"
+    },
+    "video-manifest.json": {
+      "bytes": 2403,
+      "sha256": "62bdcf843e50b878982895240881d0d028d8fd6a7f35845b02a5fdd2ffcfd491"
+    },
+    "README.md": {
+      "bytes": 5140,
+      "sha256": "4a9f54c43e75d54f3984c9803084022b266f1e4fbd64eda200104b47ee350f27"
+    },
+    "acceptance.json": {
+      "bytes": 264468,
+      "sha256": "bdb140398566f1b70126147a45ce8f8a102a994e44b2a89a7f83be4358343452"
+    },
+    "before-after.json": {
+      "bytes": 48337,
+      "sha256": "5895547ed9df1e18ca7e22fa16a91ba7852021861cb5cccb7b6a1686e1df57e6"
+    },
+    "manager-live.json": {
+      "bytes": 15435,
+      "sha256": "75fb763db8451a8a613d260916d4b8789a376fd5eafec11a195fca1e789ef34b"
+    },
+    "manager-unit.json": {
+      "bytes": 629,
+      "sha256": "066f6ddf207b5afb3c9ac775d80a6b8be4efc176f1a10b1e3beb946af2e7e43d"
+    },
+    "loaded-manager.json": {
+      "bytes": 422,
+      "sha256": "37b62cd1d7276c946f67f3e53be804dfa9c86403b8a7ee4c1dec9438523592de"
+    },
+    "source.zip": {
+      "bytes": 71299634,
+      "sha256": "689c0148cc6c578d28f8e98baf7e807e69c74933e0f4f63aadaaffd2f39ffb42"
+    },
+    "evidence.zip": {
+      "bytes": 37544401,
+      "sha256": "c3c51df05fc50f10056d33113cc3e80637e93b7c9a52d76dcfe3396400f5c6ff"
+    }
+  }
+}

@@ -1,0 +1,339 @@
+{
+  "run_id": "765ef7c1cd72",
+  "passed_raw": true,
+  "lap_sha256": "1825c9310b9c8ae8d84a1d053693baf3af58b4316dea0dc5d22bdc312b66e579",
+  "corners": {
+    "top_west": {
+      "begin_sim_s": 21.15,
+      "turn_begin_sim_s": 21.75,
+      "end_sim_s": 25.6,
+      "begin_pose": [
+        -1.1116546245717192,
+        1.6999999816655036,
+        -3.1415865138162755
+      ],
+      "end_pose": [
+        -1.7006894892604245,
+        1.2196107685968791,
+        -1.5956298914845728
+      ],
+      "net_turn_deg": 86.4680072873571,
+      "stationary_rotation_sim_s": 0,
+      "minimum_speed_m_s": 0.060000002880373424,
+      "moving_median_m_s": 0.20451758821812357,
+      "stops_through_heading_convergence": [],
+      "samples": 90
+    },
+    "left_middle": {
+      "begin_sim_s": 27.6,
+      "turn_begin_sim_s": 29.4,
+      "end_sim_s": 32.8,
+      "begin_pose": [
+        -1.7009828624040093,
+        1.0997523894656498,
+        -1.5683410671702296
+      ],
+      "end_pose": [
+        -1.2301749194635891,
+        0.5038747935136882,
+        -0.023381096916548307
+      ],
+      "net_turn_deg": 86.22549813766634,
+      "stationary_rotation_sim_s": 0,
+      "minimum_speed_m_s": 0.1808971218420936,
+      "moving_median_m_s": 0.21529290364823142,
+      "stops_through_heading_convergence": [],
+      "samples": 105
+    },
+    "middle_down": {
+      "begin_sim_s": 42.95,
+      "turn_begin_sim_s": 43.6,
+      "end_sim_s": 48.0,
+      "begin_pose": [
+        -0.6951052158563351,
+        0.5003346134025195,
+        -0.0004766911988043673
+      ],
+      "end_pose": [
+        -0.09998932894186101,
+        0.03604265076906114,
+        -1.546477002258843
+      ],
+      "net_turn_deg": -86.31199426483698,
+      "stationary_rotation_sim_s": 0,
+      "minimum_speed_m_s": 0.05934300768268783,
+      "moving_median_m_s": 0.18745311575709311,
+      "stops_through_heading_convergence": [],
+      "samples": 102
+    },
+    "lower_east": {
+      "begin_sim_s": 70.6,
+      "turn_begin_sim_s": 72.6,
+      "end_sim_s": 76.2,
+      "begin_pose": [
+        -0.09908419899222716,
+        -1.1104278039715614,
+        -1.5706542503672227
+      ],
+      "end_pose": [
+        0.13421617462740312,
+        -1.8378610495446628,
+        -0.020913396224123693
+      ],
+      "net_turn_deg": 86.25393213410868,
+      "stationary_rotation_sim_s": 0,
+      "minimum_speed_m_s": 0.0763536387069652,
+      "moving_median_m_s": 0.0857265904217357,
+      "stops_through_heading_convergence": [],
+      "samples": 113
+    },
+    "plate_entry": {
+      "begin_sim_s": 77.65,
+      "turn_begin_sim_s": 79.6,
+      "end_sim_s": 84.3,
+      "begin_pose": [
+        0.5052916586516522,
+        -1.8291246245846855,
+        0.013655080489958607
+      ],
+      "end_pose": [
+        1.091353967684482,
+        -1.7135352778350612,
+        1.5516760736317643
+      ],
+      "net_turn_deg": 86.8310234932161,
+      "stationary_rotation_sim_s": 0,
+      "minimum_speed_m_s": 0.04132037517126816,
+      "moving_median_m_s": 0.05995356484800446,
+      "stops_through_heading_convergence": [],
+      "samples": 134
+    },
+    "return_start": {
+      "begin_sim_s": 101.7,
+      "turn_begin_sim_s": 102.35,
+      "end_sim_s": 106.85,
+      "begin_pose": [
+        1.0941003729285796,
+        0.8046915136309908,
+        1.5707963271260799
+      ],
+      "end_pose": [
+        1.6379078330281995,
+        1.7055996866034278,
+        0.022519908654663485
+      ],
+      "net_turn_deg": -86.54191991282578,
+      "stationary_rotation_sim_s": 0,
+      "minimum_speed_m_s": 0.13242335301766436,
+      "moving_median_m_s": 0.2167149341593177,
+      "stops_through_heading_convergence": [],
+      "samples": 104
+    }
+  },
+  "physical_stops": [
+    {
+      "begin_sim_s": 0.05,
+      "end_sim_s": 1.85,
+      "duration_sim_s": 1.8,
+      "pose": [
+        1.7,
+        1.7000000000000004,
+        3.141592653589793
+      ],
+      "statuses": {
+        "": 2,
+        "WAIT_FRESH_PERCEPTION": 32,
+        "PLAN top_approach": 2,
+        "GO top_approach": 1
+      }
+    },
+    {
+      "begin_sim_s": 8.55,
+      "end_sim_s": 11.0,
+      "duration_sim_s": 2.4499999999999993,
+      "pose": [
+        0.5586951591378908,
+        1.700000000015677,
+        3.141592653249645
+      ],
+      "statuses": {
+        "STOP top_stop: light=red; remaining_lower=None; visual_edges=0": 33,
+        "STOP top_stop: light=unknown; remaining_lower=None; visual_edges=0": 5,
+        "STOP top_stop: light=green; remaining_lower=14.0; visual_edges=1": 2,
+        "STOP top_stop: light=green; remaining_lower=13.9; visual_edges=1": 2,
+        "STOP top_stop: light=green; remaining_lower=13.8; visual_edges=1": 2,
+        "STOP top_stop: light=green; remaining_lower=13.700000000000001; visual_edges=1": 2,
+        "REACHED top_stop": 2,
+        "PLAN observe_A_north": 2
+      }
+    },
+    {
+      "begin_sim_s": 18.2,
+      "end_sim_s": 19.2,
+      "duration_sim_s": 1.0,
+      "pose": [
+        -0.724673248729067,
+        1.6999999996784223,
+        -3.141592617526023
+      ],
+      "statuses": {
+        "OBSERVE A_north": 19,
+        "REACHED observe_A_north": 2
+      }
+    },
+    {
+      "begin_sim_s": 36.1,
+      "end_sim_s": 41.7,
+      "duration_sim_s": 5.600000000000001,
+      "pose": [
+        -0.9139146799825796,
+        0.5006955157989385,
+        -0.0031413599470872886
+      ],
+      "statuses": {
+        "OBSERVE A_south": 1,
+        "OBSERVE B_north": 110,
+        "REACHED observe_middle": 2
+      }
+    },
+    {
+      "begin_sim_s": 51.6,
+      "end_sim_s": 67.1,
+      "duration_sim_s": 15.499999999999993,
+      "pose": [
+        -0.09902773551668703,
+        -0.27066770108142957,
+        -1.5711070821356887
+      ],
+      "statuses": {
+        "STOP lower_stop: light=green; remaining_lower=0.9; visual_edges=2": 1,
+        "STOP lower_stop: light=green; remaining_lower=0.7999999999999986; visual_edges=2": 2,
+        "STOP lower_stop: light=green; remaining_lower=0.6999999999999972; visual_edges=2": 2,
+        "STOP lower_stop: light=green; remaining_lower=0.6000000000000029; visual_edges=2": 2,
+        "STOP lower_stop: light=green; remaining_lower=0.5000000000000014; visual_edges=2": 2,
+        "STOP lower_stop: light=green; remaining_lower=0.4; visual_edges=2": 2,
+        "STOP lower_stop: light=green; remaining_lower=0.2999999999999986; visual_edges=2": 2,
+        "STOP lower_stop: light=green; remaining_lower=0.19999999999999718; visual_edges=2": 2,
+        "STOP lower_stop: light=green; remaining_lower=0.09899999999999809; visual_edges=2": 2,
+        "STOP lower_stop: light=green; remaining_lower=1.4432899320127035e-15; visual_edges=2": 2,
+        "STOP lower_stop: light=green; remaining_lower=0.0; visual_edges=2": 6,
+        "STOP lower_stop: light=green; remaining_lower=None; visual_edges=2": 8,
+        "STOP lower_stop: light=unknown; remaining_lower=None; visual_edges=2": 4,
+        "STOP lower_stop: light=yellow; remaining_lower=None; visual_edges=3": 56,
+        "STOP lower_stop: light=unknown; remaining_lower=None; visual_edges=3": 4,
+        "STOP lower_stop: light=red; remaining_lower=None; visual_edges=4": 196,
+        "STOP lower_stop: light=unknown; remaining_lower=14.199999999999998; visual_edges=4": 2,
+        "STOP lower_stop: light=unknown; remaining_lower=14.100000000000003; visual_edges=4": 2,
+        "STOP lower_stop: light=green; remaining_lower=13.999999999999995; visual_edges=5": 2,
+        "STOP lower_stop: light=green; remaining_lower=13.9; visual_edges=5": 2,
+        "STOP lower_stop: light=green; remaining_lower=13.800000000000006; visual_edges=5": 2,
+        "STOP lower_stop: light=green; remaining_lower=13.699999999999998; visual_edges=5": 2,
+        "REACHED lower_stop": 2,
+        "PLAN lower_south": 4
+      }
+    },
+    {
+      "begin_sim_s": 84.4,
+      "end_sim_s": 87.15,
+      "duration_sim_s": 2.75,
+      "pose": [
+        1.0913894157802524,
+        -1.7112865035153162,
+        1.558655513359134
+      ],
+      "statuses": {
+        "OBSERVE plate_1": 53,
+        "REACHED observe_plate_1": 2,
+        "GO observe_plate_2": 1
+      }
+    },
+    {
+      "begin_sim_s": 107.5,
+      "end_sim_s": 111.5,
+      "duration_sim_s": 4.0,
+      "pose": [
+        1.6850924562534049,
+        1.7060267423277733,
+        0.0030293705777526846
+      ],
+      "statuses": {
+        "COMPLETE single lap; travelled=12.91 m": 81
+      }
+    }
+  ],
+  "observations": [
+    {
+      "view": "A_north",
+      "confirmed": true,
+      "elapsed_s": 3.7,
+      "outcome_flag_moving": false,
+      "physical_speed_at_outcome_m_s": 0.0,
+      "source_alignment_s": 0.0,
+      "physical_moving_fraction_during_observation": 0.7432432432432432
+    },
+    {
+      "view": "A_west",
+      "confirmed": true,
+      "elapsed_s": 3.21,
+      "outcome_flag_moving": false,
+      "physical_speed_at_outcome_m_s": 0.05866102338526649,
+      "source_alignment_s": 0.00999999999999801,
+      "physical_moving_fraction_during_observation": 1.0
+    },
+    {
+      "view": "A_south",
+      "confirmed": true,
+      "elapsed_s": 2.8,
+      "outcome_flag_moving": false,
+      "physical_speed_at_outcome_m_s": 0.05646336376361495,
+      "source_alignment_s": 0.0,
+      "physical_moving_fraction_during_observation": 1.0
+    },
+    {
+      "view": "B_north",
+      "confirmed": true,
+      "elapsed_s": 5.5,
+      "outcome_flag_moving": false,
+      "physical_speed_at_outcome_m_s": 0.0,
+      "source_alignment_s": 0.0,
+      "physical_moving_fraction_during_observation": 0.0
+    },
+    {
+      "view": "B_east",
+      "confirmed": true,
+      "elapsed_s": 2.6,
+      "outcome_flag_moving": false,
+      "physical_speed_at_outcome_m_s": 0.044938909063350053,
+      "source_alignment_s": 0.0,
+      "physical_moving_fraction_during_observation": 1.0
+    },
+    {
+      "view": "plate_1",
+      "confirmed": true,
+      "elapsed_s": 2.9,
+      "outcome_flag_moving": false,
+      "physical_speed_at_outcome_m_s": 0.0,
+      "source_alignment_s": 0.0,
+      "physical_moving_fraction_during_observation": 0.1016949152542373
+    },
+    {
+      "view": "plate_2",
+      "confirmed": true,
+      "elapsed_s": 2.1,
+      "outcome_flag_moving": true,
+      "physical_speed_at_outcome_m_s": 0.059999989885012046,
+      "source_alignment_s": 0.0,
+      "physical_moving_fraction_during_observation": 1.0
+    },
+    {
+      "view": "plate_3",
+      "confirmed": true,
+      "elapsed_s": 2.4,
+      "outcome_flag_moving": true,
+      "physical_speed_at_outcome_m_s": 0.0600000002859491,
+      "source_alignment_s": 0.0,
+      "physical_moving_fraction_during_observation": 1.0
+    }
+  ],
+  "scope": "Actual Gazebo ground-truth poses/speeds. Each corner includes its 60cm approach (90cm for the broad final bend) through five consecutive samples within the original 0.025rad final-heading tolerance, including any moving/stopped recognition. No cutting at OBSERVE onset. Stops >=0.25s below 0.02m/s; required recognition/light/parking remains visible."
+}

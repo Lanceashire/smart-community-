@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "processes": [
+    {
+      "pid": "17038",
+      "executable": "/home/ubuntu/projects/smart-community/install/sentry_motion_manager/lib/sentry_motion_manager/sentry_motion_manager_node",
+      "libraries": {
+        "/home/ubuntu/projects/smart-community/build/sentry_motion_manager/libsentry_motion_manager.so": "a0e7fa4e12709d3e63e2ab0a512948940ac6120b47ff7094b5d1dd6f28e64ba5"
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "run_id": "765ef7c1cd72",
+  "passed": true,
+  "full_video": "连续转弯-完整一圈.mp4",
+  "duration_wall_s": 109.0,
+  "raw_source": "/home/ubuntu/projects/smart-community/validation/remaining-defects-2026-10-12/matrix-main-03/mapped-navigation/patrol.mp4",
+  "raw_sha256": "f8d89fd5c45503328c998fe19ee7431d75e44932fc6d71416a3a3c36c309d3df",
+  "full_sha256": "a71974b3ab9bc3b81799b2aae895564c88a8dfdf8656503da845481578e9ccf4",
+  "lap_sha256": "1825c9310b9c8ae8d84a1d053693baf3af58b4316dea0dc5d22bdc312b66e579",
+  "clips": [
+    {
+      "corner": "top_west",
+      "file": "左上转弯.mp4",
+      "source_wall_begin_s": 19.153553008000017,
+      "source_wall_end_s": 25.104544994000207,
+      "sha256": "094cc417d20ac7948f859701859e590e2231d37469f4dcd14edcd3e6c900963b"
+    },
+    {
+      "corner": "left_middle",
+      "file": "左侧中部转弯.mp4",
+      "source_wall_begin_s": 25.70606285699978,
+      "source_wall_end_s": 32.40356293399964,
+      "sha256": "2e70a9d2dce5a72e4d3e84f98608fe8a7c9898551ab44f2eef0e49b055c6a80d"
+    },
+    {
+      "corner": "middle_down",
+      "file": "中部向下转弯.mp4",
+      "source_wall_begin_s": 41.05620040399982,
+      "source_wall_end_s": 47.61420210799952,
+      "sha256": "2f2be7682455a48ecc1af5a84d0bcc8e7136dc3455f72d73a7e6d9d004d87e06"
+    },
+    {
+      "corner": "lower_east",
+      "file": "下方左转.mp4",
+      "source_wall_begin_s": 68.70770303500012,
+      "source_wall_end_s": 75.80067387700001,
+      "sha256": "2a01a1995f3251c6a9327610833544101d5e82ec3bff6a5904bb4cf29c4d36ed"
+    },
+    {
+      "corner": "plate_entry",
+      "file": "车牌前转弯.mp4",
+      "source_wall_begin_s": 75.75144939849997,
+      "source_wall_end_s": 83.90663655299977,
+      "sha256": "01844cda487d7e80f4a456bb03c9e82c0cf973cbe76ef6c46d99b14c6db7f6d9"
+    },
+    {
+      "corner": "return_start",
+      "file": "最后右转回方格.mp4",
+      "source_wall_begin_s": 99.81444938000004,
+      "source_wall_end_s": 109.0,
+      "sha256": "5e5e484d87e97a7ef4f5f65236ed808ade8b692ee4e74d6a1d635b5f2aa5d8fc"
+    }
+  ],
+  "scope": "Real chronological Gazebo recording at original wall-time speed. Only overhead panel rotated180deg and labelled; robot camera and timestamps preserved. Individual corner videos are explicitly cut excerpts, final clip includes normal parking. Frame-source timestamps map simulation events to original wall-time."
+}

@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "suites": [
+    {
+      "suite": "command_buffer_test",
+      "tests": 6,
+      "failures": 0,
+      "disabled": 0,
+      "sha256": "6d9013038e0ed9a825c6a7cddd49155c3bf9a90fdb084948556344de4ae857cf"
+    },
+    {
+      "suite": "recovery_state_machine_test",
+      "tests": 5,
+      "failures": 0,
+      "disabled": 0,
+      "sha256": "c05fa1ddff94fdd2da1b6fdd1fb8a5d2d01c0bc16f4c3fa11dff052a2b03dfa7"
+    },
+    {
+      "suite": "stuck_detector_test",
+      "tests": 8,
+      "failures": 0,
+      "disabled": 0,
+      "sha256": "b0b9c45c33af09f5819378d899f52b41124b4d74eadd8c3380c17a74bbb63fa6"
+    }
+  ]
+}
