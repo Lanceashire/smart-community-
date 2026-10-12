@@ -125,7 +125,7 @@ def terminal_sweep_clear(pose,grid,posts):
     return all(pose_sweep_clear(a,b,grid,posts)for a,b in zip(extension,extension[1:]))
 
 
-def curve_target(points,pose,progress,terminal_yaw=None):
+def curve_target(points,pose,progress,terminal_yaw=None,terminal_tolerance=.02):
     """Monotonic nearest segment and arc-length carrot for pure pursuit."""
     x,y,yaw=pose
     nearest=min(range(max(0,progress-2),len(points)-1),
@@ -149,8 +149,21 @@ def curve_target(points,pose,progress,terminal_yaw=None):
     if terminal_yaw is not None:
         # Increase terminal heading feedback gradually. A long straight carrot
         # near the endpoint otherwise leaves a turn for stationary alignment.
+        # Tight bends need early heading convergence; short straight arrivals
+        # retain their longer, less sensitive carrot. Measure the last 30cm of
+        # path geometry, independent of route names and field orientation.
+        terminal_span=terminal_turn=0.;heading=terminal_yaw
+        for u,v in reversed(list(zip(points,points[1:]))):
+            span=math.dist(u[:2],v[:2])
+            if span<1e-9:continue
+            tangent=math.atan2(v[1]-u[1],v[0]-u[0])
+            terminal_turn+=abs(math.atan2(math.sin(tangent-heading),math.cos(tangent-heading)))
+            terminal_span+=span;heading=tangent
+            if terminal_span>=.30:break
+        turn_weight=max(0.,min(1.,(terminal_turn-.70)/.35))
+        terminal_look=.075-.035*turn_weight
         blend=max(0.,min(1.,(.30-to_end)/.20));blend=blend*blend*(3-2*blend)
-        look=look*(1-blend)+min(look,.075)*blend
+        look=look*(1-blend)+min(look,terminal_look)*blend
     remaining=look+along;i=progress
     while i<len(points)-2 and remaining>math.dist(points[i][:2],points[i+1][:2]):
         remaining-=math.dist(points[i][:2],points[i+1][:2]);i+=1
@@ -163,6 +176,18 @@ def curve_target(points,pose,progress,terminal_yaw=None):
         gx=points[-1][0]+extra*math.cos(terminal_yaw);gy=points[-1][1]+extra*math.sin(terminal_yaw)
     error=math.atan2(math.sin(math.atan2(gy-y,gx-x)-yaw),math.cos(math.atan2(gy-y,gx-x)-yaw))
     curvature=2*math.sin(error)/max(math.hypot(gx-x,gy-y),.025)
+    if terminal_yaw is not None and terminal_tolerance>0:
+        # Once lateral error fits the existing arrival circle, finish the
+        # configured heading while braking. A late localization correction
+        # must not pull the carrot across that heading and require a reverse
+        # stationary pivot. Retain lateral pursuit outside the allowed room;
+        # all original arrival, rolling-time and body-sweep guards still apply.
+        lateral=-(x-points[-1][0])*math.sin(terminal_yaw)+(y-points[-1][1])*math.cos(terminal_yaw)
+        room=max(0.,min(1.,(terminal_tolerance-abs(lateral))/(terminal_tolerance*.5)))
+        blend=max(0.,min(1.,(.10-to_end)/.07));blend=blend*blend*(3-2*blend)*room*(1-turn_weight)
+        heading_error=math.atan2(math.sin(terminal_yaw-yaw),math.cos(terminal_yaw-yaw))
+        heading_curvature=2*math.sin(heading_error)/max(look,.075)
+        curvature=curvature*(1-blend)+heading_curvature*blend
     return error,curvature,progress
 
 

@@ -20,14 +20,18 @@ class SensorStress(Node):
         self.rng=np.random.default_rng(self.seed)
         self.outputs={}
         latest=QoSProfile(depth=1,reliability=ReliabilityPolicy.BEST_EFFORT)
+        # Preserve real wheel samples while the large image-noise callback runs.
+        # Five 50Hz samples cover only 100ms; localization still rejects stale data.
+        wheel=QoSProfile(depth=5,reliability=ReliabilityPolicy.BEST_EFFORT)
         self.input_ages={k:[] for k in ['image','odometry','points']}
         self.counts={k:{'received':0,'published':0,'dropped':0,'blackout':0} for k in ['image','odometry','points']}
         self.blackout_start=None;self.blackout_end=None;self.blackout_samples=[]
         self.speed=0.;self.command=(0.,0.)
         for kind,topic,typ in [('image','/camera/image',Image),('odometry','/model/patrol_bot/odometry',Odometry),('points','/lidar/raw/points',PointCloud2)]:
             target={'image':'/stress/camera/image','odometry':'/stress/odometry','points':'/stress/points'}[kind]
-            self.outputs[kind]=self.create_publisher(typ,target,latest)
-            self.create_subscription(typ,topic,lambda m,k=kind:self.receive(k,m),latest)
+            qos=wheel if kind=='odometry' else latest
+            self.outputs[kind]=self.create_publisher(typ,target,qos)
+            self.create_subscription(typ,topic,lambda m,k=kind:self.receive(k,m),qos)
         self.create_subscription(String,'/patrol/status',self.on_status,10)
         self.create_subscription(Odometry,'/model/patrol_bot/ground_truth',self.on_truth,qos_profile_sensor_data)
         self.create_subscription(Twist,'/model/patrol_bot/cmd_vel',lambda m:setattr(self,'command',(m.linear.x,m.angular.z)),10)
@@ -48,7 +52,9 @@ class SensorStress(Node):
         stamp=m.header.stamp.sec+m.header.stamp.nanosec/1e9
         self.input_ages[kind].append(now-stamp)
         self.input_ages[kind]=self.input_ages[kind][-200:]
-        if self.blackout_end is not None and now<self.blackout_end:
+        # A queued source from the blackout must not leak out after it ends.
+        if self.blackout_end is not None and (now<self.blackout_end or
+                self.blackout_start<=stamp<self.blackout_end):
             c['blackout']+=1;return
         if self.rng.random()<.1:
             c['dropped']+=1;return

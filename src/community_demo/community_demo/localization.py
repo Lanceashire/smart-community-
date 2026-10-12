@@ -17,7 +17,7 @@ from ament_index_python.packages import get_package_share_directory
 from geometry_msgs.msg import TransformStamped
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import PointCloud2, LaserScan, Image, JointState, Imu
-from community_demo.imu_heading import imu_sample,heading_at
+from community_demo.imu_heading import imu_sample,map_heading_at,PaintHeadingCalibration
 from std_msgs.msg import Float64,String
 from tf2_ros import TransformBroadcaster,StaticTransformBroadcaster
 from community_demo.patrol import yaw_from_quaternion,wrap
@@ -45,6 +45,8 @@ class Localization(Node):
         self.axis_improvements=None
         self.camera_source_time=None
         self.require_imu=True;self.imu_samples=deque(maxlen=512);self.imu_reference=None
+        self.heading_calibration=PaintHeadingCalibration()
+        self.imu_map_offset=0.
         self.create_subscription(Imu,'/imu/data',self.imu,qos_profile_sensor_data)
         self.quality=self.create_publisher(String,'/localization/quality',qos_profile_sensor_data)
         grid=np.array(np.meshgrid(np.linspace(-.045,.045,7),np.linspace(-.045,.045,7),np.linspace(-.04,.04,7),indexing='ij')).reshape(3,-1).T
@@ -96,7 +98,7 @@ class Localization(Node):
             self.yaw=wrap(self.yaw+wrap(q-self.previous[2]))
         self.previous=current;self.odom_time=m.header.stamp
         self.wheel_samples.append((stamp,tuple(current)))
-        imu_yaw=heading_at(getattr(self,'imu_samples',[]),stamp)
+        imu_yaw=map_heading_at(getattr(self,'imu_samples',[]),stamp,getattr(self,'imu_map_offset',0.))
         if imu_yaw is not None:self.yaw=imu_yaw
         # Publish each accepted wheel source immediately. A same-rate timer
         # can skip intermediate wheel stamps after a delayed callback, leaving
@@ -123,7 +125,7 @@ class Localization(Node):
         wheel=interpolate(self.wheel_samples,image_time)
         if wheel is None or self.previous is None:return
         image_pose=field_pose((*self.xy,self.yaw),self.previous,wheel)
-        image_imu_yaw=heading_at(getattr(self,'imu_samples',[]),image_time)
+        image_imu_yaw=map_heading_at(getattr(self,'imu_samples',[]),image_time,getattr(self,'imu_map_offset',0.))
         if getattr(self,'require_imu',False) and image_imu_yaw is None:return
         if image_imu_yaw is not None:image_pose=(*image_pose[:2],image_imu_yaw)
         self.image_odom_delta=self.wheel_samples[-1][0]-image_time
@@ -154,9 +156,12 @@ class Localization(Node):
             distances=self.distance[iy,ix];cut=max(20,int(distances.shape[1]*.7));trim=np.partition(distances,cut-1,axis=1)[:,:cut]
             return np.mean(trim,axis=1)+.03*np.hypot(grid[:,0],grid[:,1])+.015*np.abs(grid[:,2])
         grid=self.grid.copy()
-        if image_imu_yaw is not None:grid[:,2]=0
+        calibrating=(image_imu_yaw is not None and
+                     (self.heading_calibration.start is None or image_time-self.heading_calibration.start<=6.))
+        if calibrating and self.heading_calibration.start is None:self.heading_calibration.start=image_time
+        if image_imu_yaw is not None and not calibrating:grid[:,2]=0
         scores=costs(grid);best=grid[np.argmin(scores)];fine=np.array(np.meshgrid(np.linspace(-.009,.009,5),np.linspace(-.009,.009,5),np.linspace(-.008,.008,5),indexing='ij')).reshape(3,-1).T+best
-        if image_imu_yaw is not None:fine[:,2]=0
+        if image_imu_yaw is not None and not calibrating:fine[:,2]=0
         scores=costs(fine);delta=fine[np.argmin(scores)];score=float(scores.min());self.score=score
         if score<.025:
             self.last_match=now;self.registration_stamp=image_time;self.unmatched_distance=0.
@@ -166,12 +171,14 @@ class Localization(Node):
                 # Test each coordinate against the same optimum before changing it.
                 alternatives=np.tile(delta,(3,1));np.fill_diagonal(alternatives,0.)
                 self.axis_improvements=(costs(alternatives)-score).tolist()
+                if calibrating:
+                    self.imu_map_offset=self.heading_calibration.update(image_time,float(delta[2]),self.axis_improvements[2])
                 accepted=delta*np.array([v>limit for v,limit in zip(self.axis_improvements,(.0005,.0005,.0002))])
                 corrected=(image_pose[0]+float(np.clip(accepted[0]*.65,-.025,.025)),
                            image_pose[1]+float(np.clip(accepted[1]*.65,-.025,.025)),
                            wrap(image_pose[2]+float(np.clip(accepted[2]*.35,-.012,.012))))
                 current=field_pose(corrected,wheel,self.previous)
-                current_imu_yaw=heading_at(getattr(self,'imu_samples',[]),self.wheel_samples[-1][0])
+                current_imu_yaw=map_heading_at(getattr(self,'imu_samples',[]),self.wheel_samples[-1][0],getattr(self,'imu_map_offset',0.))
                 if current_imu_yaw is not None:current=(*current[:2],current_imu_yaw)
                 self.xy=np.array(current[:2]);self.yaw=current[2];self.registration_corrections+=1
     def cloud(self,m):
@@ -205,7 +212,7 @@ class Localization(Node):
             self.quality.publish(String(data=json.dumps({'state':'lost','reason':'source or receipt freshness','odometry_source_age_s':odom_age,'odometry_receipt_age_s':now-self.odom_received,'camera_receipt_age_s':now-self.camera_received,'camera_source_age_s':None if self.camera_source_time is None else now-self.camera_source_time})))
             self.status.publish(String(data='LOST odometry or camera; navigation pose withheld'));return
         state='lost' if self.unmatched_distance>.75 else 'degraded' if self.unmatched_distance>.30 else 'tracking'
-        self.quality.publish(String(data=json.dumps({'state':state,'odometry_source_age_s':round(odom_age,4),'encoder_image_delta_s':self.encoder_age,'image_odom_delta_s':self.image_odom_delta,'registration_stamp':self.registration_stamp,'registration_corrections':self.registration_corrections,'axis_improvements_m':self.axis_improvements,'score_m':self.score,'paint_pixels':self.registration_points,'paint_value_threshold':getattr(self,'paint_threshold',None),'paint_contrast':getattr(self,'paint_contrast',None),'distance_without_match_m':round(self.unmatched_distance,4),'last_match_age_s':None if self.last_match is None else round(now-self.last_match,3),'imu_source_age_s':None if not getattr(self,'imu_samples',[]) else round(now-self.imu_samples[-1][0],4),'criterion':'Image-time wheel interpolation, IMU heading and XY correction propagated forward; not a calibrated probability or global relocalization'})))
+        self.quality.publish(String(data=json.dumps({'state':state,'imu_map_offset_rad':getattr(self,'imu_map_offset',0.),'odometry_source_age_s':round(odom_age,4),'encoder_image_delta_s':self.encoder_age,'image_odom_delta_s':self.image_odom_delta,'registration_stamp':self.registration_stamp,'registration_corrections':self.registration_corrections,'axis_improvements_m':self.axis_improvements,'score_m':self.score,'paint_pixels':self.registration_points,'paint_value_threshold':getattr(self,'paint_threshold',None),'paint_contrast':getattr(self,'paint_contrast',None),'distance_without_match_m':round(self.unmatched_distance,4),'last_match_age_s':None if self.last_match is None else round(now-self.last_match,3),'imu_source_age_s':None if not getattr(self,'imu_samples',[]) else round(now-self.imu_samples[-1][0],4),'criterion':'Image-time wheel interpolation, IMU heading and XY correction propagated forward; not a calibrated probability or global relocalization'})))
         # Pose belongs to the last integrated wheel sample, not the publication time.
         stamp=self.odom_time;transforms=[]
         # Separate mapping base avoids assigning two parents to navigation base.

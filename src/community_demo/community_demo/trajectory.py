@@ -174,11 +174,12 @@ def plan_trajectory(points,start,goal_heading,grid,posts,settings=None):
     goal_along=(goal[0]-start[0])*axis[0]+(goal[1]-start[1])*axis[1]
     aligned=available>window and goal_along>window
     advance=max(0.,min(available,goal_along-window)) if aligned else 0.
-    prefix=[];entry=tuple(start)
+    prefix=[];entry=tuple(start);join_end_index=0
     if advance>.02:
         correction=min(.25,advance)
         point=(centre[0]+axis[0]*correction,centre[1]+axis[1]*correction)
         prefix=tangent_connector(start,point,axis_yaw)
+        join_end_index=len(prefix)-1
         end=(centre[0]+axis[0]*advance,centre[1]+axis[1]*advance)
         _,line=constant(prefix[-1],0,advance-correction,True);prefix.extend(line)
         entry=(*end,axis_yaw)
@@ -208,7 +209,8 @@ def plan_trajectory(points,start,goal_heading,grid,posts,settings=None):
                         # under rotation, translation and reflection of the scene.
                         deviation+=ds*min(math.dist(a[:2],q[:2]) for q in points[::max(1,len(points)//30)])**2
                     meta={'family':'clothoid-circle-straight','radii':radii,'signs':signs,
-                          'preserved_straight_prefix_m':advance,'estimated_duration_s':duration,
+                          'preserved_straight_prefix_m':advance,'initial_centre_join_end_index':join_end_index,
+                          'estimated_duration_s':duration,
                           'length_m':length,'maximum_curvature':max_k,'goal':goal}
                     candidates.append((duration+12*deviation,curve,meta))
     # Search broad radii first, then refine the best safe family locally.

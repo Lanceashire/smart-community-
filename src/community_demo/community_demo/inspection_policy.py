@@ -1,6 +1,15 @@
 """Finish known-gallery observations from measured evidence, not a redundant timer."""
 import math
 
+def observation_frame_valid(source_ns,opened_ns,encoder,requested_pan,now_ns):
+    """Use a fresh image from this view/angle and its measured stable encoder."""
+    if encoder is None or not opened_ns<=source_ns<=now_ns or now_ns-source_ns>500_000_000:
+        return False
+    stamp,pan,velocity=encoder
+    return (all(math.isfinite(x)for x in (stamp,pan,velocity,requested_pan)) and
+            abs(stamp-source_ns/1e9)<=.10 and abs(velocity)<.15 and
+            abs(math.atan2(math.sin(pan-requested_pan),math.cos(pan-requested_pan)))<.035)
+
 def inspection_complete(outcomes,required_views,run_id,lap_id):
     """A finished route is successful only with every required confirmed view."""
     return (len(outcomes)==len(required_views) and

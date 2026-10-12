@@ -41,7 +41,9 @@ class TrafficSignals(Node):
                        ((l['state']=='on')==(l['colour']==colour)) else l['hidden_z']))<.002
                        for l in self.lamps):phase=colour;break
             t=message.header.stamp.sec*1_000_000_000+message.header.stamp.nsec
-            if not self.phase_history or (t>self.phase_history[-1][0] and (t-self.phase_history[-1][0]>=50_000_000 or phase!=self.phase_history[-1][1])):self.phase_history.append((t,phase))
+            # Keep every distinct measured lens source. An extra 50ms filter
+            # could discard the nearest real source at the audit boundary.
+            if not self.phase_history or t>self.phase_history[-1][0]:self.phase_history.append((t,phase))
 
     def on_engine(self,message):
         try:self.engine=json.loads(message.data)

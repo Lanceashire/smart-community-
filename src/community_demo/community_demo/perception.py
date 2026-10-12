@@ -19,6 +19,7 @@ from community_demo.plate_geometry import blue_plates,select_plate_target
 from community_demo.visual_overlay import draw_detection_labels,target_display_name
 from community_demo.person_evidence import overlap
 from community_demo.person_evidence import PersonEvidence
+from community_demo.inspection_policy import observation_frame_valid
 from community_demo.sensor_validation import valid_rgb_image,pan_sample,stamp_ns
 from PIL import Image as PILImage,ImageDraw,ImageFont
 
@@ -48,6 +49,7 @@ class Perception(Node):
         self.view_people={};self.view_plates={};self.view_votes={};self.last_observation_outcomes=[]
         self.person_evidence=PersonEvidence(frame_window=round(self.processing_hz*2));self.pan_samples=deque(maxlen=256)
         self.view_sample=0;self.view_pan=0.;self.sample_frames={};self.sample_angles={}
+        self.view_sample_source_ns=0
         self.detail_jpeg=b'';self.plate_read=None;self.preview_snapshot=None
         self.live_html=Path('src/community_demo/gui/live_view.html').read_bytes()
         self.create_subscription(JointState,'/world/community/model/patrol_bot/joint_state',self.on_joint,qos_profile_sensor_data)
@@ -133,6 +135,8 @@ class Perception(Node):
             if data.get('view')!='transit' and (data.get('run_id'),data.get('lap_id'))!=(self.run_id,self.lap_id):return
             view=data.get('view','transit')
             key=(view,data.get('attempt',0),self.run_id,self.lap_id)
+            if key!=self.view_key or int(data.get('sample',0))!=self.view_sample:
+                self.view_sample_source_ns=int(data.get('stamp_ns',self.get_clock().now().nanoseconds))
             if key!=self.view_key:
                 self.view_people={};self.view_plates={};self.view_votes={}
                 self.view_key=key;self.view_frames=0;self.evidence_signature=None
@@ -160,7 +164,8 @@ class Perception(Node):
         begin=time.perf_counter();result=self.model.predict(frame,imgsz=960,conf=.35,iou=.45,device=0,verbose=False)[0];detections=[];light_candidates=[];ocr_due=time.monotonic()-self.last_ocr>.6;new_events=[]
         encoder=min(self.pan_samples,key=lambda x:abs(x[0]-image_time)) if self.pan_samples else None
         pan=encoder[1] if encoder else self.view_pan
-        stable_pan=encoder is not None and abs(encoder[0]-image_time)<=.10 and abs(encoder[2])<.15 and abs(pan-self.view_pan)<.035
+        stable_pan=observation_frame_valid(stamp_ns(header.stamp),self.view_sample_source_ns,
+                                         encoder,self.view_pan,self.get_clock().now().nanoseconds)
         person_boxes=[]
         for box in result.boxes:
             name=result.names[int(box.cls.item())]
@@ -202,7 +207,7 @@ class Perception(Node):
             if (self.plate_read and image_time-self.plate_read['stamp']<=.7 and
                     overlap(target['bbox'],self.plate_read['bbox'])>.4):
                 text=self.plate_read['text'];ocr_score=self.plate_read['score']
-            if ocr_due:
+            if ocr_due and stable_pan:
                 H,W=frame.shape[:2];crop=self.frame[max(0,y1-2):min(H,y2+2),max(0,x1-2):min(W,x2+2)]
                 crop=cv2.resize(crop,None,fx=3,fy=3,interpolation=cv2.INTER_CUBIC);read=self.ocr(crop,use_det=False,use_cls=False)
                 if read and read.txts:
@@ -231,8 +236,8 @@ class Perception(Node):
         pending=[e['winner'] for e in person_tracks if not e['identity_resolved'] and e['votes']>=2 and e['mean_confidence']>.45]
         view_confirmed=bool(self.view_plates) if self.view.startswith('plate_') else bool(self.view_people) and not pending
         now_sim=self.get_clock().now().nanoseconds/1e9
-        self.view_frames+=1
         if stable_pan and age<=.5 and self.view!='transit':
+            self.view_frames+=1
             self.sample_frames[self.view_sample]=self.sample_frames.get(self.view_sample,0)+1
             self.sample_angles[self.view_sample]=pan
         two_angles=(self.sample_frames.get(0,0)>=5 and self.sample_frames.get(1,0)>=3 and
