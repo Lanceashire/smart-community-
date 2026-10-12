@@ -113,11 +113,11 @@ std::string toString(RecoveryPhase phase)
 MotionManagerNode::MotionManagerNode(const rclcpp::NodeOptions & options)
 : Node("motion_manager", options),
   source_slots_{{
-    {MotionSource::kManual, "", 0.0, nullptr, MotionCommand{MotionSource::kManual}},
-    {MotionSource::kRecovery, "", 0.0, nullptr, MotionCommand{MotionSource::kRecovery}},
-    {MotionSource::kTerrain, "", 0.0, nullptr, MotionCommand{MotionSource::kTerrain}},
-    {MotionSource::kEvasion, "", 0.0, nullptr, MotionCommand{MotionSource::kEvasion}},
-    {MotionSource::kNavigation, "", 0.0, nullptr, MotionCommand{MotionSource::kNavigation}},
+    {MotionSource::kManual, "", 0.0, nullptr, MotionCommand{MotionSource::kManual}, CommandBuffer{}},
+    {MotionSource::kRecovery, "", 0.0, nullptr, MotionCommand{MotionSource::kRecovery}, CommandBuffer{}},
+    {MotionSource::kTerrain, "", 0.0, nullptr, MotionCommand{MotionSource::kTerrain}, CommandBuffer{}},
+    {MotionSource::kEvasion, "", 0.0, nullptr, MotionCommand{MotionSource::kEvasion}, CommandBuffer{}},
+    {MotionSource::kNavigation, "", 0.0, nullptr, MotionCommand{MotionSource::kNavigation}, CommandBuffer{}},
   }},
   state_(),
   selected_command_(),
@@ -277,12 +277,15 @@ void MotionManagerNode::commandCallback(
   MotionSource source, const geometry_msgs::msg::TwistStamped::SharedPtr msg)
 {
   auto & slot = source_slots_[sourceIndex(source)];
-  slot.latest_command.source = source;
-  slot.latest_command.twist = *msg;
-  if (isZeroStamp(slot.latest_command.twist.header.stamp)) {
-    slot.latest_command.twist.header.stamp = this->now();
+  MotionCommand command;
+  command.source = source;
+  command.twist = *msg;
+  const auto now = this->now();
+  if (isZeroStamp(command.twist.header.stamp)) {
+    command.twist.header.stamp = now;
   }
-  slot.latest_command.valid = true;
+  command.valid = true;
+  slot.commands.push(command, now, slot.timeout_s);
 }
 
 void MotionManagerNode::emergencyStopCallback(const std_msgs::msg::Bool::SharedPtr msg)
@@ -347,11 +350,14 @@ void MotionManagerNode::selectCommand(const rclcpp::Time & now)
 
   for (const auto source : kPriorityOrder) {
     const auto & slot = source_slots_[sourceIndex(source)];
-    if (isCommandFresh(slot.latest_command, slot.timeout_s, now)) {
+    const MotionCommand * command = source == MotionSource::kRecovery ?
+      (isCommandFresh(slot.latest_command, slot.timeout_s, now) ? &slot.latest_command : nullptr) :
+      slot.commands.at(now, slot.timeout_s);
+    if (command != nullptr) {
       state_.mode = modeForSource(slot.source);
       state_.selected_source = slot.source;
       state_.has_fresh_command = true;
-      selected_command_ = clampCommand(slot.latest_command.twist, now);
+      selected_command_ = clampCommand(command->twist, now);
       return;
     }
   }
